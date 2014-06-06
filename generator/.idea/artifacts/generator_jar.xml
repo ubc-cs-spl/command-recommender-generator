@@ -1,0 +1,9 @@
+<component name="ArtifactManager">
+  <artifact type="jar" build-on-make="true" name="generator:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/generator_jar</output-path>
+    <root id="archive" name="generator.jar">
+      <element id="module-output" name="generator" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/external/mongo-java-driver-2.12.2.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>
