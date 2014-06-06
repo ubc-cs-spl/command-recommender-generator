@@ -9,6 +9,7 @@ import com.mongodb.*;
 import java.net.UnknownHostException;
 import java.util.*;
 
+
 public class Retriever {
 
     public static final String DB_NAME = "commands-development";
@@ -19,12 +20,13 @@ public class Retriever {
     private static final String KIND = "kind";
     private static final String COMMAND = "command";
     private static final String COMMAND_ID = "command_id";
-    private static final String NEW = "new";
+    private static final String NEW = "new_recommendation";
     private static final String REASON = "reason";
-    private static final String TIME_OF_CREATION = "time_of_creation";
+    private static final String CREATED_ON = "created_on";
     private static final String DESCRIPTION = "description";
     private static final String ID = "_id";
     private static final String BINDING_USED = "bindingUsed";
+    private static final String USEFUL = "useful";
 
     private static final String FREQUENT_REASON = "Most frequent commands which you are not using.";
     private static final String HOTKEY_REASON = "You have never used hot-key to trigger this command.";
@@ -155,7 +157,8 @@ public class Retriever {
         recommendation.put(COMMAND_ID, commandId);
         recommendation.put(REASON, reason);
         recommendation.put(NEW, true);
-        recommendation.put(TIME_OF_CREATION, System.currentTimeMillis());
+        recommendation.put(CREATED_ON, new Date());
+        recommendation.put(USEFUL, null);
         collection.insert(recommendation);
     }
 

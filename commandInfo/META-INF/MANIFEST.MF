@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Commandinfogen
+Bundle-SymbolicName: ca.ubc.cs.commandrecommender.commandinfogen;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: ca.ubc.cs.commandrecommender.commandinfogen.Activator
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ ca.ubc.cs.commandrecommender.mongodriver
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-ActivationPolicy: lazy
+Import-Package: com.mongodb
