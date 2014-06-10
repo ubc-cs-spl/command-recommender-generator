@@ -6,8 +6,9 @@ import com.mongodb.MongoClient;
 /**
  * Created by KeEr on 2014-06-09.
  */
-public class DBUtils {
-    public static final String DB_NAME = "commands-development";
+public class CmdDevDB {
+    private final String dbName;
+    private final MongoClient client;
     public static final String COMMANDS_COLLECTION = "commands";
     public static final String RECOMMENDATIONS_COLLECTION = "recommendations";
     public static final String USERS_COLLECTION = "users";
@@ -27,20 +28,30 @@ public class DBUtils {
     public static final String FREQUENT_REASON = "Most frequent commands which you are not using.";
     public static final String HOTKEY_REASON = "You have never used hot-key to trigger this command.";
 
-    public static DBCollection getCommandsCollection(MongoClient client) {
-        return getCollection(client, COMMANDS_COLLECTION);
+    public CmdDevDB(MongoClient client) {
+        dbName = "commands-development";
+        this.client = client;
     }
 
-    public static DBCollection getRecommendationsCollection(MongoClient client) {
-        return getCollection(client, RECOMMENDATIONS_COLLECTION);
+    public CmdDevDB(String dbName, MongoClient client) {
+        this.dbName = dbName;
+        this.client = client;
     }
 
-    public static DBCollection getUsersCollection(MongoClient client) {
-        return getCollection(client, USERS_COLLECTION);
+    public DBCollection getCommandsCollection() {
+        return getCollection(COMMANDS_COLLECTION);
     }
 
-    public static DBCollection getCollection(MongoClient client, String collection) {
-        return client.getDB(DB_NAME).getCollection(collection);
+    public DBCollection getRecommendationsCollection() {
+        return getCollection(RECOMMENDATIONS_COLLECTION);
+    }
+
+    public DBCollection getUsersCollection() {
+        return getCollection(USERS_COLLECTION);
+    }
+
+    private DBCollection getCollection(String collection) {
+        return client.getDB(dbName).getCollection(collection);
     }
 
 }
