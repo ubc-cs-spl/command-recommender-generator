@@ -6,10 +6,6 @@ import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
 
 import java.io.*;
-import java.net.UnknownHostException;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 /**
  * Created by KeEr on 2014-06-06.
@@ -31,15 +27,19 @@ public class OldUsageDataInjector {
         String filePath = args[0];
         //establish connection
         MongoClient mongoClient = new MongoClient();
-        DBCollection collection = mongoClient.getDB(DB_NAME)
+        final DBCollection collection = mongoClient.getDB(DB_NAME)
                 .getCollection(COMMANDS_COLLECTION);
         BufferedReader reader = new BufferedReader(new InputStreamReader(
                 new FileInputStream(filePath)));
+        long i = 0L;
         try {
             while (true) {
-                String line = reader.readLine();
-                if (line == null) break;
-                insertCommand(collection, line);
+                if (i > 40855530L) {
+                    final String line = reader.readLine();
+                    if (line == null) break;
+                    insertCommand(collection, line);
+                }
+                i++;
             }
         } finally {
             reader.close();
