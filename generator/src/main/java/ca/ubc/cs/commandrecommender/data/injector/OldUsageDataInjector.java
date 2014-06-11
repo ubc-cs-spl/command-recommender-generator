@@ -31,15 +31,11 @@ public class OldUsageDataInjector {
                 .getCollection(COMMANDS_COLLECTION);
         BufferedReader reader = new BufferedReader(new InputStreamReader(
                 new FileInputStream(filePath)));
-        long i = 0L;
         try {
             while (true) {
-                if (i > 40855530L) {
-                    final String line = reader.readLine();
-                    if (line == null) break;
-                    insertCommand(collection, line);
-                }
-                i++;
+                String line = reader.readLine();
+                if (line == null) break;
+                insertCommand(collection, line);
             }
         } finally {
             reader.close();

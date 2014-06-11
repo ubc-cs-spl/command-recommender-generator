@@ -40,7 +40,7 @@ public class CsvUtils {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        return (String[]) strings.toArray(new String[strings.size()]);
+        return strings.toArray(new String[strings.size()]);
     }
 
     private static void splitLine(String line, List<String> strings) throws IOException {
