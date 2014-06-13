@@ -1,5 +1,8 @@
 package ca.ubc.cs.commandrecommender.generator;
 
+import ca.ubc.cs.commandrecommender.db.EclipseCmdDevDB;
+import ca.ubc.cs.commandrecommender.db.IRecommenderDB;
+
 import java.util.*;
 
 /**
@@ -7,24 +10,17 @@ import java.util.*;
  */
 public class HotkeyRecGen extends AbstractGen {
 
+    private static final String REASON = "You have never used hot-key to trigger this command.";
+
     private Set<String> cmdsWithShortcuts;
 
-    public HotkeyRecGen(EclipseCmdDevDB db) {
-        super(db);
+    public HotkeyRecGen(IRecommenderDB db) {
+        super(db, REASON);
         cmdsWithShortcuts = db.getCmdsWithShortcuts();
     }
 
-    //Currently get the most frequently used command that a person doesn't know
-    public void updateRecommendationForUser(String user,
-                                                   int amount) {
-        db.markAllRecommendationOld(user);
-        for (String recommendation : getHotkeyRecommendations(user, amount)) {
-            db.insertRecommendation(recommendation, EclipseCmdDevDB.HOTKEY_REASON, user);
-        }
-    }
-
-    private List<String> getHotkeyRecommendations(String user, int amount) {
-        Set<String> knownCmds = new HashSet<String>(db.getCmdsWithShortcutUserUse(user));
+    public List<String> getRecommendationsForUser(String user, int amount) {
+        Set<String> knownCmds = new HashSet<String>(db.getCmdsForWhichUserKnowsShortcut(user));
         knownCmds.addAll(db.getAlreadyRecommendedCmdsForUser(user));
         Set<String> possibleRecommendations = db.getUsedCmdsForUser(user);
         possibleRecommendations.retainAll(cmdsWithShortcuts);

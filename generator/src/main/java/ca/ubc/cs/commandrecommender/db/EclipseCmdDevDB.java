@@ -1,4 +1,4 @@
-package ca.ubc.cs.commandrecommender.generator;
+package ca.ubc.cs.commandrecommender.db;
 
 import com.mongodb.*;
 
@@ -7,7 +7,7 @@ import java.util.*;
 /**
  * Created by KeEr on 2014-06-09.
  */
-public class EclipseCmdDevDB {
+public class EclipseCmdDevDB implements IRecommenderDB {
     private final String dbName;
     private final MongoClient client;
     public static final String COMMANDS_COLLECTION = "commands";
@@ -28,8 +28,6 @@ public class EclipseCmdDevDB {
     public static final String BINDING_USED = "bindingUsed";
     public static final String USEFUL = "useful";
     public static final String SHORTCUT = "shortcut";
-    public static final String FREQUENT_REASON = "Most frequent commands which you are not using.";
-    public static final String HOTKEY_REASON = "You have never used hot-key to trigger this command.";
 
     public EclipseCmdDevDB(MongoClient client) {
         dbName = "commands-development";
@@ -45,6 +43,7 @@ public class EclipseCmdDevDB {
         return client.getDB(dbName);
     }
 
+    @Override
     public List<String> getCmdsSortedByFrequency() {
         DBCollection usageData = getCommandsCollection();
         AggregationOutput cmdByFrequency = usageData.aggregate(mostFrequentPipeline());
@@ -55,7 +54,8 @@ public class EclipseCmdDevDB {
         return commands;
     }
 
-    public List<String> getCmdsWithShortcutUserUse(String user) {
+    @Override
+    public List<String> getCmdsForWhichUserKnowsShortcut(String user) {
         DBObject query = new BasicDBObject(EclipseCmdDevDB.USER_ID, user)
                 .append(EclipseCmdDevDB.KIND, EclipseCmdDevDB.COMMAND)
                 .append(EclipseCmdDevDB.BINDING_USED, true);
@@ -97,11 +97,13 @@ public class EclipseCmdDevDB {
         return client.getDB(dbName).getCollection(collection);
     }
 
+    @Override
     public List<String> getAllUsers() {
         DBCollection usageData = getCommandsCollection();
         return usageData.distinct(EclipseCmdDevDB.USER_ID);
     }
 
+    @Override
     public Set<String> getCmdsWithShortcuts() {
         DBCollection details = getDetailsCollection();
         DBObject query = new BasicDBObject(EclipseCmdDevDB.SHORTCUT,
@@ -110,6 +112,7 @@ public class EclipseCmdDevDB {
         return new HashSet<String>(resultList);
     }
 
+    @Override
     public Set<String> getUsedCmdsForUser(String user) {
         DBCollection usageData = getCommandsCollection();
         DBObject query = new BasicDBObject(EclipseCmdDevDB.USER_ID, user)
@@ -119,6 +122,7 @@ public class EclipseCmdDevDB {
         return knownCmds;
     }
 
+    @Override
     public Set<String> getAlreadyRecommendedCmdsForUser(String user) {
         DBCollection collection = getRecommendationsCollection();
         DBObject query = new BasicDBObject(EclipseCmdDevDB.USER_ID, user);
@@ -134,7 +138,8 @@ public class EclipseCmdDevDB {
      * @param amount max number of recommendations to make
      * @return recommendations determined by the params
      */
-    static List<String> filterOut(Collection<String> cmds,
+    //TODO: move this out into another class
+    public static List<String> filterOut(Collection<String> cmds,
                                   Collection<String> knownCmds, int amount) {
         List<String> results = new ArrayList<String>();
         int count = 0;
@@ -149,8 +154,8 @@ public class EclipseCmdDevDB {
         return results;
     }
 
-    void insertRecommendation(String commandId, String reason,
-                                     String user) {
+    @Override
+    public void insertRecommendation(String commandId, String reason, String user) {
         DBCollection collection = getRecommendationsCollection();
         DBObject recommendation = new BasicDBObject();
         recommendation.put(EclipseCmdDevDB.USER_ID, user);
@@ -162,7 +167,8 @@ public class EclipseCmdDevDB {
         collection.insert(recommendation);
     }
 
-    void markAllRecommendationOld(String user) {
+    @Override
+    public void markAllRecommendationOld(String user) {
         DBCollection collection = getRecommendationsCollection();
         DBObject query = new BasicDBObject(EclipseCmdDevDB.NEW, true)
                 .append(EclipseCmdDevDB.USER_ID, user);
@@ -171,6 +177,7 @@ public class EclipseCmdDevDB {
         collection.update(query, update, false, true);
     }
 
+    @Override
     public boolean shouldRecommendToUser(String user) {
         DBCollection collection = getUsersCollection();
         DBObject query = new BasicDBObject(EclipseCmdDevDB.USER_ID, user);
@@ -186,6 +193,7 @@ public class EclipseCmdDevDB {
         }
     }
 
+    @Override
     public void updateRecommendationStatus(String user) {
         DBCollection collection = getUsersCollection();
         DBObject query = new BasicDBObject(EclipseCmdDevDB.USER_ID, user);

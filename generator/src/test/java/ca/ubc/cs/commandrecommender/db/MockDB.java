@@ -1,4 +1,5 @@
-package ca.ubc.cs.commandrecommender.generator;
+package ca.ubc.cs.commandrecommender.db;
+
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
@@ -83,8 +84,7 @@ public class MockDB {
 
     public int countNewRecommendations() {
         return db.getRecommendationsCollection()
-                .find(new BasicDBObject(EclipseCmdDevDB.NEW, true))
-                .size();
+                .find(new BasicDBObject(EclipseCmdDevDB.NEW, true)).size();
     }
 
 }

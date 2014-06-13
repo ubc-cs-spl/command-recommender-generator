@@ -1,6 +1,8 @@
-package ca.ubc.cs.commandrecommender.generator;
+package ca.ubc.cs.commandrecommender.db;
 
 
+import ca.ubc.cs.commandrecommender.generator.AbstractGen;
+import ca.ubc.cs.commandrecommender.generator.MostUsedRecGen;
 import com.mongodb.MongoClient;
 
 import java.net.UnknownHostException;
@@ -13,12 +15,15 @@ public class RecommendationUpdater {
     public static void main(String[] args) throws UnknownHostException {
         //establish connection
         //TODO: use authorization for production
-        EclipseCmdDevDB db = new EclipseCmdDevDB(new MongoClient());
+        IRecommenderDB db = new EclipseCmdDevDB(new MongoClient());
         AbstractGen algorithm = new MostUsedRecGen(db);
         for (String user : db.getAllUsers()) {
             if (db.shouldRecommendToUser(user)) {
-                algorithm.updateRecommendationForUser(user, 10);
+                String reason = algorithm.getAlgorithmUsed();
+                db.markAllRecommendationOld(user);
                 db.updateRecommendationStatus(user);
+                for (String recommendation : algorithm.getRecommendationsForUser(user, 10))
+                    db.insertRecommendation(recommendation, reason, user);
             }
         }
     }

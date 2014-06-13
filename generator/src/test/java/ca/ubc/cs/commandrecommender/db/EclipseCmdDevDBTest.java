@@ -1,4 +1,4 @@
-package ca.ubc.cs.commandrecommender.generator;
+package ca.ubc.cs.commandrecommender.db;
 
 import org.junit.After;
 import org.junit.Before;
@@ -94,9 +94,9 @@ public class EclipseCmdDevDBTest {
 
     @Test
     public void testGetCmdsWithShortcutUserUse() {
-        assertEquals(2, db.getCmdsWithShortcutUserUse(MockDB.U1));
-        assertEquals(1, db.getCmdsWithShortcutUserUse(MockDB.U2));
-        assertEquals(2, db.getCmdsWithShortcutUserUse(MockDB.U3));
+        assertEquals(2, db.getCmdsForWhichUserKnowsShortcut(MockDB.U1));
+        assertEquals(1, db.getCmdsForWhichUserKnowsShortcut(MockDB.U2));
+        assertEquals(2, db.getCmdsForWhichUserKnowsShortcut(MockDB.U3));
     }
 
 }
