@@ -8,7 +8,7 @@ import java.util.*;
 /**
  * Created by KeEr on 2014-06-09.
  */
-public class HotkeyRecGen extends AbstractGen {
+public class HotkeyRecGen extends AbstractRecGen {
 
     private static final String REASON = "You have never used hot-key to trigger this command.";
 

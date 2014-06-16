@@ -28,6 +28,7 @@ public class EclipseCmdDevDB implements IRecommenderDB {
     public static final String BINDING_USED = "bindingUsed";
     public static final String USEFUL = "useful";
     public static final String SHORTCUT = "shortcut";
+    public static final String COMMAND_DETAIL_ID = "command_detail_id";
 
     public EclipseCmdDevDB(MongoClient client) {
         dbName = "commands-development";
@@ -49,32 +50,37 @@ public class EclipseCmdDevDB implements IRecommenderDB {
         AggregationOutput cmdByFrequency = usageData.aggregate(mostFrequentPipeline());
         List<String> commands = new ArrayList<String>();
         for (DBObject entry : cmdByFrequency.results()) {
-            commands.add((String) entry.get(EclipseCmdDevDB.ID));
+            commands.add((String) entry.get(ID));
         }
         return commands;
-    }
-
-    @Override
-    public List<String> getCmdsForWhichUserKnowsShortcut(String user) {
-        DBObject query = new BasicDBObject(EclipseCmdDevDB.USER_ID, user)
-                .append(EclipseCmdDevDB.KIND, EclipseCmdDevDB.COMMAND)
-                .append(EclipseCmdDevDB.BINDING_USED, true);
-        return getCommandsCollection().distinct(EclipseCmdDevDB.DESCRIPTION, query);
     }
 
     private static List<DBObject> mostFrequentPipeline() {
         String countField = "count";
         DBObject match = new BasicDBObject("$match",
-                new BasicDBObject(EclipseCmdDevDB.KIND, EclipseCmdDevDB.COMMAND));
+                new BasicDBObject(KIND, COMMAND));
         DBObject project = new BasicDBObject("$project",
-                new BasicDBObject(EclipseCmdDevDB.DESCRIPTION, 1));
-        DBObject groupFields = new BasicDBObject(EclipseCmdDevDB.ID, "$description")
+                new BasicDBObject(DESCRIPTION, 1));
+        DBObject groupFields = new BasicDBObject(ID, "$description")
                 .append(countField, new BasicDBObject("$sum", 1));
         DBObject group = new BasicDBObject("$group", groupFields);
         DBObject sort = new BasicDBObject("$sort", new BasicDBObject(countField, -1));
         DBObject project2 = new BasicDBObject("$project",
-                new BasicDBObject(EclipseCmdDevDB.ID, 1));
+                new BasicDBObject(ID, 1));
         return Arrays.asList(match, project, group, sort, project2);
+    }
+
+    @Override
+    public List<String> getCmdsSortedByUserCount() {
+        return null;
+    }
+
+    @Override
+    public List<String> getCmdsForWhichUserKnowsShortcut(String user) {
+        DBObject query = new BasicDBObject(USER_ID, user)
+                .append(KIND, COMMAND)
+                .append(BINDING_USED, true);
+        return getCommandsCollection().distinct(DESCRIPTION, query);
     }
 
     protected DBCollection getDetailsCollection() {
@@ -99,25 +105,25 @@ public class EclipseCmdDevDB implements IRecommenderDB {
 
     @Override
     public List<String> getAllUsers() {
-        DBCollection usageData = getCommandsCollection();
-        return usageData.distinct(EclipseCmdDevDB.USER_ID);
+        DBCollection users = getUsersCollection();
+        return users.distinct(USER_ID);
     }
 
     @Override
     public Set<String> getCmdsWithShortcuts() {
         DBCollection details = getDetailsCollection();
-        DBObject query = new BasicDBObject(EclipseCmdDevDB.SHORTCUT,
+        DBObject query = new BasicDBObject(SHORTCUT,
                 new BasicDBObject("$ne", null));
-        List<String> resultList = details.distinct(EclipseCmdDevDB.COMMAND_ID, query);
+        List<String> resultList = details.distinct(COMMAND_ID, query);
         return new HashSet<String>(resultList);
     }
 
     @Override
     public Set<String> getUsedCmdsForUser(String user) {
         DBCollection usageData = getCommandsCollection();
-        DBObject query = new BasicDBObject(EclipseCmdDevDB.USER_ID, user)
-                .append(EclipseCmdDevDB.KIND, EclipseCmdDevDB.COMMAND);
-        List<String> usedCmds = usageData.distinct(EclipseCmdDevDB.DESCRIPTION, query);
+        DBObject query = new BasicDBObject(USER_ID, user)
+                .append(KIND, COMMAND);
+        List<String> usedCmds = usageData.distinct(DESCRIPTION, query);
         Set<String> knownCmds = new HashSet<String>(usedCmds);
         return knownCmds;
     }
@@ -125,8 +131,8 @@ public class EclipseCmdDevDB implements IRecommenderDB {
     @Override
     public Set<String> getAlreadyRecommendedCmdsForUser(String user) {
         DBCollection collection = getRecommendationsCollection();
-        DBObject query = new BasicDBObject(EclipseCmdDevDB.USER_ID, user);
-        List<String> recommendedCmds = collection.distinct(EclipseCmdDevDB.COMMAND_ID, query);
+        DBObject query = new BasicDBObject(USER_ID, user);
+        List<String> recommendedCmds = collection.distinct(COMMAND_ID, query);
         Set<String> knownCmds = new HashSet<String>(recommendedCmds);
         return knownCmds;
     }
@@ -158,32 +164,37 @@ public class EclipseCmdDevDB implements IRecommenderDB {
     public void insertRecommendation(String commandId, String reason, String user) {
         DBCollection collection = getRecommendationsCollection();
         DBObject recommendation = new BasicDBObject();
-        recommendation.put(EclipseCmdDevDB.USER_ID, user);
-        recommendation.put(EclipseCmdDevDB.COMMAND_ID, commandId);
-        recommendation.put(EclipseCmdDevDB.REASON, reason);
-        recommendation.put(EclipseCmdDevDB.NEW, true);
-        recommendation.put(EclipseCmdDevDB.CREATED_ON, new Date());
-        recommendation.put(EclipseCmdDevDB.USEFUL, null);
+        recommendation.put(USER_ID, user);
+        recommendation.put(COMMAND_ID, commandId);
+        recommendation.put(REASON, reason);
+        recommendation.put(NEW, true);
+        recommendation.put(CREATED_ON, new Date());
+        recommendation.put(USEFUL, null);
+        DBObject command = new BasicDBObject(COMMAND_ID, commandId);
+        DBCollection commandDetails = getDetailsCollection();
+        DBObject object = commandDetails.findOne(command);
+        if (object != null)
+            recommendation.put(COMMAND_DETAIL_ID, object.get("_id"));
         collection.insert(recommendation);
     }
 
     @Override
     public void markAllRecommendationOld(String user) {
         DBCollection collection = getRecommendationsCollection();
-        DBObject query = new BasicDBObject(EclipseCmdDevDB.NEW, true)
-                .append(EclipseCmdDevDB.USER_ID, user);
+        DBObject query = new BasicDBObject(NEW, true)
+                .append(USER_ID, user);
         DBObject update = new BasicDBObject("$set",
-                new BasicDBObject(EclipseCmdDevDB.NEW, false));
+                new BasicDBObject(NEW, false));
         collection.update(query, update, false, true);
     }
 
     @Override
     public boolean shouldRecommendToUser(String user) {
         DBCollection collection = getUsersCollection();
-        DBObject query = new BasicDBObject(EclipseCmdDevDB.USER_ID, user);
+        DBObject query = new BasicDBObject(USER_ID, user);
         DBObject userEntry = collection.findOne(query);
-        Date lastUpload = (Date) userEntry.get(EclipseCmdDevDB.LAST_UPLOAD_DATE);
-        Date lastRecommend = (Date) userEntry.get(EclipseCmdDevDB.LAST_RECOMMENDATION_DATE);
+        Date lastUpload = (Date) userEntry.get(LAST_UPLOAD_DATE);
+        Date lastRecommend = (Date) userEntry.get(LAST_RECOMMENDATION_DATE);
         if (lastUpload == null) {
             return false;
         } else if (lastRecommend == null) {
@@ -196,9 +207,10 @@ public class EclipseCmdDevDB implements IRecommenderDB {
     @Override
     public void updateRecommendationStatus(String user) {
         DBCollection collection = getUsersCollection();
-        DBObject query = new BasicDBObject(EclipseCmdDevDB.USER_ID, user);
+        DBObject query = new BasicDBObject(USER_ID, user);
         DBObject update = new BasicDBObject("$set",
-                new BasicDBObject(EclipseCmdDevDB.LAST_RECOMMENDATION_DATE, new Date()));
+                new BasicDBObject(LAST_RECOMMENDATION_DATE, new Date()));
         collection.update(query, update, true, false);
     }
+
 }

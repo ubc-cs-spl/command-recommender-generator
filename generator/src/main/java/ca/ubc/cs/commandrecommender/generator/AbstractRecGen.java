@@ -7,11 +7,11 @@ import java.util.List;
 /**
  * Created by KeEr on 2014-06-11.
  */
-public abstract class AbstractGen {
+public abstract class AbstractRecGen {
     protected final IRecommenderDB db;
     protected final String algorithm;
 
-    public AbstractGen(IRecommenderDB db, String algorithm) {
+    public AbstractRecGen(IRecommenderDB db, String algorithm) {
         this.db = db;
         this.algorithm = algorithm;
     }

@@ -3,21 +3,22 @@ package ca.ubc.cs.commandrecommender.generator;
 import ca.ubc.cs.commandrecommender.db.EclipseCmdDevDB;
 import ca.ubc.cs.commandrecommender.db.IRecommenderDB;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
- * Created by KeEr on 2014-06-09.
+ * Created by KeEr on 2014-06-13.
  */
-public class MostUsedRecGen extends AbstractRecGen {
+public class MostWidelyUsedRecGen extends AbstractRecGen {
 
-
-    public static final String REASON = "Most frequently used";
+    public static final String REASON = "Most widely used";
 
     private final List<String> sortedCmds;
 
-    public MostUsedRecGen(IRecommenderDB db) {
+    public MostWidelyUsedRecGen(IRecommenderDB db) {
         super(db, REASON);
-        sortedCmds = db.getCmdsSortedByFrequency();
+        sortedCmds = db.getCmdsSortedByUserCount();
     }
 
     @Override
@@ -27,5 +28,4 @@ public class MostUsedRecGen extends AbstractRecGen {
         knownCmds.addAll(db.getAlreadyRecommendedCmdsForUser(user));
         return EclipseCmdDevDB.filterOut(sortedCmds, knownCmds, amount);
     }
-
 }

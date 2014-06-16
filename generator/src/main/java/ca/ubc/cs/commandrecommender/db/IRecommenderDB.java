@@ -28,4 +28,5 @@ public interface IRecommenderDB {
 
     void updateRecommendationStatus(String user);
 
+    List<String> getCmdsSortedByUserCount();
 }

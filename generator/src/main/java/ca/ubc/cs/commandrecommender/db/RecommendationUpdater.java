@@ -1,7 +1,7 @@
 package ca.ubc.cs.commandrecommender.db;
 
 
-import ca.ubc.cs.commandrecommender.generator.AbstractGen;
+import ca.ubc.cs.commandrecommender.generator.AbstractRecGen;
 import ca.ubc.cs.commandrecommender.generator.MostUsedRecGen;
 import com.mongodb.MongoClient;
 
@@ -16,13 +16,13 @@ public class RecommendationUpdater {
         //establish connection
         //TODO: use authorization for production
         IRecommenderDB db = new EclipseCmdDevDB(new MongoClient());
-        AbstractGen algorithm = new MostUsedRecGen(db);
+        AbstractRecGen algorithm = new MostUsedRecGen(db);
+        String reason = algorithm.getAlgorithmUsed();
         for (String user : db.getAllUsers()) {
             if (db.shouldRecommendToUser(user)) {
-                String reason = algorithm.getAlgorithmUsed();
                 db.markAllRecommendationOld(user);
                 db.updateRecommendationStatus(user);
-                for (String recommendation : algorithm.getRecommendationsForUser(user, 10))
+                for (String recommendation : algorithm.getRecommendationsForUser(user, 3))
                     db.insertRecommendation(recommendation, reason, user);
             }
         }
