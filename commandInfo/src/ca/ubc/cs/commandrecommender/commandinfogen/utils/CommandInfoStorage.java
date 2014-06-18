@@ -38,13 +38,12 @@ public class CommandInfoStorage {
 	}
 
 	private static void insertNewCmdIfNotExist(String knownCmd, DBCollection collection) {
-		if (collection.findOne(new BasicDBObject(COMMAND_ID, knownCmd)) == null) {
-			DBObject info = getShortCut(knownCmd);
-			info.put(COMMAND_NAME, CommandInfoUtils.getCommandName(knownCmd));
-			info.put(COMMAND_ID, knownCmd);
-			info.put(DESCRIPTION, CommandInfoUtils.getCommandDescription(knownCmd));
-			collection.insert(info);
-		}
+		DBObject command = new BasicDBObject(COMMAND_NAME, CommandInfoUtils.getCommandName(knownCmd));
+		DBObject info = getShortCut(knownCmd);
+		info.put(COMMAND_NAME, CommandInfoUtils.getCommandName(knownCmd));
+		info.put(COMMAND_ID, knownCmd);
+		info.put(DESCRIPTION, CommandInfoUtils.getCommandDescription(knownCmd));
+		collection.update(command, info, true, false);
 	}
 
 	private static DBObject getShortCut(String knownCmd) {

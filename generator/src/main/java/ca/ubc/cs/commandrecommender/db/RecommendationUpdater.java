@@ -28,7 +28,7 @@ public class RecommendationUpdater {
             if (db.shouldRecommendToUser(user)) {
                 db.markAllRecommendationOld(user);
                 db.updateRecommendationStatus(user);
-                for (String recommendation : algorithm.getRecommendationsForUser(user, 3))
+                for (String recommendation : algorithm.getRecommendationsForUser(user, 10))
                     db.insertRecommendation(recommendation, reason, user);
             }
         }
