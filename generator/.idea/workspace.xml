@@ -7,17 +7,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="f70c786b-3697-4808-b3a9-993719f74e67" name="Default" comment="Take into account of hot-keys">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/META-INF/MANIFEST.MF" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/ca/ubc/cs/commandrecommender/generator/MostWidelyUsedRecGen.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/ca/ubc/cs/commandrecommender/data/injector/UserInjector.java" />
-      <change type="MOVED" beforePath="C:\Users\KeEr\git\command-recommender-generator\generator\src\main\java\ca\ubc\cs\commandrecommender\generator\AbstractGen.java" afterPath="$PROJECT_DIR$/src/main/java/ca/ubc/cs/commandrecommender/generator/AbstractRecGen.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/ca/ubc/cs/commandrecommender/data/injector/CsvUtils.java" afterPath="$PROJECT_DIR$/src/main/java/ca/ubc/cs/commandrecommender/data/injector/CsvUtils.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../.gitignore" afterPath="$PROJECT_DIR$/../.gitignore" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/ca/ubc/cs/commandrecommender/db/EclipseCmdDevDB.java" afterPath="$PROJECT_DIR$/src/main/java/ca/ubc/cs/commandrecommender/db/EclipseCmdDevDB.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/ca/ubc/cs/commandrecommender/generator/HotkeyRecGen.java" afterPath="$PROJECT_DIR$/src/main/java/ca/ubc/cs/commandrecommender/generator/HotkeyRecGen.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/ca/ubc/cs/commandrecommender/db/IRecommenderDB.java" afterPath="$PROJECT_DIR$/src/main/java/ca/ubc/cs/commandrecommender/db/IRecommenderDB.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/ca/ubc/cs/commandrecommender/generator/MostUsedRecGen.java" afterPath="$PROJECT_DIR$/src/main/java/ca/ubc/cs/commandrecommender/generator/MostUsedRecGen.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/ca/ubc/cs/commandrecommender/db/RecommendationUpdater.java" afterPath="$PROJECT_DIR$/src/main/java/ca/ubc/cs/commandrecommender/db/RecommendationUpdater.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/artifacts/generator_jar.xml" afterPath="$PROJECT_DIR$/.idea/artifacts/generator_jar.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="generator.iws" />
@@ -46,8 +39,8 @@
           <file leaf-file-name="EclipseCmdDevDB.java" pinned="false" current="true" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/src/main/java/ca/ubc/cs/commandrecommender/db/EclipseCmdDevDB.java">
               <provider selected="true" editor-type-id="text-editor">
-                <state vertical-scroll-proportion="0.5" vertical-offset="578" max-vertical-offset="3502">
-                  <caret line="57" column="58" selection-start-line="57" selection-start-column="58" selection-end-line="57" selection-end-column="58" />
+                <state vertical-scroll-proportion="0.46982056" vertical-offset="0" max-vertical-offset="4014">
+                  <caret line="18" column="40" selection-start-line="18" selection-start-column="40" selection-end-line="18" selection-end-column="40" />
                   <folding />
                 </state>
               </provider>
@@ -76,8 +69,8 @@
           <file leaf-file-name="HotkeyRecGen.java" pinned="false" current="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/src/main/java/ca/ubc/cs/commandrecommender/generator/HotkeyRecGen.java">
               <provider selected="true" editor-type-id="text-editor">
-                <state vertical-scroll-proportion="0.0" vertical-offset="476" max-vertical-offset="612">
-                  <caret line="28" column="0" selection-start-line="28" selection-start-column="0" selection-end-line="28" selection-end-column="0" />
+                <state vertical-scroll-proportion="0.0" vertical-offset="510" max-vertical-offset="612">
+                  <caret line="30" column="0" selection-start-line="30" selection-start-column="0" selection-end-line="30" selection-end-column="0" />
                   <folding />
                 </state>
               </provider>
@@ -86,7 +79,7 @@
           <file leaf-file-name="AbstractRecGen.java" pinned="false" current="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/src/main/java/ca/ubc/cs/commandrecommender/generator/AbstractRecGen.java">
               <provider selected="true" editor-type-id="text-editor">
-                <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="612">
+                <state vertical-scroll-proportion="0.0" vertical-offset="527" max-vertical-offset="680">
                   <caret line="31" column="33" selection-start-line="31" selection-start-column="33" selection-end-line="31" selection-end-column="33" />
                   <folding />
                 </state>
@@ -100,7 +93,7 @@
           <file leaf-file-name="OldUsageDataInjector.java" pinned="false" current="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/src/main/java/ca/ubc/cs/commandrecommender/data/injector/OldUsageDataInjector.java">
               <provider selected="true" editor-type-id="text-editor">
-                <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1190">
+                <state vertical-scroll-proportion="0.0" vertical-offset="204" max-vertical-offset="1275">
                   <caret line="12" column="35" selection-start-line="12" selection-start-column="35" selection-end-line="12" selection-end-column="35" />
                   <folding />
                 </state>
@@ -110,7 +103,7 @@
           <file leaf-file-name="HotkeyRecGenTest.java" pinned="false" current="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/src/test/java/ca/ubc/cs/commandrecommender/generator/HotkeyRecGenTest.java">
               <provider selected="true" editor-type-id="text-editor">
-                <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="221">
+                <state vertical-scroll-proportion="0.0" vertical-offset="119" max-vertical-offset="221">
                   <caret line="7" column="0" selection-start-line="7" selection-start-column="0" selection-end-line="7" selection-end-column="0" />
                   <folding />
                 </state>
@@ -120,18 +113,18 @@
           <file leaf-file-name="UserInjector.java" pinned="false" current="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/src/main/java/ca/ubc/cs/commandrecommender/data/injector/UserInjector.java">
               <provider selected="true" editor-type-id="text-editor">
-                <state vertical-scroll-proportion="0.0" vertical-offset="42" max-vertical-offset="680">
+                <state vertical-scroll-proportion="0.0" vertical-offset="425" max-vertical-offset="782">
                   <caret line="25" column="52" selection-start-line="25" selection-start-column="41" selection-end-line="25" selection-end-column="52" />
                   <folding />
                 </state>
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="DBCollection.java" pinned="false" current="false" current-in-tab="true">
+          <file leaf-file-name="DBCollection.java" pinned="false" current="false" current-in-tab="false">
             <entry file="jar://$PROJECT_DIR$/external/mongo-java-driver-2.12.2-sources.jar!/com/mongodb/DBCollection.java">
               <provider selected="true" editor-type-id="text-editor">
-                <state vertical-scroll-proportion="0.0" vertical-offset="3383" max-vertical-offset="33881">
-                  <caret line="236" column="7" selection-start-line="236" selection-start-column="7" selection-end-line="236" selection-end-column="7" />
+                <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="33881">
+                  <caret line="64" column="22" selection-start-line="64" selection-start-column="22" selection-end-line="64" selection-end-column="22" />
                   <folding />
                 </state>
               </provider>
@@ -140,7 +133,7 @@
           <file leaf-file-name="DB.java" pinned="false" current="false" current-in-tab="false">
             <entry file="jar://$PROJECT_DIR$/external/mongo-java-driver-2.12.2-sources.jar!/com/mongodb/DB.java">
               <provider selected="true" editor-type-id="text-editor">
-                <state vertical-scroll-proportion="0.0" vertical-offset="14490" max-vertical-offset="15742">
+                <state vertical-scroll-proportion="0.0" vertical-offset="16439" max-vertical-offset="17085">
                   <caret line="967" column="0" selection-start-line="967" selection-start-column="0" selection-end-line="967" selection-end-column="0" />
                   <folding />
                 </state>
@@ -150,8 +143,8 @@
           <file leaf-file-name="IRecommenderDB.java" pinned="false" current="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/src/main/java/ca/ubc/cs/commandrecommender/db/IRecommenderDB.java">
               <provider selected="true" editor-type-id="text-editor">
-                <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="629">
-                  <caret line="20" column="16" selection-start-line="20" selection-start-column="16" selection-end-line="20" selection-end-column="16" />
+                <state vertical-scroll-proportion="0.0" vertical-offset="544" max-vertical-offset="680">
+                  <caret line="32" column="23" selection-start-line="32" selection-start-column="23" selection-end-line="32" selection-end-column="23" />
                   <folding />
                 </state>
               </provider>
@@ -167,11 +160,11 @@
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="RecommendationUpdater.java" pinned="false" current="false" current-in-tab="false">
+          <file leaf-file-name="RecommendationUpdater.java" pinned="false" current="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/src/main/java/ca/ubc/cs/commandrecommender/db/RecommendationUpdater.java">
               <provider selected="true" editor-type-id="text-editor">
-                <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="561">
-                  <caret line="18" column="53" selection-start-line="18" selection-start-column="39" selection-end-line="18" selection-end-column="53" />
+                <state vertical-scroll-proportion="0.5356551" vertical-offset="0" max-vertical-offset="629">
+                  <caret line="25" column="0" selection-start-line="25" selection-start-column="0" selection-end-line="25" selection-end-column="0" />
                   <folding />
                 </state>
               </provider>
@@ -191,7 +184,7 @@
             <entry file="file://$PROJECT_DIR$/src/main/java/ca/ubc/cs/commandrecommender/generator/MostUsedRecGen.java">
               <provider selected="true" editor-type-id="text-editor">
                 <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="578">
-                  <caret line="26" column="60" selection-start-line="26" selection-start-column="28" selection-end-line="26" selection-end-column="60" />
+                  <caret line="22" column="13" selection-start-line="22" selection-start-column="13" selection-end-line="22" selection-end-column="13" />
                   <folding />
                 </state>
               </provider>
@@ -255,19 +248,19 @@
         <option value="$PROJECT_DIR$/src/main/java/ca/ubc/cs/commandrecommender/generator/AbstractGen.java" />
         <option value="$PROJECT_DIR$/src/main/java/ca/ubc/cs/commandrecommender/generator/AbstractRecGen.java" />
         <option value="$PROJECT_DIR$/src/main/java/ca/ubc/cs/commandrecommender/data/injector/CsvUtils.java" />
+        <option value="$PROJECT_DIR$/src/main/java/ca/ubc/cs/commandrecommender/generator/MostWidelyUsedRecGen.java" />
         <option value="$PROJECT_DIR$/src/main/java/ca/ubc/cs/commandrecommender/generator/MostUsedRecGen.java" />
         <option value="$PROJECT_DIR$/src/main/java/ca/ubc/cs/commandrecommender/db/IRecommenderDB.java" />
-        <option value="$PROJECT_DIR$/src/main/java/ca/ubc/cs/commandrecommender/generator/MostWidelyUsedRecGen.java" />
         <option value="$PROJECT_DIR$/src/main/java/ca/ubc/cs/commandrecommender/db/EclipseCmdDevDB.java" />
         <option value="$PROJECT_DIR$/src/main/java/ca/ubc/cs/commandrecommender/db/RecommendationUpdater.java" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="-8" />
-    <option name="y" value="-1168" />
-    <option name="width" value="1936" />
-    <option name="height" value="1176" />
+    <option name="x" value="66" />
+    <option name="y" value="-8" />
+    <option name="width" value="1862" />
+    <option name="height" value="1096" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true">
     <OptionsSetting value="true" id="Add" />
@@ -295,16 +288,7 @@
       <sortByType />
     </navigator>
     <panes>
-      <pane id="PackagesPane">
-        <subPane>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="generator" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewProjectNode" />
-            </PATH_ELEMENT>
-          </PATH>
-        </subPane>
-      </pane>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -439,7 +423,16 @@
           </PATH>
         </subPane>
       </pane>
-      <pane id="Scope" />
+      <pane id="PackagesPane">
+        <subPane>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="generator" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewProjectNode" />
+            </PATH_ELEMENT>
+          </PATH>
+        </subPane>
+      </pane>
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -454,7 +447,7 @@
     <property name="project.structure.last.edited" value="Artifacts" />
     <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.2" />
-    <property name="options.lastSelected" value="preferences.customizations" />
+    <property name="options.lastSelected" value="preferences.keymap" />
     <property name="options.splitter.main.proportions" value="0.3" />
     <property name="options.splitter.details.proportions" value="0.2" />
     <property name="options.searchVisible" value="true" />
@@ -714,7 +707,7 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-1168" width="1936" height="1176" extended-state="6" />
+    <frame x="66" y="-8" width="1862" height="1096" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
@@ -725,17 +718,17 @@
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Mirror" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32987553" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.39925024" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.2588997" sideWeight="0.5" order="10" side_tool="true" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.34304208" sideWeight="0.47613764" order="10" side_tool="true" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.17480578" sideWeight="0.5007278" order="3" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32950193" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.23833168" sideWeight="0.5" order="13" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.2373247" sideWeight="0.5" order="13" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.17145593" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="12" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.17430703" sideWeight="0.4992722" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.18338399" sideWeight="0.54957354" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.18867925" sideWeight="0.4992722" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.26968718" sideWeight="0.52330744" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32950193" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -806,14 +799,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="jar://$PROJECT_DIR$/external/mongo-java-driver-2.12.2-sources.jar!/com/mongodb/DB.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="11390" max-vertical-offset="17085">
-          <caret line="670" column="0" selection-start-line="670" selection-start-column="0" selection-end-line="670" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="jar://$PROJECT_DIR$/external/mongo-java-driver-2.12.2-sources.jar!/com/mongodb/Mongo.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="9469" max-vertical-offset="14484">
@@ -999,13 +984,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="jar://$PROJECT_DIR$/external/mongo-java-driver-2.12.2-sources.jar!/com/mongodb/AggregationOutput.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="796" max-vertical-offset="1411">
-          <caret line="79" column="0" selection-start-line="79" selection-start-column="0" selection-end-line="79" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="jar://$PROJECT_DIR$/external/mongo-java-driver-2.12.2-sources.jar!/com/mongodb/BasicDBObject.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="425" max-vertical-offset="1445">
@@ -1056,14 +1034,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/test/java/ca/ubc/cs/commandrecommender/db/MockDB.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1564">
-          <caret line="17" column="28" selection-start-line="17" selection-start-column="28" selection-end-line="17" selection-end-column="28" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/ca/ubc/cs/commandrecommender/data/injector/LineCounter.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="561">
@@ -1071,43 +1041,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/ca/ubc/cs/commandrecommender/generator/HotkeyRecGen.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="561">
-          <caret line="28" column="0" selection-start-line="28" selection-start-column="0" selection-end-line="28" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/ca/ubc/cs/commandrecommender/data/injector/CsvUtils.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="383" max-vertical-offset="1445">
           <caret line="38" column="33" selection-start-line="38" selection-start-column="33" selection-end-line="38" selection-end-column="33" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/ca/ubc/cs/commandrecommender/generator/MostWidelyUsedRecGen.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="629">
-          <caret line="20" column="48" selection-start-line="20" selection-start-column="24" selection-end-line="20" selection-end-column="48" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/ca/ubc/cs/commandrecommender/data/injector/UserInjector.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="966">
-          <caret line="25" column="52" selection-start-line="25" selection-start-column="41" selection-end-line="25" selection-end-column="52" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/ca/ubc/cs/commandrecommender/data/injector/OldUsageDataInjector.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1190">
-          <caret line="12" column="35" selection-start-line="12" selection-start-column="35" selection-end-line="12" selection-end-column="35" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1127,26 +1064,48 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/test/java/ca/ubc/cs/commandrecommender/generator/MostUsedRecGenTest.java">
+    <entry file="file://$PROJECT_DIR$/src/main/java/ca/ubc/cs/commandrecommender/data/injector/UserInjector.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="238">
-          <caret line="6" column="0" selection-start-line="6" selection-start-column="0" selection-end-line="6" selection-end-column="0" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="966">
+          <caret line="25" column="52" selection-start-line="25" selection-start-column="41" selection-end-line="25" selection-end-column="52" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/test/java/ca/ubc/cs/commandrecommender/generator/RecommendationUpdaterTest.java">
+    <entry file="jar://$PROJECT_DIR$/external/mongo-java-driver-2.12.2-sources.jar!/com/mongodb/AggregationOutput.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="221">
-          <caret line="5" column="13" selection-start-line="5" selection-start-column="13" selection-end-line="5" selection-end-column="13" />
+        <state vertical-scroll-proportion="0.08881923" vertical-offset="0" max-vertical-offset="1411">
+          <caret line="19" column="13" selection-start-line="19" selection-start-column="13" selection-end-line="19" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$PROJECT_DIR$/external/mongo-java-driver-2.12.2-sources.jar!/org/bson/types/ObjectId.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-14.010327" vertical-offset="8480" max-vertical-offset="9061">
+          <caret line="43" column="13" selection-start-line="43" selection-start-column="13" selection-end-line="43" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/ca/ubc/cs/commandrecommender/db/IRecommenderDB.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="663">
+          <caret line="32" column="23" selection-start-line="32" selection-start-column="23" selection-end-line="32" selection-end-column="23" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/ca/ubc/cs/commandrecommender/db/RecommendationUpdater.java">
+    <entry file="file://$PROJECT_DIR$/src/test/java/ca/ubc/cs/commandrecommender/db/MockDB.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="561">
-          <caret line="18" column="53" selection-start-line="18" selection-start-column="39" selection-end-line="18" selection-end-column="53" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1564">
+          <caret line="17" column="28" selection-start-line="17" selection-start-column="28" selection-end-line="17" selection-end-column="28" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/ca/ubc/cs/commandrecommender/data/injector/OldUsageDataInjector.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1190">
+          <caret line="12" column="35" selection-start-line="12" selection-start-column="35" selection-end-line="12" selection-end-column="35" />
           <folding />
         </state>
       </provider>
@@ -1159,34 +1118,66 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/ca/ubc/cs/commandrecommender/generator/MostUsedRecGen.java">
+    <entry file="file://$PROJECT_DIR$/src/main/java/ca/ubc/cs/commandrecommender/generator/HotkeyRecGen.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="578">
-          <caret line="26" column="60" selection-start-line="26" selection-start-column="28" selection-end-line="26" selection-end-column="60" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="561">
+          <caret line="30" column="0" selection-start-line="30" selection-start-column="0" selection-end-line="30" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/ca/ubc/cs/commandrecommender/db/IRecommenderDB.java">
+    <entry file="file://$PROJECT_DIR$/src/main/java/ca/ubc/cs/commandrecommender/generator/MostWidelyUsedRecGen.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="629">
-          <caret line="20" column="16" selection-start-line="20" selection-start-column="16" selection-end-line="20" selection-end-column="16" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="544">
+          <caret line="20" column="48" selection-start-line="20" selection-start-column="24" selection-end-line="20" selection-end-column="48" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/test/java/ca/ubc/cs/commandrecommender/generator/RecommendationUpdaterTest.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="221">
+          <caret line="5" column="13" selection-start-line="5" selection-start-column="13" selection-end-line="5" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/ca/ubc/cs/commandrecommender/generator/MostUsedRecGen.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="578">
+          <caret line="22" column="13" selection-start-line="22" selection-start-column="13" selection-end-line="22" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/test/java/ca/ubc/cs/commandrecommender/generator/MostUsedRecGenTest.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="238">
+          <caret line="6" column="0" selection-start-line="6" selection-start-column="0" selection-end-line="6" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="jar://$PROJECT_DIR$/external/mongo-java-driver-2.12.2-sources.jar!/com/mongodb/DBCollection.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="2737" max-vertical-offset="33881">
-          <caret line="236" column="7" selection-start-line="236" selection-start-column="7" selection-end-line="236" selection-end-column="7" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="8879" max-vertical-offset="33881">
+          <caret line="64" column="22" selection-start-line="64" selection-start-column="22" selection-end-line="64" selection-end-column="22" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/ca/ubc/cs/commandrecommender/db/RecommendationUpdater.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.5356551" vertical-offset="0" max-vertical-offset="629">
+          <caret line="25" column="0" selection-start-line="25" selection-start-column="0" selection-end-line="25" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/ca/ubc/cs/commandrecommender/db/EclipseCmdDevDB.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.5" vertical-offset="578" max-vertical-offset="3502">
-          <caret line="57" column="58" selection-start-line="57" selection-start-column="58" selection-end-line="57" selection-end-column="58" />
+        <state vertical-scroll-proportion="0.46982056" vertical-offset="0" max-vertical-offset="4014">
+          <caret line="18" column="40" selection-start-line="18" selection-start-column="40" selection-end-line="18" selection-end-column="40" />
           <folding />
         </state>
       </provider>

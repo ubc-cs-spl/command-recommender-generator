@@ -8,6 +8,7 @@ import java.util.*;
  * Created by KeEr on 2014-06-09.
  */
 public class EclipseCmdDevDB implements IRecommenderDB {
+    //TODO: close connections properly
     private final String dbName;
     private final MongoClient client;
     public static final String COMMANDS_COLLECTION = "commands";
@@ -42,6 +43,18 @@ public class EclipseCmdDevDB implements IRecommenderDB {
 
     public DB getDB(){
         return client.getDB(dbName);
+    }
+
+    @Override
+    public void insureIndex() {
+        DBCollection usageData = getCommandsCollection();
+        usageData.createIndex(new BasicDBObject(USER_ID, 1).append(KIND, 1));
+        DBCollection users = getUsersCollection();
+        users.createIndex(new BasicDBObject(USER_ID, 1));
+        DBCollection details = getDetailsCollection();
+        details.createIndex(new BasicDBObject(COMMAND_ID, 1));
+        DBCollection recommendations = getRecommendationsCollection();
+        recommendations.createIndex(new BasicDBObject(USER_ID, 1));
     }
 
     @Override
@@ -128,6 +141,7 @@ public class EclipseCmdDevDB implements IRecommenderDB {
         return knownCmds;
     }
 
+
     @Override
     public Set<String> getAlreadyRecommendedCmdsForUser(String user) {
         DBCollection collection = getRecommendationsCollection();
@@ -162,19 +176,22 @@ public class EclipseCmdDevDB implements IRecommenderDB {
 
     @Override
     public void insertRecommendation(String commandId, String reason, String user) {
+        DBObject command = new BasicDBObject(COMMAND_ID, commandId);
+        DBCollection commandDetails = getDetailsCollection();
+        DBObject object = commandDetails.findOne(command);
         DBCollection collection = getRecommendationsCollection();
+        if (object == null) {
+            commandDetails.insert(command);
+            object = commandDetails.findOne(command);
+        }
         DBObject recommendation = new BasicDBObject();
+        recommendation.put(COMMAND_DETAIL_ID, object.get("_id"));
         recommendation.put(USER_ID, user);
         recommendation.put(COMMAND_ID, commandId);
         recommendation.put(REASON, reason);
         recommendation.put(NEW, true);
         recommendation.put(CREATED_ON, new Date());
         recommendation.put(USEFUL, null);
-        DBObject command = new BasicDBObject(COMMAND_ID, commandId);
-        DBCollection commandDetails = getDetailsCollection();
-        DBObject object = commandDetails.findOne(command);
-        if (object != null)
-            recommendation.put(COMMAND_DETAIL_ID, object.get("_id"));
         collection.insert(recommendation);
     }
 
