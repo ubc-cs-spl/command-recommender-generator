@@ -35,21 +35,23 @@ public class CommandInfoStorage {
 		for (String knownCmd : knownCmds) {
 			insertNewCmdIfNotExist(knownCmd, collection);
 		}
+		mongoClient.close();
 	}
 
 	private static void insertNewCmdIfNotExist(String knownCmd, DBCollection collection) {
-		if (collection.findOne(new BasicDBObject(COMMAND_ID, knownCmd)) == null) {
-			DBObject info = getShortCut(knownCmd);
-			info.put(COMMAND_NAME, CommandInfoUtils.getCommandName(knownCmd));
-			info.put(COMMAND_ID, knownCmd);
-			info.put(DESCRIPTION, CommandInfoUtils.getCommandDescription(knownCmd));
-			collection.insert(info);
-		}
+		DBObject command = new BasicDBObject(COMMAND_NAME, CommandInfoUtils.getCommandName(knownCmd));
+		DBObject info = getShortCut(knownCmd);
+		info.put(COMMAND_NAME, CommandInfoUtils.getCommandName(knownCmd));
+		info.put(COMMAND_ID, knownCmd);
+		info.put(DESCRIPTION, CommandInfoUtils.getCommandDescription(knownCmd));
+		collection.update(command, new BasicDBObject("$set", info), true, false);
 	}
 
 	private static DBObject getShortCut(String knownCmd) {
 		String shortcut = CommandInfoUtils.getKeyBindingFor(knownCmd);
-		if (Platform.getOS() == Platform.OS_MACOSX) {
+		if (shortcut == null) {
+			return new BasicDBObject();
+		} else if (Platform.getOS() == Platform.OS_MACOSX) {
 			return new BasicDBObject(SHORTCUT_MAC, shortcut);
 		} else {
 			return new BasicDBObject(SHORTCUT, shortcut);
