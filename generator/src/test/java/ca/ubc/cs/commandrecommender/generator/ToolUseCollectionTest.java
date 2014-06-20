@@ -1,8 +1,8 @@
 package ca.ubc.cs.commandrecommender.generator;
 
 /**
- * Created by KeEr on 2014-06-10.
+ * Created by KeEr on 2014-06-20.
  */
-public class HotkeyRecGenTest {
+public class ToolUseCollectionTest {
     //TODO
 }

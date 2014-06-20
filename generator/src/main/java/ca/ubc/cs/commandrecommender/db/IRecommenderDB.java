@@ -1,5 +1,8 @@
 package ca.ubc.cs.commandrecommender.db;
 
+import ca.ubc.cs.commandrecommender.model.ToolUseCollection;
+import ca.ubc.cs.commandrecommender.model.User;
+
 import java.util.List;
 import java.util.Set;
 
@@ -8,27 +11,46 @@ import java.util.Set;
  */
 public interface IRecommenderDB {
 
-    List<String> getCmdsSortedByFrequency();
+    //TODO: modify as needed
 
-    List<String> getCmdsForWhichUserKnowsShortcut(String user);
+    /**
+     * Get all usage data
+     * @return
+     */
+    List<ToolUseCollection> getAllData();
 
-    Set<String> getCmdsWithShortcuts();
-
-    List<String> getAllUsers();
-
-    Set<String> getUsedCmdsForUser(String user);
-
-    Set<String> getAlreadyRecommendedCmdsForUser(String user);
-
-    void insertRecommendation(String commandId, String reason, String user);
-
-    void markAllRecommendationOld(String user);
-
-    boolean shouldRecommendToUser(String user);
-
-    void updateRecommendationStatus(String user);
-
-    List<String> getCmdsSortedByUserCount();
-
+    /**
+     * Ensure that the database has been indexed correctly
+     * for better query performance
+     */
     void insureIndex();
+
+    /**
+     * Get the command ID that corresponds to a command code
+     * @param cmdCode
+     * @return
+     */
+    String getCmdId(int cmdCode);
+
+    /**
+     * Get the set of commands (represented by an integer) whose short cut is
+     * known by a user
+     * @param user
+     * @return
+     */
+    Set<Integer> getCmdsForWhichUserKnowsShortcut(User user);
+
+    /**
+     * Get the set of commands (represented by an integer) that has shortcuts
+     * @return A set of commands with shortcuts
+     */
+    Set<Integer> getCmdsWithShortcuts();
+
+    //TODO: move this method out as needed, it's being put here now for convenience
+    /**
+     * Get all users in the database
+     * @return
+     */
+    List<User> getAllUsers();
+
 }

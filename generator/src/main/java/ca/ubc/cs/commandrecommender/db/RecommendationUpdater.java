@@ -1,13 +1,13 @@
 package ca.ubc.cs.commandrecommender.db;
 
 
-import ca.ubc.cs.commandrecommender.generator.AbstractRecGen;
-import ca.ubc.cs.commandrecommender.generator.MostUsedRecGen;
+import ca.ubc.cs.commandrecommender.generator.AlgorithmType;
+import ca.ubc.cs.commandrecommender.generator.IRecGen;
+import ca.ubc.cs.commandrecommender.model.ToolUseCollection;
+import ca.ubc.cs.commandrecommender.model.User;
 import com.mongodb.MongoClient;
 
 import java.net.UnknownHostException;
-import java.util.Date;
-import java.util.List;
 
 /**
  * Created by KeEr on 2014-06-09.
@@ -18,18 +18,24 @@ public class RecommendationUpdater {
         //establish connection
         //TODO: use authorization for production
         //TODO: close connections properly
-        EclipseCmdDevDB db = new EclipseCmdDevDB(new MongoClient());
+        //TODO: make more robust
+        String algoName = args[0];
+        int amount = Integer.parseInt(args[1]);
 
+        AlgorithmType algoType = AlgorithmType.valueOf(algoName);
+        IRecommenderDB db = new EclipseCmdDevDB(new MongoClient());
         db.insureIndex();
-        AbstractRecGen algorithm = new MostUsedRecGen(db);
-        String reason = algorithm.getAlgorithmUsed();
-
-        for (String user : db.getAllUsers()) {
-            if (db.shouldRecommendToUser(user)) {
-                db.markAllRecommendationOld(user);
-                db.updateRecommendationStatus(user);
-                for (String recommendation : algorithm.getRecommendationsForUser(user, 10))
-                    db.insertRecommendation(recommendation, reason, user);
+        IRecGen recGen = algoType.getRecGen(db);
+        String reason = recGen.getAlgorithmUsed();
+        for (ToolUseCollection uses : db.getAllData())
+            recGen.trainWith(uses);
+        recGen.runAlgorithm();
+        for (User user : db.getAllUsers()) {
+            if (user.isTimeToGenerateRecs()) {
+                Iterable<Integer> recommendations = recGen.getRecommendationsForUser(user, amount);
+                user.markAllRecommendationOld();
+                user.updateRecommendationStatus();
+                user.saveRecommendations(recommendations, reason);
             }
         }
     }

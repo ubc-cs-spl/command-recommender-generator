@@ -10,25 +10,27 @@ import org.apache.commons.collections4.bag.HashBag;
 import org.apache.commons.collections4.set.ListOrderedSet;
 
 
-public class ToolUses extends ArrayList<ToolUse>{
+public class ToolUseCollection extends ArrayList<ToolUse>{
+
+    //TODO: change if necessary
 
     public final int userId;
 
-    public ToolUses(){
+    public ToolUseCollection(){
         this(-1);
     }
 
-    public ToolUses(int userId){
+    public ToolUseCollection(int userId){
         super();
         this.userId = userId;
     }
 
-    public ToolUses(int userId, Collection<? extends ToolUse> c) {
+    public ToolUseCollection(int userId, Collection<? extends ToolUse> c) {
         super(c);
         this.userId = userId;
     }
 
-    public ToolUses(int userId, int initialCapacity) {
+    public ToolUseCollection(int userId, int initialCapacity) {
         super(initialCapacity);
         this.userId = userId;
     }
