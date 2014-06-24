@@ -49,6 +49,7 @@ public class ToolUseCollection extends ArrayList<ToolUse>{
             set.add(u.tool);
         return set;
     }
+
     public String firstTimeUsed(int toolId) {
         for(ToolUse tu : this){
             if(tu.tool==toolId)

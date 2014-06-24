@@ -1,6 +1,5 @@
 package ca.ubc.cs.commandrecommender.generator;
 
-import ca.ubc.cs.commandrecommender.db.EclipseCmdDevDB;
 import ca.ubc.cs.commandrecommender.db.IRecommenderDB;
 import ca.ubc.cs.commandrecommender.model.acceptance.AbstractLearningAcceptance;
 import ca.ubc.cs.commandrecommender.model.cf.matejka.MatejkaOptions;

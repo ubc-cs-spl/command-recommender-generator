@@ -19,4 +19,23 @@ public class ToolUse {
         return Integer.toString(tool);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        ToolUse toolUse = (ToolUse) o;
+
+        if (tool != toolUse.tool) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = time.hashCode();
+        result = 31 * result + tool;
+        result = 31 * result + (hotkey ? 1 : 0);
+        return result;
+    }
 }
