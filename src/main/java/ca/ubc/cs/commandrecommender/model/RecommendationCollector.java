@@ -1,9 +1,6 @@
 package ca.ubc.cs.commandrecommender.model;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 /**
  * //TODO add in the recommendations made so that we can centralize the filtering process
@@ -19,7 +16,9 @@ public class RecommendationCollector implements Iterable<Integer>{
 	private Double lastValue;
 
 	public final int userId;
+
 	private List<Integer> history;
+    private HashSet<Integer> pastRecommendations;
 
     /**
      * Create a recommendation collector for a given user that recommends at most
@@ -27,9 +26,10 @@ public class RecommendationCollector implements Iterable<Integer>{
      * @param userId
      * @param history
      */
-	public RecommendationCollector(int userId, List<Integer> history) {
+	public RecommendationCollector(int userId, List<Integer> history, HashSet<Integer> pastRecommendations) {
 		this.userId = userId;
 		this.history = history;
+        this.pastRecommendations = pastRecommendations;
 		init();
 	}
 
@@ -39,8 +39,8 @@ public class RecommendationCollector implements Iterable<Integer>{
      * @param history usage data of the target user
      * @param size # of items to recommend
      */
-	public RecommendationCollector(int userId, List<Integer> history, int size) {
-		this(userId,history);
+	public RecommendationCollector(int userId, List<Integer> history, HashSet<Integer> recommendations, int size) {
+		this(userId,history,recommendations);
 		recSize = size;
 	}
 
@@ -88,7 +88,7 @@ public class RecommendationCollector implements Iterable<Integer>{
 	}
 
     /**
-     * Add a potential recommendation. The recommendation can be rejected here.
+     * Add a potential recommendation. The already recommended items will not be added
      * @param thisKey
      * @param thisValue
      */
@@ -98,8 +98,12 @@ public class RecommendationCollector implements Iterable<Integer>{
 		if(isSatisfied())
             return;
 
-        //TODO: we could filter out the already recommended ones
-        //      and used ones here
+        //TODO: we could also filter out the used commands here but
+        //      right now each algorithm has its own implementation of filtering
+
+        //filter out the already recommended ones
+        if (pastRecommendations.contains(thisKey))
+            return;
 
 		//make sure we haven't already added it
 		for(List<Integer> ls : lists)

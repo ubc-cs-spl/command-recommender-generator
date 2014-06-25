@@ -1,7 +1,5 @@
 package ca.ubc.cs.commandrecommender.Exception;
 
-import java.sql.Connection;
-
 /**
  * Created by Spencer on 6/20/2014.
  */

@@ -1,12 +1,11 @@
 package ca.ubc.cs.commandrecommender.generator;
 
 
-import ca.ubc.cs.commandrecommender.model.IndexMap;
-
-
 import ca.ubc.cs.commandrecommender.model.RecommendationCollector;
+import ca.ubc.cs.commandrecommender.model.ToolUseCollection;
 import ca.ubc.cs.commandrecommender.model.User;
 
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -28,10 +27,12 @@ public abstract class AbstractRecGen implements IRecGen {
     }
 
     @Override
-    public Iterable<Integer> getRecommendationsForUser(User user, int amount, IndexMap userIndexMap) {
-        List<Integer> history = user.getPastRecommendations().toolsUsedInOrder().asList();
-        RecommendationCollector collector =
-                new RecommendationCollector(userIndexMap.getItemByItemId(user.getUserId()), history, amount);
+    public Iterable<Integer> getRecommendationsForUser(User user, ToolUseCollection history,
+                                                       int amount, int userId) {
+        history.sort();
+        List<Integer> historyList = history.toolsUsedInOrder().asList();
+        HashSet<Integer> recommended = user.getPastRecommendations().toolsUsedHashSet();
+        RecommendationCollector collector = new RecommendationCollector(userId, historyList, recommended, amount);
         fillRecommendations(collector);
         return collector;
     }

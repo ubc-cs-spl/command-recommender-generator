@@ -45,7 +45,9 @@ public class RecommendationUpdater {
         for (User user : recommendationDB.getAllUsers()) {
 
             if (user.isTimeToGenerateRecs()) {
-                Iterable<Integer> recommendations = recGen.getRecommendationsForUser(user, amount, userIndexMap);
+                int userId = userIndexMap.getItemByItemId(user.getUserId());
+                ToolUseCollection history = commandDB.getUsersUsageData(user.getUserId());
+                Iterable<Integer> recommendations = recGen.getRecommendationsForUser(user, history, amount, userId);
                 user.saveRecommendations(recommendations, reason, toolIndexMap);
                 user.updateRecommendationStatus();
             }

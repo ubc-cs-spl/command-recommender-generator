@@ -1,12 +1,15 @@
 package ca.ubc.cs.commandrecommender.db;
 
 import ca.ubc.cs.commandrecommender.Exception.DBConnectionException;
-import ca.ubc.cs.commandrecommender.model.*;
-
+import ca.ubc.cs.commandrecommender.model.IndexMap;
+import ca.ubc.cs.commandrecommender.model.ToolUse;
+import ca.ubc.cs.commandrecommender.model.ToolUseCollection;
 import com.mongodb.*;
 
 import java.net.UnknownHostException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * Created by Spencer on 6/20/2014.

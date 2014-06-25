@@ -1,6 +1,7 @@
 package ca.ubc.cs.commandrecommender.model;
 
 import ca.ubc.cs.commandrecommender.db.AbstractRecommendationDB;
+
 import java.sql.Date;
 import java.util.Calendar;
 import java.util.Set;

@@ -3,13 +3,14 @@ package ca.ubc.cs.commandrecommender.model;
 import junit.framework.TestCase;
 import org.junit.Test;
 
+import java.util.HashSet;
 import java.util.Iterator;
 
 public class RecommendationCollectorTest extends TestCase{
 
     @Test
 	public void testOverflow(){
-		RecommendationCollector rc = new RecommendationCollector(1,null);
+		RecommendationCollector rc = new RecommendationCollector(1,null,new HashSet<Integer>());
 		
 		rc.add(1, 5.0); assertFalse(rc.isSatisfied());
 		rc.add(2, 4.0); assertFalse(rc.isSatisfied());
@@ -37,7 +38,7 @@ public class RecommendationCollectorTest extends TestCase{
 
     @Test
 	public void testExactFit(){
-		RecommendationCollector rc = new RecommendationCollector(1,null);
+		RecommendationCollector rc = new RecommendationCollector(1,null,new HashSet<Integer>());
 		
 		rc.add(1, 5.0); assertFalse(rc.isSatisfied());
 		rc.add(2, 4.0); assertFalse(rc.isSatisfied());

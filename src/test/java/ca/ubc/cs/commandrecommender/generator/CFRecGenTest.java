@@ -4,6 +4,8 @@ package ca.ubc.cs.commandrecommender.generator;
 import ca.ubc.cs.commandrecommender.model.RecommendationCollector;
 import org.junit.Test;
 
+import java.util.HashSet;
+
 //TODO: there are likely problems with UserBasedCF; Errors and Failed tests
 public abstract class CFRecGenTest extends AbstractRecGenTest {
 
@@ -16,7 +18,8 @@ public abstract class CFRecGenTest extends AbstractRecGenTest {
 
 		rec.runAlgorithm();
 
-		RecommendationCollector rc = new RecommendationCollector(2, null, 2);
+		RecommendationCollector rc = new RecommendationCollector(
+                2, null, new HashSet<Integer>(), 2);
 		rec.fillRecommendations(rc);
 		assertTrue(rc.containsRec(3));
 		assertTrue(rc.containsRec(4));
@@ -31,7 +34,8 @@ public abstract class CFRecGenTest extends AbstractRecGenTest {
 
 		rec.runAlgorithm();
 
-		RecommendationCollector rc = new RecommendationCollector(2, null, 1000);
+		RecommendationCollector rc = new RecommendationCollector(
+                2, null, new HashSet<Integer>(), 1000);
 		rec.fillRecommendations(rc);
 
 		assertTrue(rc.containsRec(2));
@@ -52,7 +56,8 @@ public abstract class CFRecGenTest extends AbstractRecGenTest {
 
 		rec.runAlgorithm();
 
-		RecommendationCollector rc = new RecommendationCollector(2, null, 1000);
+		RecommendationCollector rc = new RecommendationCollector(
+                2, null, new HashSet<Integer>(), 1000);
 		rec.fillRecommendations(rc);
 		assertFalse(rc.iterator().hasNext());
 	}
@@ -66,7 +71,8 @@ public abstract class CFRecGenTest extends AbstractRecGenTest {
 
 		rec.runAlgorithm();
 
-		RecommendationCollector rc = new RecommendationCollector(2, null, 1000);
+		RecommendationCollector rc = new RecommendationCollector(
+                2, null, new HashSet<Integer>(), 1000);
 		rec.fillRecommendations(rc);
 
 		assertEquals(new Integer(3),rc.iterator().next());
@@ -84,7 +90,8 @@ public abstract class CFRecGenTest extends AbstractRecGenTest {
 
 		rec.runAlgorithm();
 
-		RecommendationCollector rc = new RecommendationCollector(2, null, 1000);
+		RecommendationCollector rc = new RecommendationCollector(
+                2, null, new HashSet<Integer>(), 1000);
 		rec.fillRecommendations(rc);
 
 		assertTrue(rc.containsRec(2));

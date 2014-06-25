@@ -65,6 +65,13 @@ public class ToolUseCollection extends ArrayList<ToolUse>{
         return bag;
     }
 
+    public HashSet<Integer> toolsUsedHashSet() {
+        HashSet<Integer> set = new HashSet<Integer>();
+        for(ToolUse u : this)
+            set.add(u.tool);
+        return set;
+    }
+
     public List<Transaction> divideIntoTransactions() {
 
         List<Transaction> ts = new ArrayList<Transaction>();

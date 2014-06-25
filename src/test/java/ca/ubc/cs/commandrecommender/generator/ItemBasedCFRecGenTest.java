@@ -4,6 +4,8 @@ import ca.ubc.cs.commandrecommender.model.RecommendationCollector;
 import ca.ubc.cs.commandrecommender.model.cf.matejka.MatejkaOptions;
 import org.junit.Test;
 
+import java.util.HashSet;
+
 public class ItemBasedCFRecGenTest extends CFRecGenTest {
 
     @Test
@@ -14,7 +16,8 @@ public class ItemBasedCFRecGenTest extends CFRecGenTest {
 		
 		rec.runAlgorithm();
 		
-		RecommendationCollector rc = new RecommendationCollector(2, null, 1);
+		RecommendationCollector rc = new RecommendationCollector(
+                2, null, new HashSet<Integer>(), 1);
 		rec.fillRecommendations(rc);
 		assertTrue(rc.containsRec(3));
 	}
@@ -29,7 +32,8 @@ public class ItemBasedCFRecGenTest extends CFRecGenTest {
 		
 		rec.runAlgorithm();
 		
-		RecommendationCollector rc = new RecommendationCollector(2, null, 5);
+		RecommendationCollector rc = new RecommendationCollector(
+                2, null, new HashSet<Integer>(), 5);
 		rec.fillRecommendations(rc);
 		assertEquals(new Integer(6),rc.iterator().next());
 		assertTrue(rc.containsRec(2));

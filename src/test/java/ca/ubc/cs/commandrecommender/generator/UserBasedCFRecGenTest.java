@@ -7,6 +7,8 @@ import org.apache.mahout.cf.taste.common.TasteException;
 import org.apache.mahout.cf.taste.model.DataModel;
 import org.junit.Test;
 
+import java.util.HashSet;
+
 public class UserBasedCFRecGenTest extends CFRecGenTest {
 	
 	@Test
@@ -17,7 +19,8 @@ public class UserBasedCFRecGenTest extends CFRecGenTest {
 		
 		rec.runAlgorithm();
 		
-		RecommendationCollector rc = new RecommendationCollector(2, null, 1);
+		RecommendationCollector rc = new RecommendationCollector(
+                2, null, new HashSet<Integer>(), 1);
 		rec.fillRecommendations(rc);
 		assertEquals(new Integer(3),rc.iterator().next());
 	}
@@ -85,7 +88,7 @@ public class UserBasedCFRecGenTest extends CFRecGenTest {
 		//		= 2*0.2027325540540822 / 0.585523465521611*0.28670712747782
 		//		= 0.198539842181415
 		
-		assertEquals(sim.userSimilarity(1, 2),sim.userSimilarity(2, 1));
+		assertEquals(sim.userSimilarity(1, 2),sim.userSimilarity(2, 3));
 		assertEquals(sim.userSimilarity(2, 1),sim.userSimilarity(2, 3));
 		assertEquals(sim.userSimilarity(1, 2),sim.userSimilarity(3, 2));
 		assertEquals(sim.userSimilarity(2, 1),sim.userSimilarity(3, 2));
