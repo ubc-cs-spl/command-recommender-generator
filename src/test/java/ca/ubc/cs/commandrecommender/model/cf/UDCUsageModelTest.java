@@ -9,6 +9,10 @@ public class UDCUsageModelTest extends TestCase {
 
 	private UDCUsageModel model;
 
+    //TODO: This is about the smallest delta for making all the tests pass.
+    //      Is this appropriate? Where does the difference come from?
+    private static final double DELTA = 0.0000001;
+
 
 	double third = 1/(double)3;
 	double half = 1/(double)2;
@@ -24,10 +28,10 @@ public class UDCUsageModelTest extends TestCase {
 		insertUse(userId,1,2,3,4);
 		model.finish();//preferences get recomputed here		
 		
-		assertEquals(0.0,valueOfPreferenceFor(1,1));
-		assertEquals(0.0,valueOfPreferenceFor(1,2));
-		assertEquals(0.0,valueOfPreferenceFor(1,3));
-		assertEquals(0.0,valueOfPreferenceFor(1,4));
+		assertEquals(0.0,valueOfPreferenceFor(1,1),DELTA);
+		assertEquals(0.0,valueOfPreferenceFor(1,2),DELTA);
+		assertEquals(0.0,valueOfPreferenceFor(1,3),DELTA);
+		assertEquals(0.0,valueOfPreferenceFor(1,4),DELTA);
 	}
 
     @Test
@@ -36,8 +40,8 @@ public class UDCUsageModelTest extends TestCase {
 		insertUse(2,1,2,3,4);
 		model.finish();//preferences get recomputed here		
 		
-		assertEquals(0.0,valueOfPreferenceFor(1,1));
-		assertEquals(0.0,valueOfPreferenceFor(2,1));
+		assertEquals(0.0,valueOfPreferenceFor(1,1),DELTA);
+		assertEquals(0.0,valueOfPreferenceFor(2,1),DELTA);
 	}
 
     @Test
@@ -46,8 +50,8 @@ public class UDCUsageModelTest extends TestCase {
 		insertUse(2,1,2);
 		model.finish();//preferences get recomputed here		
 		
-		assertEquals(Math.log(2) * half,valueOfPreferenceFor(1,3));
-		assertEquals(Math.log(2) * half,valueOfPreferenceFor(2,1));
+		assertEquals(Math.log(2) * half,valueOfPreferenceFor(1,3),DELTA);
+		assertEquals(Math.log(2) * half,valueOfPreferenceFor(2,1),DELTA);
 	}
 
     @Test
@@ -57,13 +61,13 @@ public class UDCUsageModelTest extends TestCase {
 		insertUse(3,3,4);
 		model.finish();//preferences get recomputed here		
 		
-		assertEquals(valueOfPreferenceFor(1,1),valueOfPreferenceFor(3,4));
-		assertEquals(valueOfPreferenceFor(1,2),valueOfPreferenceFor(2,2));
-		assertEquals(valueOfPreferenceFor(2,3),valueOfPreferenceFor(3,3));
-		assertEquals(valueOfPreferenceFor(1,2),valueOfPreferenceFor(3,3));
+		assertEquals(valueOfPreferenceFor(1,1),valueOfPreferenceFor(3,4),DELTA);
+		assertEquals(valueOfPreferenceFor(1,2),valueOfPreferenceFor(2,2),DELTA);
+		assertEquals(valueOfPreferenceFor(2,3),valueOfPreferenceFor(3,3),DELTA);
+		assertEquals(valueOfPreferenceFor(1,2),valueOfPreferenceFor(3,3),DELTA);
 		
-		assertEquals(Math.log(3)*half,valueOfPreferenceFor(1,1));
-		assertEquals(Math.log(1.5)*half,valueOfPreferenceFor(2,2));
+		assertEquals(Math.log(3)*half,valueOfPreferenceFor(1,1),DELTA);
+		assertEquals(Math.log(1.5)*half,valueOfPreferenceFor(2,2),DELTA);
 	}
 
     @Test
@@ -73,14 +77,14 @@ public class UDCUsageModelTest extends TestCase {
 		insertUse(3,4,5,6);
 		model.finish();//preferences get recomputed here
 		
-		assertEquals(Math.log(3),valueOfPreferenceFor(1,1));
+		assertEquals(Math.log(3),valueOfPreferenceFor(1,1),DELTA);
 		
-		assertEquals(Math.log(3)*half,valueOfPreferenceFor(2,2));
-		assertEquals(Math.log(3)*half,valueOfPreferenceFor(2,3));
+		assertEquals(Math.log(3)*half,valueOfPreferenceFor(2,2),DELTA);
+		assertEquals(Math.log(3)*half,valueOfPreferenceFor(2,3),DELTA);
 		
-		assertEquals(Math.log(3)*third,valueOfPreferenceFor(3,4));
-		assertEquals(Math.log(3)*third,valueOfPreferenceFor(3,5));
-		assertEquals(Math.log(3)*third,valueOfPreferenceFor(3,6));
+		assertEquals(Math.log(3)*third,valueOfPreferenceFor(3,4),DELTA);
+		assertEquals(Math.log(3)*third,valueOfPreferenceFor(3,5),DELTA);
+		assertEquals(Math.log(3)*third,valueOfPreferenceFor(3,6),DELTA);
 	}
 	
 	public void test6(){		
@@ -89,14 +93,14 @@ public class UDCUsageModelTest extends TestCase {
 		insertUse(3,1,2,3);
 		model.finish();//preferences get recomputed here
 		
-		assertEquals(Math.log(1),valueOfPreferenceFor(1,1));
+		assertEquals(Math.log(1),valueOfPreferenceFor(1,1),DELTA);
 
-		assertEquals(Math.log(1)  *half,valueOfPreferenceFor(2,1));
-		assertEquals(Math.log(1.5)*half,valueOfPreferenceFor(2,2));
+		assertEquals(Math.log(1)  *half,valueOfPreferenceFor(2,1),DELTA);
+		assertEquals(Math.log(1.5)*half,valueOfPreferenceFor(2,2),DELTA);
 		
-		assertEquals(Math.log(1)  *third,valueOfPreferenceFor(3,1));
-		assertEquals(Math.log(1.5)*third,valueOfPreferenceFor(3,2));
-		assertEquals(Math.log(3)  *third,valueOfPreferenceFor(3,3));
+		assertEquals(Math.log(1)  *third,valueOfPreferenceFor(3,1),DELTA);
+		assertEquals(Math.log(1.5)*third,valueOfPreferenceFor(3,2),DELTA);
+		assertEquals(Math.log(3)  *third,valueOfPreferenceFor(3,3),DELTA);
 	}
 
     @Test
@@ -108,12 +112,12 @@ public class UDCUsageModelTest extends TestCase {
 		
 		assertEquals(Math.log(1),valueOfPreferenceFor(1,1));		
 		
-		assertEquals(Math.log(1)  *0.4,valueOfPreferenceFor(2,1));
-		assertEquals(Math.log(1.5)*0.6,valueOfPreferenceFor(2,2));
+		assertEquals(Math.log(1)  *0.4,valueOfPreferenceFor(2,1),DELTA);
+		assertEquals(Math.log(1.5)*0.6,valueOfPreferenceFor(2,2),DELTA);
 		
-		assertEquals(Math.log(1)  *0.2,valueOfPreferenceFor(3,1));
-		assertEquals(Math.log(1.5)*0.3,valueOfPreferenceFor(3,2));
-		assertEquals(Math.log(3)  *0.5,valueOfPreferenceFor(3,3));
+		assertEquals(Math.log(1)  *0.2,valueOfPreferenceFor(3,1),DELTA);
+		assertEquals(Math.log(1.5)*0.3,valueOfPreferenceFor(3,2),DELTA);
+		assertEquals(Math.log(3)  *0.5,valueOfPreferenceFor(3,3),DELTA);
 	}
 
 	private double valueOfPreferenceFor(int userId, int itemID) {

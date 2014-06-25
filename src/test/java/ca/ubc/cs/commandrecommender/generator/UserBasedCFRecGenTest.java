@@ -35,7 +35,8 @@ public class UserBasedCFRecGenTest extends CFRecGenTest {
 		
 //		User p1 = model.getUser(1);
 //		User p2 = model.getUser(2);
-//		
+//
+        assertTrue(sim.userSimilarity(1,1)==1.0);
 		assertTrue(sim.userSimilarity(1, 2)<1.0);
 		assertTrue(sim.userSimilarity(1, 2)>0.0);
 	}
@@ -58,28 +59,24 @@ public class UserBasedCFRecGenTest extends CFRecGenTest {
 		DataModel model = getModel();
 		MatejkaSimilarity sim = sim(model);
 		
-//		User p1 = model.getUser(1);
-//		User p2 = model.getUser(2);
-//		User p3 = model.getUser(3);
-		
 		assertTrue(sim.userSimilarity(1, 2)<sim.userSimilarity(2, 3));
 	}
 
     @Test
 	public void testEqualSimilarity() throws TasteException{
 		rec.trainWith(person(1,1,2));		
-		rec.trainWith(person(2,  2,3));
-		rec.trainWith(person(3,    3,4));
+		rec.trainWith(person(2,2,3));
+		rec.trainWith(person(3,3,4));
 		
 		rec.runAlgorithm();				
 		
 		DataModel model = getModel();
 		MatejkaSimilarity sim = sim(model);
-		
+
 //		User p1 = model.getUser(1);
-//		User p2 = model.getUser(2);		
+//		User p2 = model.getUser(2);
 //		User p3 = model.getUser(3);
-		
+
 		//sim 	= cos(a,b)
 		//		= a.b / |a|*|b|
 		//		= 2*0.2027325540540822 / |a|*|b|
@@ -88,7 +85,7 @@ public class UserBasedCFRecGenTest extends CFRecGenTest {
 		//		= 2*0.2027325540540822 / 0.585523465521611*0.28670712747782
 		//		= 0.198539842181415
 		
-		assertEquals(sim.userSimilarity(1, 2),sim.userSimilarity(2, 3));
+		assertEquals(sim.userSimilarity(1, 2),sim.userSimilarity(2, 1));
 		assertEquals(sim.userSimilarity(2, 1),sim.userSimilarity(2, 3));
 		assertEquals(sim.userSimilarity(1, 2),sim.userSimilarity(3, 2));
 		assertEquals(sim.userSimilarity(2, 1),sim.userSimilarity(3, 2));

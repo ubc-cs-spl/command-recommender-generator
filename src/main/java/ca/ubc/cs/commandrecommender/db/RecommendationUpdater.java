@@ -10,12 +10,6 @@ import ca.ubc.cs.commandrecommender.model.User;
 import ca.ubc.cs.commandrecommender.model.acceptance.AbstractLearningAcceptance;
 import ca.ubc.cs.commandrecommender.model.acceptance.LearningAcceptanceType;
 
-import ca.ubc.cs.commandrecommender.model.acceptance.AbstractLearningAcceptance;
-import ca.ubc.cs.commandrecommender.model.acceptance.LearningAcceptanceType;
-
-import com.mongodb.MongoClient;
-
-
 import java.net.UnknownHostException;
 
 /**
@@ -40,10 +34,9 @@ public class RecommendationUpdater {
         AbstractLearningAcceptance acceptance = null;
         if (args.length == 3)
             acceptance = LearningAcceptanceType.valueOf(args[2]).getAcceptance();
-
         AlgorithmType algoType = AlgorithmType.valueOf(algoName);
         initializeDatabases();
-        IRecGen recGen = algoType.getRecGen();
+        IRecGen recGen = algoType.getRecGen(acceptance);
         String reason = recGen.getAlgorithmUsed();
         for (ToolUseCollection uses : commandDB.getAllUsageData())
             recGen.trainWith(uses);

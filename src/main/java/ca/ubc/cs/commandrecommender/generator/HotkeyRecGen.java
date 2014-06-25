@@ -1,6 +1,5 @@
 package ca.ubc.cs.commandrecommender.generator;
 
-import ca.ubc.cs.commandrecommender.db.IRecommenderDB;
 import ca.ubc.cs.commandrecommender.model.RecommendationCollector;
 import ca.ubc.cs.commandrecommender.model.ToolUseCollection;
 
@@ -14,13 +13,10 @@ import java.util.Set;
 public class HotkeyRecGen extends AbstractRecGen {
 
     //TODO: implement this class
-
-    private IRecommenderDB db;
     private Set<String> cmdsWithShortcuts;
 
-    public HotkeyRecGen(IRecommenderDB db, String algorithm) {
+    public HotkeyRecGen(String algorithm) {
         super(algorithm);
-        this.db = db;
     }
 
     @Override
@@ -37,21 +33,5 @@ public class HotkeyRecGen extends AbstractRecGen {
     public void runAlgorithm() {
 
     }
-
-
-/*
-    public HotkeyRecGen(IRecommenderDB db) {
-        super(db, REASON);
-        cmdsWithShortcuts = db.getCmdsWithShortcuts();
-    }
-
-    public List<String> getRecommendationsForUser(String user, int amount) {
-        Set<String> knownCmds = new HashSet<String>(db.getCmdsForWhichUserKnowsShortcut(user));
-        knownCmds.addAll(db.getAlreadyRecommendedCmdsForUser(user));
-        Set<String> possibleRecommendations = db.getUsedCmdsForUser(user);
-        possibleRecommendations.retainAll(cmdsWithShortcuts);
-        return EclipseCmdDevDB.filterOut(possibleRecommendations, knownCmds, amount);
-    }
-    */
 
 }

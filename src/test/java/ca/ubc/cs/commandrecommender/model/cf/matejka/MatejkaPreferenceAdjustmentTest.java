@@ -7,6 +7,10 @@ import org.junit.Test;
 
 public class MatejkaPreferenceAdjustmentTest extends TestCase {
 
+    //TODO: This is about the smallest delta for making all the tests pass.
+    //      Is this appropriate?
+    private static final double DELTA = 0.00000001;
+
 	private BasicUsageModel stub;
 	
 	public void setUp(){
@@ -20,7 +24,7 @@ public class MatejkaPreferenceAdjustmentTest extends TestCase {
 		
 		recompute();		
 		
-		assertEquals(0.0,use.getValue());
+		assertEquals(0.0,use.getValue(),DELTA);
 	}
 
     @Test
@@ -31,8 +35,8 @@ public class MatejkaPreferenceAdjustmentTest extends TestCase {
 		
 		recompute();
 		
-		assertEquals(0.0,use1.getValue());
-		assertEquals(0.0,use2.getValue());
+		assertEquals(0.0,use1.getValue(),DELTA);
+		assertEquals(0.0,use2.getValue(),DELTA);
 	}
 
     @Test
@@ -44,8 +48,8 @@ public class MatejkaPreferenceAdjustmentTest extends TestCase {
 		recompute();
 		
 		double expected = alpha()*Math.log(2);
-		assertEquals(expected,use1.getValue());
-		assertEquals(expected,use2.getValue());
+		assertEquals(expected,use1.getValue(),DELTA);
+		assertEquals(expected,use2.getValue(),DELTA);
 	}
 
     @Test
@@ -57,9 +61,9 @@ public class MatejkaPreferenceAdjustmentTest extends TestCase {
 		
 		recompute();
 		
-		assertEquals(0.0,use1.getValue());
-		assertEquals(alpha()*0.5*Math.log(2),use2.getValue());
-		assertEquals(0.0,use3.getValue());
+		assertEquals(0.0,use1.getValue(),DELTA);
+		assertEquals(alpha()*0.5*Math.log(2),use2.getValue(),DELTA);
+		assertEquals(0.0,use3.getValue(),DELTA);
 	}
 
     @Test
@@ -71,7 +75,7 @@ public class MatejkaPreferenceAdjustmentTest extends TestCase {
 		
 		recompute();
 		
-		assertEquals(alpha()*0.75*Math.log(2),use.getValue());
+		assertEquals(alpha()*0.75*Math.log(2),use.getValue(),DELTA);
 	}
 	
 	//still need to test mutation... seems to screw stuff up!

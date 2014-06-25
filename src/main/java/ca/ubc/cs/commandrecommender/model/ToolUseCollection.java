@@ -7,10 +7,10 @@ import org.apache.commons.collections4.set.ListOrderedSet;
 
 import java.util.*;
 
-
+/**
+ * The usage history for a user and related helpful utility methods
+ */
 public class ToolUseCollection extends ArrayList<ToolUse>{
-
-    //TODO: change if necessary
 
     public final int userId;
 
@@ -89,7 +89,8 @@ public class ToolUseCollection extends ArrayList<ToolUse>{
         return ts;
     }
 
-    /*
+    /**
+     * TODO: we should probably use this to ensure the correctness of the order sensitive algorithms
      * A convenience method for sorting the uses by timestamp
      */
     public void sort() {

@@ -3,6 +3,7 @@ package ca.ubc.cs.commandrecommender.generator;
 import ca.ubc.cs.commandrecommender.model.ToolUse;
 import ca.ubc.cs.commandrecommender.model.ToolUseCollection;
 import junit.framework.TestCase;
+import org.junit.Before;
 
 import java.sql.Timestamp;
 
@@ -10,6 +11,7 @@ public abstract class AbstractRecGenTest extends TestCase {
 
 	protected AbstractRecGen rec;
 
+    @Before
 	public void setUp() throws Exception {
 		super.setUp();
 		rec = getRec();

@@ -1,6 +1,5 @@
 package ca.ubc.cs.commandrecommender.generator;
 
-import ca.ubc.cs.commandrecommender.db.IRecommenderDB;
 import ca.ubc.cs.commandrecommender.model.acceptance.AbstractLearningAcceptance;
 import ca.ubc.cs.commandrecommender.model.cf.matejka.MatejkaOptions;
 import ca.ubc.cs.commandrecommender.model.cf.matejka.Parameters;
@@ -74,17 +73,16 @@ public enum AlgorithmType {
      * Retrieve the {@link ca.ubc.cs.commandrecommender.generator.IRecGen} corresponding
      * to the AlgorithmType and provided parameters
      * @param acceptance
-     * @param db
      * @return
      */
-    public IRecGen getRecGen(IRecommenderDB db, AbstractLearningAcceptance acceptance) {
+    public IRecGen getRecGen(AbstractLearningAcceptance acceptance) {
         switch (this) {
             case MOST_FREQUENTLY_USED:
                 return new LintonTotalRecGen(reason);
             case MOST_WIDELY_USED:
                 return new LintonUserRecGen(reason);
             case HOTKEY_NOT_USED:
-                return new HotkeyRecGen(db, reason);
+                return new HotkeyRecGen(reason);
             case LEARNING_RULE:
                 return new LearningRuleRecGen(reason, acceptance);
             case MOST_POPULAR_LEARNING_RULE:

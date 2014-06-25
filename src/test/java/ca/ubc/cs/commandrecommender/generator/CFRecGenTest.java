@@ -4,6 +4,7 @@ package ca.ubc.cs.commandrecommender.generator;
 import ca.ubc.cs.commandrecommender.model.RecommendationCollector;
 import org.junit.Test;
 
+//TODO: there are likely problems with UserBasedCF; Errors and Failed tests
 public abstract class CFRecGenTest extends AbstractRecGenTest {
 
     @Test

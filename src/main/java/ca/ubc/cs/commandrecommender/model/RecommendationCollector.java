@@ -5,7 +5,11 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-//TODO: renew
+/**
+ * //TODO add in the recommendations made so that we can centralize the filtering process
+ * This class acts as a container for recommendations and keeps track of
+ * the user id and history.
+ */
 public class RecommendationCollector implements Iterable<Integer>{
 
 	private int recSize = 10;
@@ -16,13 +20,25 @@ public class RecommendationCollector implements Iterable<Integer>{
 
 	public final int userId;
 	private List<Integer> history;
-	
-	public RecommendationCollector(int user, List<Integer> history) {
-		this.userId = user;
+
+    /**
+     * Create a recommendation collector for a given user that recommends at most
+     * 10 recommendations
+     * @param userId
+     * @param history
+     */
+	public RecommendationCollector(int userId, List<Integer> history) {
+		this.userId = userId;
 		this.history = history;
 		init();
 	}
-	
+
+    /**
+     * Create a recommendation collector for a given user
+     * @param userId user id
+     * @param history usage data of the target user
+     * @param size # of items to recommend
+     */
 	public RecommendationCollector(int userId, List<Integer> history, int size) {
 		this(userId,history);
 		recSize = size;
@@ -34,6 +50,7 @@ public class RecommendationCollector implements Iterable<Integer>{
 		lastValue = null;
 	}
 
+    @Override
 	public Iterator<Integer> iterator() {
 		
 		if(!isSatisfied())
@@ -45,7 +62,7 @@ public class RecommendationCollector implements Iterable<Integer>{
 			
 			@Override
 			public boolean hasNext() {
-				return pointer<size();
+				return pointer < size();
 			}
 
 			@Override
@@ -60,7 +77,6 @@ public class RecommendationCollector implements Iterable<Integer>{
 							i++;
 						}
 					}
-				
 				throw new IndexOutOfBoundsException();
 			}
 
@@ -71,20 +87,28 @@ public class RecommendationCollector implements Iterable<Integer>{
 		};
 	}
 
+    /**
+     * Add a potential recommendation. The recommendation can be rejected here.
+     * @param thisKey
+     * @param thisValue
+     */
 	public void add(Integer thisKey, Double thisValue) {
-		
+
+        //we don't add more than recSize
 		if(isSatisfied())
-			return;
-		
+            return;
+
+        //TODO: we could filter out the already recommended ones
+        //      and used ones here
+
 		//make sure we haven't already added it
 		for(List<Integer> ls : lists)
-			for(Integer i : ls)
-				if(i.equals(thisKey))
-					return;
-		for(Integer i : currentList)
-			if(i.equals(thisKey))
-				return;
-		
+            if (ls.contains(thisKey))
+                return;
+		if (currentList.contains(thisKey))
+            return;
+
+        //add the key and keep track of last value
 		if (lastValue != null && !lastValue.equals(thisValue)) {
 			flush();
 		}
@@ -103,26 +127,37 @@ public class RecommendationCollector implements Iterable<Integer>{
 		}
 	}
 
+    /**
+     *
+     * @return whether or not we have made enough recommendations for the user
+     */
 	public boolean isSatisfied() {
 		return size() >= recSize;
 	}
 
-	// return # of elements in lists
+    // TODO: this method recomputes the current size of recommendation every time
+    //       considering that we would usually have <= 10 recommendations, it's not
+    //       that bad. Nevertheless, we might want to keep a counter for the size
+    //       so we can retrieve the size more efficiently?
+	// return # of elements in lists (ie. the # of recommendations so far
 	private int size() {
 		int size = 0;
-		
 		for(List<Integer> ls : lists)
 			size += ls.size();
-		
 		return size;
 	}
 
 	public boolean isEmpty() {
-		return !iterator().hasNext();
+		return size() == 0;
 	}
 
-	public boolean toolsContain(int a) {
-		return history.contains(a);
+    /**
+     *
+     * @param tool tool or command id
+     * @return true if the user has used the tool before
+     */
+	public boolean toolsContain(int tool) {
+		return history.contains(tool);
 	}
 
 	public Iterable<Integer> tools() {
