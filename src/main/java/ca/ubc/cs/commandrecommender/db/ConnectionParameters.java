@@ -1,18 +1,34 @@
 package ca.ubc.cs.commandrecommender.db;
 
 public class ConnectionParameters {
-    private final String dbUrl;
-    private final String dbUser;
-    private final int dbPort;
-    private final String dbPassword;
-    private final String dBName;
+    private String dbUrl;
+    private int dbPort;
+    private String dbPassword;
+    private String dbUser;
+    private String dBName;
 
-    public ConnectionParameters(String dbUrl, String dbUser, int dbPort, String dbPassword, String cmdDbName) {
+    public ConnectionParameters(String dbUrl, int dbPort, String cmdDbName, String dbUser, String dbPassword) {
         this.dbUrl = dbUrl;
         this.dbUser = dbUser;
         this.dbPort = dbPort;
         this.dbPassword = dbPassword;
         this.dBName = cmdDbName;
+    }
+
+    public ConnectionParameters(String dbUrl, int dbPort, String dBName){
+        this.dbUrl = dbUrl;
+        this.dBName = dBName;
+        this.dbPort = dbPort;
+        this.dbUser = "";
+        this.dbPassword = "";
+    }
+
+    public void setDbUser(String dbUser) {
+        this.dbUser = dbUser;
+    }
+
+    public void setDbPassword(String dbPassword) {
+        this.dbPassword = dbPassword;
     }
 
     public String getDbUrl() {

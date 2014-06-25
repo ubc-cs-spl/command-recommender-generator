@@ -9,6 +9,7 @@ import ca.ubc.cs.commandrecommender.model.ToolUseCollection;
 import ca.ubc.cs.commandrecommender.model.User;
 import ca.ubc.cs.commandrecommender.model.acceptance.AbstractLearningAcceptance;
 import ca.ubc.cs.commandrecommender.model.acceptance.LearningAcceptanceType;
+import org.apache.commons.cli.*;
 
 import java.net.UnknownHostException;
 
@@ -22,19 +23,29 @@ public class RecommendationUpdater {
     private static AbstractRecommendationDB recommendationDB;
     private static IndexMap userIndexMap;
     private static IndexMap toolIndexMap;
+    private static String dbName = "commands-development";
+    private static String dbUrl = "localhost";
+    private static int port = 27017;
+    private static int amount = 10;
+    private static String algoName = "MOST_WIDELY_USED";
+    private static AlgorithmType algoType;
+    private static AbstractLearningAcceptance acceptance;
 
     public static void main(String[] args) throws UnknownHostException, DBConnectionException {
         //establish connection
         //TODO: use authorization for production
         //TODO: close connections properly
         //TODO: make more robust
-        String algoName = args[0];
-        int amount = Integer.parseInt(args[1]);
+        try {
+            parseCommandLineArguments(args);
+        } catch (ParseException e) {
+           System.out.println("Invalid argument: " + e.getMessage());
+           System.exit(1);
+        }
 
-        AbstractLearningAcceptance acceptance = null;
-        if (args.length == 3)
-            acceptance = LearningAcceptanceType.valueOf(args[2]).getAcceptance();
-        AlgorithmType algoType = AlgorithmType.valueOf(algoName);
+
+
+
         initializeDatabases();
         IRecGen recGen = algoType.getRecGen(acceptance);
         String reason = recGen.getAlgorithmUsed();
@@ -43,7 +54,6 @@ public class RecommendationUpdater {
 
         recGen.runAlgorithm();
         for (User user : recommendationDB.getAllUsers()) {
-
             if (user.isTimeToGenerateRecs()) {
                 int userId = userIndexMap.getItemByItemId(user.getUserId());
                 ToolUseCollection history = commandDB.getUsersUsageData(user.getUserId());
@@ -54,11 +64,80 @@ public class RecommendationUpdater {
         }
     }
 
+    private static Options createCommandLineOptions() {
+        Options options = new Options();
+        options.addOption("h", true, "Specify the host of your data store. Default: " + dbUrl);
+        options.addOption("p", true, "Specify the port to connect to to your data store on. Default: " + port);
+        options.addOption("n", true, "Name for the database which contains your commands. Default: " + dbName);
+        options.addOption("u", true, "User for your data store. Default: none");
+        options.addOption("P", true, "Password for the user for data store. Default: none");
+        options.addOption("a", true, "Number of recommendations to generate for each user. Default: " + amount);
+        options.addOption("t", true, "Type of algorithm you want to use to generate the recommendations. Default: " + algoName);
+        options.addOption("c", true, "Acceptance type for the algorithm. Default: none");
+        return options;
+    }
+
+    private static void parseCommandLineArguments(String[] args) throws ParseException {
+        Options options = createCommandLineOptions();
+        CommandLineParser parser = new BasicParser();
+        CommandLine cmd = parser.parse(options, args);
+        if(cmd.hasOption('h')){
+            dbUrl = cmd.getOptionValue('h');
+        }
+        if(cmd.hasOption('p')){
+            try {
+                port = Integer.parseInt(cmd.getOptionValue('p'));
+            }catch (NumberFormatException ex){
+                throw new ParseException("Not a valid port number.");
+            }
+        }
+        if(cmd.hasOption('n')){
+            dbName = cmd.getOptionValue('n');
+        }
+        connectionParameters = new ConnectionParameters(dbUrl, port, dbName);
+
+        if(cmd.hasOption('u')){
+            connectionParameters.setDbUser(cmd.getOptionValue('u'));
+        }
+
+        if(cmd.hasOption('P')){
+            connectionParameters.setDbPassword(cmd.getOptionValue('P'));
+        }
+
+        if(cmd.hasOption('a')){
+            try {
+                amount = Integer.parseInt(cmd.getOptionValue('a'));
+            }catch (NumberFormatException ex){
+                throw new ParseException("Not a valid amount.");
+            }
+        }
+
+        if(cmd.hasOption('t')){
+            try {
+                algoType = AlgorithmType.valueOf(cmd.getOptionValue('t'));
+            }catch (IllegalArgumentException exp){
+                throw new ParseException("Invalid algorithm");
+            }
+        }else{
+            algoType = AlgorithmType.valueOf(algoName);
+        }
+
+        if(cmd.hasOption('c')){
+            try {
+                acceptance = LearningAcceptanceType.valueOf(args[2]).getAcceptance();
+            }catch (IllegalArgumentException ex){
+                throw new ParseException("Invalid acceptance type.");
+            }
+        }else{
+            acceptance = null;
+        }
+    }
+
     private static void initializeDatabases() throws DBConnectionException {
         userIndexMap = new IndexMap();
         toolIndexMap = new IndexMap();
         toolConverter = new EclipseCommandToolConverter(toolIndexMap);
-        connectionParameters = new ConnectionParameters("localhost","",20171,"","commands");
+        connectionParameters = new ConnectionParameters("localhost", 27017, "commands");
         commandDB = new MongoCommandDB(connectionParameters, toolConverter, userIndexMap);
         recommendationDB = new MongoRecommendationDB(connectionParameters, toolConverter, userIndexMap);
     }

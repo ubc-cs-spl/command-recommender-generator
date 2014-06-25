@@ -45,7 +45,7 @@ public class MongoCommandDBTest {
         userIndexMap = new IndexMap();
         toolConverter = new EclipseCommandToolConverter(toolIndexMap);
 
-        ConnectionParameters connectionParameters = new ConnectionParameters(DB_URL, "", DB_PORT, "", DB_NAME);
+        ConnectionParameters connectionParameters = new ConnectionParameters(DB_URL, DB_PORT, DB_NAME, "", "");
         commandDB = new MongoCommandDB(connectionParameters,toolConverter, userIndexMap);
         savedToolUseCollections = generateToolUses();
     }

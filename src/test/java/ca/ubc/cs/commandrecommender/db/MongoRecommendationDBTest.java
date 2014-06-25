@@ -54,7 +54,7 @@ public class MongoRecommendationDBTest {
         this.commandDetailsCollection = getCollection(MongoRecommendationDB.COMMAND_DETAILS_COLLECTION);
         userIndexMap = new IndexMap();
         toolIndexMap = new IndexMap();
-        connectionParameters = new ConnectionParameters(DB_URL, "", DB_PORT, "", DB_NAME);
+        connectionParameters = new ConnectionParameters(DB_URL, DB_PORT, DB_NAME, "", "");
         toolConverter = new EclipseCommandToolConverter(toolIndexMap);
         initializeDataBase();
         recommendationDB = new MongoRecommendationDB(connectionParameters, toolConverter, userIndexMap);
