@@ -7,16 +7,20 @@ import ca.ubc.cs.commandrecommender.model.ToolUseCollection;
 import java.util.Set;
 
 /**
+ * Generate the commands with hot-keys that a user has never used.
+ *
  * Created by KeEr on 2014-06-09.
  */
 public class HotkeyRecGen extends AbstractRecGen {
 
     //TODO: implement this class
 
+    private IRecommenderDB db;
     private Set<String> cmdsWithShortcuts;
 
     public HotkeyRecGen(IRecommenderDB db, String algorithm) {
-        super(db, algorithm);
+        super(algorithm);
+        this.db = db;
     }
 
     @Override

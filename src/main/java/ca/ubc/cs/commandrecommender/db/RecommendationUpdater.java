@@ -5,6 +5,8 @@ import ca.ubc.cs.commandrecommender.generator.AlgorithmType;
 import ca.ubc.cs.commandrecommender.generator.IRecGen;
 import ca.ubc.cs.commandrecommender.model.ToolUseCollection;
 import ca.ubc.cs.commandrecommender.model.User;
+import ca.ubc.cs.commandrecommender.model.acceptance.AbstractLearningAcceptance;
+import ca.ubc.cs.commandrecommender.model.acceptance.LearningAcceptanceType;
 import com.mongodb.MongoClient;
 
 import java.net.UnknownHostException;
@@ -22,14 +24,21 @@ public class RecommendationUpdater {
         String algoName = args[0];
         int amount = Integer.parseInt(args[1]);
 
+        AbstractLearningAcceptance acceptance = null;
+        if (args.length == 3)
+            acceptance = LearningAcceptanceType.valueOf(args[2]).getAcceptance();
+
         AlgorithmType algoType = AlgorithmType.valueOf(algoName);
         IRecommenderDB db = new EclipseCmdDevDB(new MongoClient());
         db.insureIndex();
-        IRecGen recGen = algoType.getRecGen(db);
+        IRecGen recGen = algoType.getRecGen(db, acceptance);
         String reason = recGen.getAlgorithmUsed();
+
         for (ToolUseCollection uses : db.getAllData())
             recGen.trainWith(uses);
+
         recGen.runAlgorithm();
+
         for (User user : db.getAllUsers()) {
             if (user.isTimeToGenerateRecs()) {
                 Iterable<Integer> recommendations = recGen.getRecommendationsForUser(user, amount);

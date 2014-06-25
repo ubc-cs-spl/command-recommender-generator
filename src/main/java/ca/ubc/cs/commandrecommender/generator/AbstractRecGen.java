@@ -1,20 +1,20 @@
 package ca.ubc.cs.commandrecommender.generator;
 
-import ca.ubc.cs.commandrecommender.db.IRecommenderDB;
 import ca.ubc.cs.commandrecommender.model.RecommendationCollector;
 import ca.ubc.cs.commandrecommender.model.User;
 
 import java.util.List;
 
 /**
+ * The base class for all classes implementing
+ * {@link ca.ubc.cs.commandrecommender.generator.IRecGen}
+ *
  * Created by KeEr on 2014-06-11.
  */
 public abstract class AbstractRecGen implements IRecGen {
-    protected final IRecommenderDB db;
     protected final String algorithm;
 
-    public AbstractRecGen(IRecommenderDB db, String algorithm) {
-        this.db = db;
+    public AbstractRecGen(String algorithm) {
         this.algorithm = algorithm;
     }
 

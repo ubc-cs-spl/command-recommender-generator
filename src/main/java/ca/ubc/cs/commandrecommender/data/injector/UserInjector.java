@@ -1,12 +1,12 @@
 package ca.ubc.cs.commandrecommender.data.injector;
 
-import ca.ubc.cs.commandrecommender.db.EclipseCmdDevDB;
-import ca.ubc.cs.commandrecommender.db.IRecommenderDB;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.MongoClient;
+
 import java.net.UnknownHostException;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by KeEr on 2014-06-13.
@@ -20,10 +20,9 @@ public class UserInjector {
     public static void main(String args[]) throws UnknownHostException {
         //establish connection
         MongoClient mongoClient = new MongoClient();
-        IRecommenderDB recommenderDB = new EclipseCmdDevDB(mongoClient);
         final DBCollection collection = mongoClient.getDB(DB_NAME)
                 .getCollection(USERS_COLLECTION);
-        for (String user : recommenderDB.getAllUsers()) {
+        for (String user : getAllUsers(mongoClient)) {
             upsertUser(collection, user);
         }
     }
@@ -34,6 +33,12 @@ public class UserInjector {
                         .append(USER_ID, user),
                 true, false);
     }
+
+    private static List<String> getAllUsers(MongoClient client) {
+        DBCollection users = client.getDB(DB_NAME).getCollection(USERS_COLLECTION);
+        return users.distinct(USER_ID);
+    }
+
 }
 
 

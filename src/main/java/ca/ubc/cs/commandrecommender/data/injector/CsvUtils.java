@@ -1,6 +1,8 @@
 package ca.ubc.cs.commandrecommender.data.injector;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.Reader;
+import java.io.StringReader;
 import java.util.List;
 
 /**

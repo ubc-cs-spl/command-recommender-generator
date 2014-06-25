@@ -1,13 +1,11 @@
 package ca.ubc.cs.commandrecommender.model;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-
+import ca.ubc.cs.commandrecommender.model.learning.Transaction;
 import org.apache.commons.collections4.Bag;
 import org.apache.commons.collections4.bag.HashBag;
 import org.apache.commons.collections4.set.ListOrderedSet;
+
+import java.util.*;
 
 
 public class ToolUseCollection extends ArrayList<ToolUse>{
@@ -64,6 +62,30 @@ public class ToolUseCollection extends ArrayList<ToolUse>{
         for(ToolUse u : this)
             bag.add(u.tool);
         return bag;
+    }
+
+    public List<Transaction> divideIntoTransactions() {
+
+        List<Transaction> ts = new ArrayList<Transaction>();
+
+        //this is wasteful...
+        int toolCount = 10000;
+
+        Transaction trans = new Transaction(toolCount);
+        for(ToolUse t : this){
+
+            if (!trans.include(userId, t.time)) {
+
+                ts.add(trans);
+                trans = new Transaction(toolCount,userId,t.time,t.tool);
+            }else{
+                trans.add(t.tool);
+            }
+        }
+
+        ts.add(trans);
+
+        return ts;
     }
 
     /*
