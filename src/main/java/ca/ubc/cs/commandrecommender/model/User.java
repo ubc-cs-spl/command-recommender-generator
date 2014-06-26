@@ -41,10 +41,6 @@ public class User {
             return true;
     }
 
-    public Set<Integer> retrieveRecommendations() {
-        return null; //TODO
-    }
-
     public void saveRecommendations(Iterable<Integer> recommendations, String reason, IndexMap toolIndexMap) {
         recommendationDB.markRecommendationsAsOld(userId);
         for(Integer recommendation : recommendations){

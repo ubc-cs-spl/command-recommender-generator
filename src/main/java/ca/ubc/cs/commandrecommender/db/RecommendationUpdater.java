@@ -42,11 +42,8 @@ public class RecommendationUpdater {
            System.out.println("Invalid argument: " + e.getMessage());
            System.exit(1);
         }
-
-
-
-
         initializeDatabases();
+
         IRecGen recGen = algoType.getRecGen(acceptance);
         String reason = recGen.getAlgorithmUsed();
         for (ToolUseCollection uses : commandDB.getAllUsageData())
@@ -137,7 +134,6 @@ public class RecommendationUpdater {
         userIndexMap = new IndexMap();
         toolIndexMap = new IndexMap();
         toolConverter = new EclipseCommandToolConverter(toolIndexMap);
-        connectionParameters = new ConnectionParameters("localhost", 27017, "commands");
         commandDB = new MongoCommandDB(connectionParameters, toolConverter, userIndexMap);
         recommendationDB = new MongoRecommendationDB(connectionParameters, toolConverter, userIndexMap);
     }
