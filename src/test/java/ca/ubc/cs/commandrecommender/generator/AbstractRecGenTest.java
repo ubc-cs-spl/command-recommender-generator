@@ -2,28 +2,31 @@ package ca.ubc.cs.commandrecommender.generator;
 
 import ca.ubc.cs.commandrecommender.model.ToolUse;
 import ca.ubc.cs.commandrecommender.model.ToolUseCollection;
-import junit.framework.TestCase;
 import org.junit.Before;
 
 import java.sql.Timestamp;
 
-public abstract class AbstractRecGenTest extends TestCase {
+public abstract class AbstractRecGenTest {
 
 	protected AbstractRecGen rec;
 
     @Before
 	public void setUp() throws Exception {
-		super.setUp();
 		rec = getRec();
 	}
 
 	public ToolUseCollection person(int... ns) {
-		ToolUseCollection person = new ToolUseCollection(ns[0]);
-		for(int i = 1; i<ns.length; i++){
-			person.add(new ToolUse(now(), ns[i], true));
-		}
-		return person;
+		return person(false, false, ns);
 	}
+
+    public ToolUseCollection person(boolean hotkey, boolean alternate, int... ns) {
+        ToolUseCollection person = new ToolUseCollection(ns[0]);
+        for(int i = 1; i<ns.length; i++){
+            boolean shortcut = alternate ? ((i % 2) == 0) : hotkey;
+            person.add(new ToolUse(now(), ns[i], shortcut));
+        }
+        return person;
+    }
 
 	protected ToolUseCollection addDummyPerson() {
 		ToolUseCollection p = new ToolUseCollection(-1);
@@ -35,6 +38,6 @@ public abstract class AbstractRecGenTest extends TestCase {
 		return new Timestamp(System.currentTimeMillis());
 	}
 
-	abstract AbstractRecGen getRec();
+	protected abstract AbstractRecGen getRec();
 
 }

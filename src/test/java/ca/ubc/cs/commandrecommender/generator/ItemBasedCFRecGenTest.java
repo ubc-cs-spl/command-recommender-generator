@@ -6,7 +6,10 @@ import org.junit.Test;
 
 import java.util.HashSet;
 
-public class ItemBasedCFRecGenTest extends CFRecGenTest {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+public class ItemBasedCFRecGenTest extends AbstractCFRecGenTest {
 
     @Test
 	public void testBasic(){
@@ -43,7 +46,7 @@ public class ItemBasedCFRecGenTest extends CFRecGenTest {
 	}
 	
 	@Override
-	ItemBasedCFRecGen getRec() {
+    protected ItemBasedCFRecGen getRec() {
         return new ItemBasedCFRecGen("", new MatejkaOptions(false, true, 1.0));
     }
 }
