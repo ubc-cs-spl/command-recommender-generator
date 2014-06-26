@@ -1,12 +1,15 @@
-package ca.ubc.cs.commandrecommender.generator;
+package ca.ubc.cs.commandrecommender.model.learning;
 
+import ca.ubc.cs.commandrecommender.generator.AbstractRecGen;
+import ca.ubc.cs.commandrecommender.generator.AbstractRecGenTest;
 import ca.ubc.cs.commandrecommender.model.ToolUse;
 import ca.ubc.cs.commandrecommender.model.ToolUseCollection;
-import ca.ubc.cs.commandrecommender.model.learning.Transaction;
 import org.junit.Test;
 
 import java.sql.Timestamp;
 import java.util.List;
+
+import static org.junit.Assert.assertEquals;
 
 
 public class ToolUseCollectionTransactionTest extends AbstractRecGenTest {
@@ -66,7 +69,7 @@ public class ToolUseCollectionTransactionTest extends AbstractRecGenTest {
 	}
 
 	@Override
-	AbstractRecGen getRec() {
+    protected AbstractRecGen getRec() {
 		return null;
 	}
 

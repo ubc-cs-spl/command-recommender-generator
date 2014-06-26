@@ -9,8 +9,14 @@ import org.junit.Test;
 
 import java.util.HashSet;
 
-public class UserBasedCFRecGenTest extends CFRecGenTest {
-	
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+//TODO: there are likely problems with UserBasedCF; Errors and Failed tests
+public class UserBasedCFRecGenTest extends AbstractCFRecGenTest {
+
+    private static final double DELTA = 0.00000001;
+
 	@Test
 	public void testBasicUser(){
 		rec.trainWith(person(1,1,2,3));
@@ -44,7 +50,6 @@ public class UserBasedCFRecGenTest extends CFRecGenTest {
 		assertTrue(sim.userSimilarity(1, 2)>0.0);
 	}
 
-    @Test
 	private MatejkaSimilarity sim(DataModel model) throws TasteException {
 		return new MatejkaSimilarity(model, new MatejkaOptions(false, true, -1));
 	}
@@ -88,10 +93,10 @@ public class UserBasedCFRecGenTest extends CFRecGenTest {
 		//		= 2*0.2027325540540822 / 0.585523465521611*0.28670712747782
 		//		= 0.198539842181415
 		
-		assertEquals(sim.userSimilarity(1, 2),sim.userSimilarity(2, 3));
-		assertEquals(sim.userSimilarity(2, 1),sim.userSimilarity(2, 3));
-		assertEquals(sim.userSimilarity(1, 2),sim.userSimilarity(3, 2));
-		assertEquals(sim.userSimilarity(2, 1),sim.userSimilarity(3, 2));
+		assertEquals(sim.userSimilarity(1, 2),sim.userSimilarity(2, 3),DELTA);
+		assertEquals(sim.userSimilarity(2, 1),sim.userSimilarity(2, 3),DELTA);
+		assertEquals(sim.userSimilarity(1, 2),sim.userSimilarity(3, 2),DELTA);
+		assertEquals(sim.userSimilarity(2, 1),sim.userSimilarity(3, 2),DELTA);
 	}
 	
 	private DataModel getModel() {
@@ -99,7 +104,7 @@ public class UserBasedCFRecGenTest extends CFRecGenTest {
 	}
 
 	@Override
-	AbstractCFRecGen getRec() {
+    protected AbstractCFRecGen getRec() {
 		return new UserBasedCFRecGen("",32,new MatejkaOptions(false, true, 1.0));
 	}
 }

@@ -6,8 +6,11 @@ import org.junit.Test;
 
 import java.util.HashSet;
 
-//TODO: there are likely problems with UserBasedCF; Errors and Failed tests
-public abstract class CFRecGenTest extends AbstractRecGenTest {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+public abstract class AbstractCFRecGenTest extends AbstractRecGenTest {
 
     @Test
 	public void testRecsFromSeveralPeople(){

@@ -3,7 +3,6 @@ package ca.ubc.cs.commandrecommender.model;
 import java.util.*;
 
 /**
- * //TODO add in the recommendations made so that we can centralize the filtering process
  * This class acts as a container for recommendations and keeps track of
  * the user id and history.
  */
@@ -97,9 +96,6 @@ public class RecommendationCollector implements Iterable<Integer>{
         //we don't add more than recSize
 		if(isSatisfied())
             return;
-
-        //TODO: we could also filter out the used commands here but
-        //      right now each algorithm has its own implementation of filtering
 
         //filter out the already recommended ones
         if (pastRecommendations.contains(thisKey))
