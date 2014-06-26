@@ -1,7 +1,8 @@
-package ca.ubc.cs.commandrecommender.db;
+package ca.ubc.cs.commandrecommender;
 
 
 import ca.ubc.cs.commandrecommender.Exception.DBConnectionException;
+import ca.ubc.cs.commandrecommender.db.*;
 import ca.ubc.cs.commandrecommender.generator.AlgorithmType;
 import ca.ubc.cs.commandrecommender.generator.IRecGen;
 import ca.ubc.cs.commandrecommender.model.IndexMap;
@@ -16,7 +17,7 @@ import java.net.UnknownHostException;
 /**
  * Created by KeEr on 2014-06-09.
  */
-public class RecommendationUpdater {
+public class App {
     private static AbstractCommandToolConverter toolConverter;
     private static ConnectionParameters connectionParameters;
     private static AbstractCommandDB commandDB;
