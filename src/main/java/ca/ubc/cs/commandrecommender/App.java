@@ -122,7 +122,7 @@ public class App {
 
         if(cmd.hasOption('c')){
             try {
-                acceptance = LearningAcceptanceType.valueOf(args[2]).getAcceptance();
+                acceptance = LearningAcceptanceType.valueOf(cmd.getOptionValue('c')).getAcceptance();
             }catch (IllegalArgumentException ex){
                 throw new ParseException("Invalid acceptance type.");
             }
