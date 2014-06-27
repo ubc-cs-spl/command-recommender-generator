@@ -16,7 +16,6 @@ import java.util.Set;
  * A sequence is a list of itemsets.
  * @author Philippe Fournier-Viger 
  **/
-//TODO: check overb
 public class Sequence implements Serializable{
 	public long shift = 0;
 	

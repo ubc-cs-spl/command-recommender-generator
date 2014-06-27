@@ -15,6 +15,7 @@ import java.util.List;
  */
 public class MultiSessionAcceptance extends AbstractLearningAcceptance {
 
+    // Removes from all transactions all the tools that has only been used in one transaction
     @Override
     public Collection<Integer> filterTransactions(List<Transaction> ts, Bag<Integer> toolBag){
 

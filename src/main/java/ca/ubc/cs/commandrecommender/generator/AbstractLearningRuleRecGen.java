@@ -15,8 +15,6 @@ import org.apache.commons.collections4.bag.HashBag;
  */
 public abstract class AbstractLearningRuleRecGen extends AbstractFilteredLearningRecGen {
 
-    SequenceSet trainer = new SequenceSet();
-
     public AbstractLearningRuleRecGen(String algorithm,
                                       AbstractLearningAcceptance acceptance){
         super(algorithm, acceptance);

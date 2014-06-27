@@ -8,7 +8,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-//TODO: check over
+/**
+ * Break down the sequences into the antecedent and consequent and store them properly
+ */
 class ToolLearningDatabase implements Serializable{
 	
 	private static final long serialVersionUID = -2110708519038439942L;

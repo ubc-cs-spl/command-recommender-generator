@@ -1,19 +1,21 @@
 package ca.ubc.cs.commandrecommender.model.learning;
 
-import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.sql.Timestamp;
 import java.util.HashSet;
 import java.util.Set;
 
-//TODO: check over
+/**
+ * Encapsulate tools that have been used and their count in a single session (ie. no gap >= tolerance)
+ */
 public class Transaction{
 	
 	private final double[] toolsUsed;
 	
-	
 	private int userId;
 	private Timestamp lastTimeUsed;
+
+    private Set<Integer> toolsUsedCache = new HashSet<Integer>();
+    private boolean cacheValid = true;
 	
 	public Transaction(int numberOfTools){
 		toolsUsed = new double[numberOfTools + 1];
@@ -53,8 +55,8 @@ public class Transaction{
 		}
 		
 		if(lastTimeUsed.after(t)){
-			System.err.println("Unexpected time comparison");
-			return false;//I don't think that this should happen
+            // If we get here, the algorithm's correctness is not guaranteed
+			throw new IllegalArgumentException("Unexpected time comparison");
 		}
 		
 		boolean shouldInclude = (t.getTime()-lastTimeUsed.getTime()) < tolerance;
@@ -64,15 +66,20 @@ public class Transaction{
 		
 		return shouldInclude;
 	}
-	
+
+    /**
+     * add a tool into the transaction
+     * @param toolId
+     */
 	public void add(int toolId) {
 		toolsUsed[toolId] += 1;
 		cacheValid = false;
 	}
-	
-	private Set<Integer> toolsUsedCache = new HashSet<Integer>();
-	private boolean cacheValid = true;
-	
+
+    /**
+     *
+     * @return the set of tools used in this transaction
+     */
 	public Set<Integer> toolsUsed(){
 		
 		if(!cacheValid){
@@ -89,18 +96,31 @@ public class Transaction{
 			
 		return new HashSet<Integer>(toolsUsedCache);
 	}
-	
+
+    /**
+     *
+     * @param toolId
+     * @return true if toolId is used in this transaction
+     */
 	public boolean contains(int toolId){
 		return toolsUsed[toolId] > 0.0;
 	}
-	
+
+    /**
+     * remove all the usages of a given tool from the transaction
+     * @param toolCounts
+     */
 	public void removeAll(Iterable<Integer> toolCounts) {
 		for(int toolToRemove : toolCounts){
 			toolsUsed[toolToRemove] = 0.0;
 		}
 		cacheValid = false;
 	}
-	
+
+    /**
+     * Get the total number of command usages in this transaction
+     * @return
+     */
 	public int toolsUsedCount(){
 		int result = 0;
 		for(int j = 0; j < toolsUsed.length; j++){
@@ -108,7 +128,8 @@ public class Transaction{
 		}
 		return result;
 	}
-	
+
+    @Override
 	public String toString(){
 		StringBuilder sb = new StringBuilder();
 		sb.append("[");
@@ -125,4 +146,5 @@ public class Transaction{
 	public int getUserId(){
 		return userId;
 	}
+
 }

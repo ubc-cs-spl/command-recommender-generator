@@ -41,7 +41,7 @@ public abstract class AbstractFilteredLearningRecGen extends AbstractRecGen {
         int count = 0;
         acceptance.filterTransactions(ts,uses.toolsUsedBag());
         for(Transaction t : ts){
-            trainer.process(t, count, t!=last);
+            trainer.process(t, count, t==last);
             count++;
         }
     }

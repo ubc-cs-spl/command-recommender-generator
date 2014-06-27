@@ -2,9 +2,8 @@ package ca.ubc.cs.commandrecommender.model.learning;
 
 import ca.pfv.spmf.Itemset;
 
-/*
- * A few more features than the standard itemset.  May want
- * to submit this as a patch instead of having a seperate class.
+/**
+ * Provides additional features to {@link ca.pfv.spmf.Itemset}
  */
 //TODO: check over
 public class MyItemset extends Itemset {

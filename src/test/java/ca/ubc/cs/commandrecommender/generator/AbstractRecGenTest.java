@@ -19,13 +19,27 @@ public abstract class AbstractRecGenTest {
 		return person(false, false, ns);
 	}
 
-    public ToolUseCollection person(boolean hotkey, boolean alternate, int... ns) {
+    public ToolUseCollection person(boolean largeInterval, boolean hotkey, boolean alternate, int... ns) {
         ToolUseCollection person = new ToolUseCollection(ns[0]);
         for(int i = 1; i<ns.length; i++){
             boolean shortcut = alternate ? ((i % 2) == 0) : hotkey;
-            person.add(new ToolUse(now(), ns[i], shortcut));
+            if (largeInterval) {
+                for (int j = 0; j < 10 ; j ++) {
+                    person.add(new ToolUse(new Timestamp(i * 100000000L + j * 10000000), ns[i], shortcut));
+                }
+            } else {
+                person.add(new ToolUse(now(), ns[i], shortcut));
+            }
         }
         return person;
+    }
+
+    public ToolUseCollection person(boolean hotkey, boolean alternate, int... ns) {
+        return person(false, hotkey, alternate, ns);
+    }
+
+    public ToolUseCollection person(boolean largeInterval, int... ns) {
+        return person(largeInterval, false, false, ns);
     }
 
 	protected ToolUseCollection addDummyPerson() {

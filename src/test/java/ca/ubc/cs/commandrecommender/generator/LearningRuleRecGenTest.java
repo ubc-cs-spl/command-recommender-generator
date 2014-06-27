@@ -16,13 +16,15 @@ import static org.junit.Assert.assertFalse;
  */
 public class LearningRuleRecGenTest extends AbstractRecGenTest {
 
+    //TODO: suspecting off by one in the algorithm
+
     @Test
     public void testExampleInPaper() {
-        rec.trainWith(person(1,1,2,1,3,1,4));
-        rec.trainWith(person(2,1,5,1,5,1,3));
-        rec.trainWith(person(3,5,6,5,6,5,7));
+        rec.trainWith(person(true,1,1,2,1,3,1,4));
+        rec.trainWith(person(true,2,1,5,1,5,1,3));
+        rec.trainWith(person(true,3,5,6,5,6,5,7));
         rec.runAlgorithm();
-/*
+
         RecommendationCollector r1 = new RecommendationCollector(1, Arrays.asList(1,2,1,3,1,4), new HashSet<Integer>());
         rec.fillRecommendations(r1);
         Iterator<Integer> i1 = r1.iterator();
@@ -33,11 +35,11 @@ public class LearningRuleRecGenTest extends AbstractRecGenTest {
         rec.fillRecommendations(r2);
         Iterator<Integer> i2 = r2.iterator();
         assertEquals(new Integer(4), i2.next());
-        assertEquals(new Integer(2), i2.next());
-        assertEquals(new Integer(6), i2.next());
         assertEquals(new Integer(7), i2.next());
+        assertEquals(new Integer(6), i2.next());
+        assertEquals(new Integer(2), i2.next());
         assertFalse(i2.hasNext());
-*/
+
         RecommendationCollector r3 = new RecommendationCollector(3, Arrays.asList(5,6,5,6,5,7), new HashSet<Integer>());
         rec.fillRecommendations(r3);
         Iterator<Integer> i3 = r3.iterator();

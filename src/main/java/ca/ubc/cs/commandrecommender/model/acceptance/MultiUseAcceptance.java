@@ -15,6 +15,7 @@ import java.util.List;
  */
 public class MultiUseAcceptance extends AbstractLearningAcceptance {
 
+    //Remove from all transactions all the tools that have been used only once
     @Override
     public Collection<Integer> filterTransactions(List<Transaction> ts, Bag<Integer> toolBag){
         List<Integer> toRemove = new LinkedList<Integer>();

@@ -8,9 +8,9 @@ import java.util.Set;
 /**
  * This class represents an itemset from a sequence from a sequence database.
  * The itemset can thus have a timestamp.
+ *
  * @author Philippe Fournier-Viger 
  */
-//TODO: check over
 public class Itemset implements Serializable{
 
 	private final List<Item> items = new ArrayList<Item>(); // ordered list.

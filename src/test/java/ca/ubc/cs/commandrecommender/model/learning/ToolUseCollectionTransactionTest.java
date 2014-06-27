@@ -68,6 +68,16 @@ public class ToolUseCollectionTransactionTest extends AbstractRecGenTest {
 		assertEquals(3,ts.get(2).toolsUsedCount());
 	}
 
+    @Test (expected = IllegalArgumentException.class)
+    public void throwExceptionWhenTimestampNotInOrder() {
+        ToolUseCollection tu = new ToolUseCollection();
+        tu.add(new ToolUse(now(), 1, true));
+        tu.add(new ToolUse(new Timestamp(now().getTime()+100000000), 3, true));
+        tu.add(new ToolUse(new Timestamp(now().getTime()-100000000), 4, true));
+        tu.add(new ToolUse(new Timestamp(now().getTime()+200000000), 5, true));
+        tu.divideIntoTransactions();
+    }
+
 	@Override
     protected AbstractRecGen getRec() {
 		return null;
