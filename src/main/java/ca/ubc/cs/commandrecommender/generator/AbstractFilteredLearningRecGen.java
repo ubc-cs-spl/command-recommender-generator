@@ -34,6 +34,7 @@ public abstract class AbstractFilteredLearningRecGen extends AbstractRecGen {
      */
     @Override
     public void trainWith(ToolUseCollection uses) {
+        uses.sort();
         List<Transaction> ts = uses.divideIntoTransactions();
         Transaction last = ts.get(ts.size()-1);
 

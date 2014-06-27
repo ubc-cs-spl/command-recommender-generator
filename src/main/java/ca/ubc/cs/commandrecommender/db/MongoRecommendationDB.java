@@ -25,7 +25,7 @@ public class MongoRecommendationDB extends AbstractRecommendationDB{
     public static final String USER_RECOMMENDATION_COLLECTION = "recommendations";
     public static final String COMMAND_DETAILS_COLLECTION = "command_details";
     public static final String COMMAND_ID_FIELD = "command_id";
-    public static final String LAST_UPLOADED_DATE_FIELD = "last_uploaded_date";
+    public static final String LAST_UPLOADED_DATE_FIELD = "last_upload_date";
     public static final String REASON_FIELD = "reason";
 
     private MongoClient client;

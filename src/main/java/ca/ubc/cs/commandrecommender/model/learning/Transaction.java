@@ -25,9 +25,21 @@ public class Transaction{
 		this.lastTimeUsed = t;
 		add(toolId);
 	}
-	
-	private static final double tolerance =  3600000;
-	
+
+    /**
+     * The amount of time that need to pass for usages to be considered as being
+     * in different transactions
+     */
+	private static final double tolerance =  3600000; //an hour
+
+    /**
+     * Determine whether a tool use should be included in this transaction
+     * @param otherUserId
+     * @param t
+     * @return false if the userId is different, the timestamp is out of order, or
+     * the time interval between the current and lastTimeUsed >= tolerance; true
+     * otherwise
+     */
 	public boolean include(int otherUserId, Timestamp t){
 		
 		if(lastTimeUsed==null){
@@ -112,58 +124,5 @@ public class Transaction{
 	
 	public int getUserId(){
 		return userId;
-	}
-
-	public void writeLineForMallet(OutputStreamWriter out, int sessionId) throws IOException {
-		out.write("user"+encode(userId));
-		out.write(" ");
-		out.write("session"+encode(sessionId));
-		for(int j = 0; j < toolsUsed.length; j++)			
-			for(int k = 0; k < toolsUsed[j]; k++)
-				out.write(" "+encode(j));
-		
-		out.write(System.getProperty("line.separator"));
-	}
-
-	//TODO: a bidirectional map is a better solution for these two
-	public static String encode(int i) {
-		String original = i+"";
-		String result = "";
-		for(char c : original.toCharArray()){
-			switch(c){
-				case '0': result += 'a'; break;
-				case '1': result += 'b'; break;
-				case '2': result += 'c'; break;
-				case '3': result += 'd'; break;
-				case '4': result += 'e'; break;
-				case '5': result += 'f'; break;
-				case '6': result += 'g'; break;
-				case '7': result += 'h'; break;
-				case '8': result += 'i'; break;
-				case '9': result += 'j'; break;
-				default: System.out.println("Unexpected character: " + c);
-			}
-		}
-		return result;
-	}
-	
-	public static int decode(String s) {
-		String result = "";
-		for(char c : s.toCharArray()){
-			switch(c){
-				case 'a': result += '0'; break;
-				case 'b': result += '1'; break;
-				case 'c': result += '2'; break;
-				case 'd': result += '3'; break;
-				case 'e': result += '4'; break;
-				case 'f': result += '5'; break;
-				case 'g': result += '6'; break;
-				case 'h': result += '7'; break;
-				case 'i': result += '8'; break;
-				case 'j': result += '9'; break;
-				default: System.out.println("Unexpected character: " + c);
-			}
-		}
-		return Integer.parseInt(result);
 	}
 }
