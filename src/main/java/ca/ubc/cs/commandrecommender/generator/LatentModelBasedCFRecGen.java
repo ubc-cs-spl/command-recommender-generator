@@ -7,9 +7,8 @@ import org.apache.mahout.cf.taste.impl.recommender.svd.SVDRecommender;
 import org.apache.mahout.cf.taste.recommender.Recommender;
 
 /**
- * This algorithm is like a combination of user-based and item-based collaborative filtering
- *
- * Created by KeEr on 2014-06-23.
+ * This algorithm is like a combination of user-based and item-based collaborative filtering.
+ * Underneath, it uses SVD (singular value decomposition) with matrix factorization.
  */
 public class LatentModelBasedCFRecGen extends AbstractCFRecGen {
 

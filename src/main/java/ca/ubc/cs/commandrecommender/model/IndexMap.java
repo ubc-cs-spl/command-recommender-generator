@@ -29,6 +29,12 @@ public class IndexMap {
         return itemMap.get(itemIndex);
     }
 
+    /**
+     * get the integer corresponding to {@code itemId}. if such integer doesn't exist,
+     * add the {@code itemId} into the map
+     * @param itemId
+     * @return
+     */
     public Integer getItemByItemId(String itemId){
         Integer itemIndex = itemMap.inverse().get(itemId);
         if(itemIndex == null){

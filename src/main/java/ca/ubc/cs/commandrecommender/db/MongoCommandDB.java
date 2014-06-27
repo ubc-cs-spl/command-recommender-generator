@@ -20,13 +20,15 @@ public class MongoCommandDB extends AbstractCommandDB {
     private DBCollection commandCollection;
 
     public static final String COMMANDS_COLLECTION = "commands";
+    public static final String KIND = "kind";
+    public static final String COMMAND = "command";
 
     public MongoCommandDB(ConnectionParameters connectionParameters, AbstractCommandToolConverter toolConverter, IndexMap userIndexMap) throws DBConnectionException{
         super(toolConverter, userIndexMap);
         this.cmdDbName = connectionParameters.getdBName();
         try {
             client = new MongoClient(connectionParameters.getDbUrl(), connectionParameters.getDbPort());
-            this.commandCollection = client.getDB(connectionParameters.getdBName()).getCollection(COMMANDS_COLLECTION);
+            commandCollection = client.getDB(connectionParameters.getdBName()).getCollection(COMMANDS_COLLECTION);
             ensureIndex();
         }catch(UnknownHostException ex){
             throw new DBConnectionException(ex);
@@ -36,14 +38,15 @@ public class MongoCommandDB extends AbstractCommandDB {
 
     private void ensureIndex() {
         if(commandCollection != null) {
-            commandCollection.createIndex(new BasicDBObject(toolConverter.getUserIdField(), 1));
+            commandCollection.createIndex(new BasicDBObject(toolConverter.getUserIdField(), 1).append(KIND, 1));
         }
     }
 
     @Override
     public List<ToolUseCollection> getAllUsageData() {
         HashMap<Integer, ToolUseCollection> toolUses = new HashMap<Integer, ToolUseCollection>();
-        DBCursor cursor = commandCollection.find();
+        //We might want to adjust this later to recommend bundles
+        DBCursor cursor = commandCollection.find(new BasicDBObject(KIND, COMMAND));
         while(cursor.hasNext()){
             DBObject row = cursor.next();
             String userIdString = (String) row.get(toolConverter.getUserIdField());
@@ -62,7 +65,8 @@ public class MongoCommandDB extends AbstractCommandDB {
 
     @Override
     public ToolUseCollection getUsersUsageData(String userId) {
-        DBObject query = new BasicDBObject(toolConverter.getUserIdField(), userId);
+        DBObject query = new BasicDBObject(toolConverter.getUserIdField(), userId)
+                .append(KIND, COMMAND);
         DBCursor userCommandCursor = commandCollection.find(query);
         Integer userIdIndex = userIndexMap.getItemByItemId(userId);
         ToolUseCollection toolUses = new ToolUseCollection(userIdIndex);

@@ -7,8 +7,8 @@ import org.junit.Test;
 
 public class MatejkaPreferenceAdjustmentTest extends TestCase {
 
-    //TODO: This is about the smallest delta for making all the tests pass.
-    //      Is this appropriate?
+    //The small difference between the expected value and the result is likely
+    //caused by the use of Float instead of doubles in MatejkaPreferenceAdjustment
     private static final double DELTA = 0.00000001;
 
 	private BasicUsageModel stub;

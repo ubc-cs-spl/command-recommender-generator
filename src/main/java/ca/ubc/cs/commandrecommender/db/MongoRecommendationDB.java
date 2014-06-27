@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Adapter for the recommendation, user, and command details collections in mongoDB
+ *
  * Created by Spencer on 6/23/2014.
  */
 public class MongoRecommendationDB extends AbstractRecommendationDB{
@@ -42,8 +44,15 @@ public class MongoRecommendationDB extends AbstractRecommendationDB{
             this.userCollection = getCollection(connectionParameters, USER_COLLECTION);
             this.recommendationCollection = getCollection(connectionParameters, USER_RECOMMENDATION_COLLECTION);
             this.commandDetailsCollection = getCollection(connectionParameters, COMMAND_DETAILS_COLLECTION);
+            ensureIndex();
         }catch(UnknownHostException ex){
             throw new DBConnectionException(ex);
+        }
+    }
+
+    private void ensureIndex() {
+        if(recommendationCollection != null) {
+            recommendationCollection.createIndex(new BasicDBObject(USER_ID_FIELD, 1));
         }
     }
 
@@ -53,10 +62,11 @@ public class MongoRecommendationDB extends AbstractRecommendationDB{
 
     @Override
     public void saveRecommendation(String commandId, String userId, String reason) {
-        if(commandId == null || commandId == "" || userId == null || userId == "")
+        if(commandId == null || commandId.equals("") || userId == null || userId.equals(""))
             return;
         DBObject query = new BasicDBObject(COMMAND_ID_FIELD, commandId);
         DBObject commandDetail = commandDetailsCollection.findOne(query);
+        // If the command detail is not know, we would not make the recommendation for the user
         if(commandDetail == null)
             return;
         BasicDBObject recommendationToSave = new BasicDBObject(USER_ID_FIELD, userId)
@@ -69,8 +79,8 @@ public class MongoRecommendationDB extends AbstractRecommendationDB{
     @Override
     public void markRecommendationsAsOld(String userId) {
         BasicDBObject query = new BasicDBObject(USER_ID_FIELD, userId);
-        BasicDBObject update = new BasicDBObject().append("$set", new BasicDBObject().append(NEW_RECOMMENDATION_FIELD, false));
-        recommendationCollection.update(query, update);
+        BasicDBObject update = new BasicDBObject().append("$set", new BasicDBObject(NEW_RECOMMENDATION_FIELD, false));
+        recommendationCollection.update(query, update, false, true);
     }
 
     @Override

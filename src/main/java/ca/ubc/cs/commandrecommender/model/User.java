@@ -51,6 +51,6 @@ public class User {
 
 
     public void updateRecommendationStatus() {
-        //TODO
+        //TODO: do we want to update the last recommendation date on the user table?
     }
 }

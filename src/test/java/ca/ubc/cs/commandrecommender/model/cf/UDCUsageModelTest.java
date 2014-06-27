@@ -10,7 +10,8 @@ public class UDCUsageModelTest extends TestCase {
 	private UDCUsageModel model;
 
     //TODO: This is about the smallest delta for making all the tests pass.
-    //      Is this appropriate? Where does the difference come from?
+    //The small difference between the expected value and the result is likely
+    //caused by the use of Float instead of doubles in MatejkaPreferenceAdjustment
     private static final double DELTA = 0.0000001;
 
 
