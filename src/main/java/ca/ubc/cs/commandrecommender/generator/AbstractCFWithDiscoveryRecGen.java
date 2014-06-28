@@ -7,7 +7,7 @@ import ca.ubc.cs.commandrecommender.model.cf.LearningModel;
 import ca.ubc.cs.commandrecommender.model.cf.Pair;
 import ca.ubc.cs.commandrecommender.model.cf.matejka.MatejkaOptions;
 import ca.ubc.cs.commandrecommender.model.learning.MyItemset;
-import ca.ubc.cs.commandrecommender.model.learning.Sequence;
+import ca.pfv.spmf.Sequence;
 import org.apache.mahout.cf.taste.impl.recommender.AbstractRecommender;
 import org.apache.mahout.cf.taste.recommender.RecommendedItem;
 

@@ -9,7 +9,7 @@ import java.util.Set;
  */
 public class Transaction{
 	
-	private final double[] toolsUsed;
+	private final double[] toolsUsed; //TODO: this is wasting a lot of space
 	
 	private int userId;
 	private Timestamp lastTimeUsed;

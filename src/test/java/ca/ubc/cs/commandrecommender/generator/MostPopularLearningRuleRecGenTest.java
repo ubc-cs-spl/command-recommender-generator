@@ -14,12 +14,12 @@ import static org.junit.Assert.assertFalse;
 /**
  * Created by KeEr on 2014-06-27.
  */
-public class LearningRuleRecGenTest extends AbstractRecGenTest {
+public class MostPopularLearningRuleRecGenTest extends AbstractRecGenTest {
 
     @Test
     public void testExampleInPaper() {
-        rec.trainWith(person(true,1,10,10,10,10,1,2,1,3,1,4));
-        rec.trainWith(person(true,2,11,11,11,11,1,5,1,5,1,3));
+        rec.trainWith(person(true,1,12,12,12,12,1,2,1,3,1,4));
+        rec.trainWith(person(true,2,12,12,12,12,1,5,1,5,1,3));
         rec.trainWith(person(true,3,12,12,12,12,5,6,5,6,5,7));
         rec.runAlgorithm();
 
@@ -27,14 +27,15 @@ public class LearningRuleRecGenTest extends AbstractRecGenTest {
         rec.fillRecommendations(r1);
         Iterator<Integer> i1 = r1.iterator();
         assertEquals(new Integer(5), i1.next());
+        assertEquals(new Integer(6), i1.next());
+        assertEquals(new Integer(7), i1.next());
         assertFalse(i1.hasNext());
 
         RecommendationCollector r2 = new RecommendationCollector(2, Arrays.asList(1,5,1,5,1,3), new HashSet<Integer>());
         rec.fillRecommendations(r2);
         Iterator<Integer> i2 = r2.iterator();
-        assertEquals(new Integer(4), i2.next());
-        //The following should have the same count in which case, the smaller one gets added first
         assertEquals(new Integer(2), i2.next());
+        assertEquals(new Integer(4), i2.next());
         assertEquals(new Integer(6), i2.next());
         assertEquals(new Integer(7), i2.next());
         assertFalse(i2.hasNext());
@@ -42,12 +43,16 @@ public class LearningRuleRecGenTest extends AbstractRecGenTest {
         RecommendationCollector r3 = new RecommendationCollector(3, Arrays.asList(5,6,5,6,5,7), new HashSet<Integer>());
         rec.fillRecommendations(r3);
         Iterator<Integer> i3 = r3.iterator();
+        assertEquals(new Integer(1), i3.next());
         assertEquals(new Integer(3), i3.next());
+        assertEquals(new Integer(2), i3.next());
+        assertEquals(new Integer(4), i3.next());
         assertFalse(i3.hasNext());
     }
 
     @Override
     protected AbstractRecGen getRec() {
-        return new LearningRuleRecGen("", new IncludeAllAcceptance());
+        return new MostPopularLearningRuleRecGen("", new IncludeAllAcceptance());
     }
+
 }

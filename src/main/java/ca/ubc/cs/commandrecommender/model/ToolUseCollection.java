@@ -76,7 +76,7 @@ public class ToolUseCollection extends ArrayList<ToolUse>{
 
         List<Transaction> ts = new ArrayList<Transaction>();
 
-        //this is wasteful...
+        //TODO:this is wasteful...
         int toolCount = 10000;
 
         Transaction trans = new Transaction(toolCount);
@@ -97,7 +97,6 @@ public class ToolUseCollection extends ArrayList<ToolUse>{
     }
 
     /**
-     * TODO: we should probably use this to ensure the correctness of the order sensitive algorithms
      * A convenience method for sorting the uses by timestamp
      */
     public void sort() {

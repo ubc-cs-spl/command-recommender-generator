@@ -13,7 +13,7 @@ import org.apache.commons.collections4.bag.HashBag;
  */
 public class MostPopularLearningRuleRecGen extends AbstractLearningRuleRecGen {
 
-    private Bag<Integer> recs = new HashBag<Integer>();
+    private Bag<Integer> discoveryTally = new HashBag<Integer>();
 
     public MostPopularLearningRuleRecGen(String algorithm, AbstractLearningAcceptance acceptance) {
         super(algorithm, acceptance);
@@ -22,12 +22,12 @@ public class MostPopularLearningRuleRecGen extends AbstractLearningRuleRecGen {
     @Override
     protected void processSequence(Itemset antecedent, Itemset consequent) {
         for(Item aCons : consequent.getItems())
-            recs.add(aCons.getId());
+            discoveryTally.add(aCons.getId());
     }
 
     @Override
     protected void addRecsTo(Iterable<Integer> tools, final Bag<Integer> tempRecs) {
-        tempRecs.addAll(recs);
+        tempRecs.addAll(discoveryTally);
     }
 
 }

@@ -1,7 +1,4 @@
-package ca.ubc.cs.commandrecommender.model.learning;
-
-import ca.pfv.spmf.Item;
-import ca.pfv.spmf.Itemset;
+package ca.pfv.spmf;
 
 import java.io.Serializable;
 import java.text.DecimalFormat;

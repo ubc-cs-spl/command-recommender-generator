@@ -5,7 +5,6 @@ import ca.pfv.spmf.Itemset;
 /**
  * Provides additional features to {@link ca.pfv.spmf.Itemset}
  */
-//TODO: check over
 public class MyItemset extends Itemset {
 
 	private static final long serialVersionUID = 6316951900924884075L;
@@ -32,10 +31,11 @@ public class MyItemset extends Itemset {
 		return result;
 	}
 
-	public boolean containsSameAs(Itemset other) {	
-		return this.union(other).size()==this.size();
-	}
-
+    /**
+     *
+     * @param other
+     * @return other - this (set difference)
+     */
 	public MyItemset subtractedFrom(Itemset other) {
 		MyItemset result;
 		if(other instanceof MyItemset){

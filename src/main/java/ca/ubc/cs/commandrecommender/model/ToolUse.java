@@ -4,7 +4,6 @@ import java.sql.Timestamp;
 
 public class ToolUse {
 
-    //TODO: change if necessary
     public Timestamp time;
     public int tool;
     public boolean hotkey;

@@ -1,7 +1,5 @@
 package ca.pfv.spmf;
 
-import ca.ubc.cs.commandrecommender.model.learning.Sequence;
-
 import java.io.*;
 import java.util.ArrayList;
 import java.util.HashSet;

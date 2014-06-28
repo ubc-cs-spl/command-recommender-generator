@@ -25,7 +25,7 @@ public abstract class AbstractRecGenTest {
             boolean shortcut = alternate ? ((i % 2) == 0) : hotkey;
             if (largeInterval) {
                 for (int j = 0; j < 10 ; j ++) {
-                    person.add(new ToolUse(new Timestamp(i * 100000000L + j * 10000000), ns[i], shortcut));
+                    person.add(new ToolUse(new Timestamp(i * 1000000000L + j * 100000000L), ns[i], shortcut));
                 }
             } else {
                 person.add(new ToolUse(now(), ns[i], shortcut));

@@ -2,6 +2,7 @@ package ca.ubc.cs.commandrecommender.model.learning;
 
 import ca.pfv.spmf.Item;
 import ca.pfv.spmf.Itemset;
+import ca.pfv.spmf.Sequence;
 
 import java.util.ArrayList;
 import java.util.Iterator;
