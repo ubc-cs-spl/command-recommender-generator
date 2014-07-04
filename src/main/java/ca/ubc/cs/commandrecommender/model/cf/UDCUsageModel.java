@@ -19,7 +19,8 @@ public class UDCUsageModel extends UsageModel {
     }
 
     /**
-     * Finalize the model and recompute the preference
+     * Finalize the model and recompute the preference. Should be called
+     * only once for each model.
      */
     public void finish(){
         usersToPrefs = converter.usersToPrefs();

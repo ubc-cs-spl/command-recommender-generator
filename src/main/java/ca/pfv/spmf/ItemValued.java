@@ -3,7 +3,6 @@ package ca.pfv.spmf;
 /**
  * This class is an Item that can have an integer value.
  */
-//TODO: check over
 public class ItemValued extends Item{
 	private double value;
 	private int sequenceID =-1; // used for clustering to recognize items that are from sequences.

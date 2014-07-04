@@ -22,6 +22,8 @@ public class LearningModel extends GenericUsageModel<ToolUsePreference, ItemFact
         return (LearningRuleFactory) itemFactory;
     }
 
+    //TODO: this method is never called. It's hard to tell whether we should apply
+    //      the Matejka's way of recomputing preferences for the learning related algorithms
     protected void recomputePreference(){
         new MatejkaPreferenceAdjustment(this).recomputePreferences();
     }

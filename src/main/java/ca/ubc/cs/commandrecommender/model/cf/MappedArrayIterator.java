@@ -6,13 +6,11 @@ package ca.ubc.cs.commandrecommender.model.cf;
 import java.util.Iterator;
 import java.util.Map;
 
-
 /**
- * Iterates over the array of values in a map.
+ * Iterates over the arrays of values in a map.
  * 
  * Could also be implemented as a CompositeVisitor
  */
-//TODO: check over
 public class MappedArrayIterator<Key,Value> implements Iterable<Value> {
 
 	private final Map<Key, Value[]> map;
@@ -34,10 +32,8 @@ public class MappedArrayIterator<Key,Value> implements Iterable<Value> {
 			
 			@Override
 			public boolean hasNext() {
-				
 				if(valueIterator.hasNext()){
 					return true;
-				
 				}else if(keyIterator.hasNext()){
 					Key p = keyIterator.next();
 					valueIterator = new ArrayIterator<Value>(map.get(p));

@@ -38,7 +38,7 @@ public abstract class GenericPreferenceMaker<P extends Preference>{
 	 * @param source
 	 * 
 	 * @param destination a copy of the source with the values being an array. The values in the array are
-	 * 			sorted by Item, as specified  by {@link //TODO User#getPreferencesAsArray()}
+	 * 			sorted by Item
 	 */
 	private <T> void genericCopy(Map<T, List<P>> source, Map<T, P[]> destination){
 		

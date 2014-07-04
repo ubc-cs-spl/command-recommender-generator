@@ -18,11 +18,11 @@ import java.util.Collections;
 import java.util.List;
 
 /**
+ * Item-based recommender based on Matejka tuning and similarity.
  * Simplified version of 
  * {@link org.apache.mahout.cf.taste.impl.recommender.GenericItemBasedRecommender}
  */
-//TODO check over
-public final class MatejkaItemBasedRecommender  extends AbstractRecommender implements
+public final class MatejkaItemBasedRecommender extends AbstractRecommender implements
 		Recommender {
 	
 	/*
@@ -46,7 +46,7 @@ public final class MatejkaItemBasedRecommender  extends AbstractRecommender impl
 	@Override
 	public float estimatePreference(long userID, long itemID)
 			throws TasteException {
-		
+        //TODO: Not obvious where or how this method is used
 		DataModel model = getDataModel();
 	    Float actualPref = model.getPreferenceValue(userID, itemID);
 	    if (actualPref != null) {
@@ -79,12 +79,13 @@ public final class MatejkaItemBasedRecommender  extends AbstractRecommender impl
 		return topItems;
 	}
 
+    // basically, the estimated preference is the average of the similarity between itemid and
+    // all other items the user has preference of.
 	private double doEstimatePreference(long userid, long itemid)
 			throws TasteException {
 		
 		DataModel model = getDataModel();
 		PreferenceArray userPrefs = model.getPreferencesFromUser(userid);
-//		Preference[] userPrefs = theUser.getPreferencesAsArray();
 		
 		double sum = 0.0;
 		
@@ -99,8 +100,11 @@ public final class MatejkaItemBasedRecommender  extends AbstractRecommender impl
 	}
 
 	@Override
-	public void refresh(Collection<Refreshable> alreadyRefreshed) {}
+	public void refresh(Collection<Refreshable> alreadyRefreshed) {
+        //do nothing
+    }
 
+    // A wrapper class for estimating the preference of a user for an item
 	private final class Estimator implements TopItems.Estimator<Long> {
 
 		private final long theUser;

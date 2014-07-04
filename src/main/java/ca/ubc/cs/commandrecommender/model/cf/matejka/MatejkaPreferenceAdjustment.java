@@ -9,7 +9,8 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * 
+ * For recomputing the preferences of a IPreferenceMapper
+ *
  * when recomputePreferences() is called, preferences are adjusted using Autodesk's 
  * method, described in:
  * CommunityCommands: Command Recommendations for Software Applications 
@@ -19,13 +20,11 @@ import java.util.Set;
  * 
  * @author emerson
  */
-//TODO: check over
 public class MatejkaPreferenceAdjustment{
 
 	private final IPreferenceMapper<? extends Preference> mapper;
 
 	public MatejkaPreferenceAdjustment(IPreferenceMapper<? extends Preference> mapper) {
-		
 		this.mapper = mapper;
 	}
 	
@@ -36,7 +35,7 @@ public class MatejkaPreferenceAdjustment{
 		
 		Map<Preference, Float> newValues = new HashMap<Preference, Float>();
 		
-		//there's a more efficient way to do this
+		//TODO: there's a more efficient way to do this
 		for(Preference p : mapper.getPreferences()){
 			
 			float commandFrequencyInverseUserFrequency = 
@@ -45,7 +44,8 @@ public class MatejkaPreferenceAdjustment{
 			
 			newValues.put(p, commandFrequencyInverseUserFrequency);
 		}
-		
+
+        //we don't want to modify the preferences before all the calculations are done
 		for(Map.Entry<Preference, Float> e : newValues.entrySet()){
 			e.getKey().setValue(e.getValue());
 		}
@@ -69,7 +69,6 @@ public class MatejkaPreferenceAdjustment{
 		for(Preference pref : preferences){
 			usesOfAllTools += pref.getValue();
 		}
-		
 		return usesOfThisTool / usesOfAllTools;
 	}
 }

@@ -5,8 +5,6 @@ import org.apache.mahout.cf.taste.model.Preference;
 /**
  * Encapsulates a command (or tool) and a preference value, which indicates the
  * strength of the preference for the command. the values are associated to users.
- *
- * Created by KeEr on 2014-06-23.
  */
 public class ToolUsePreference implements Preference {
 

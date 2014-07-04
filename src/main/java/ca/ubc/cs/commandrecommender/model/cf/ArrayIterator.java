@@ -25,12 +25,9 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 /**
- * <p>
  * Simple, fast {@link java.util.Iterator} for an array.
  * Note: this is a copy from mahout 0.4
- * </p>
  */
-//TODO: check over
 public final class ArrayIterator<T> implements SkippingIterator<T>, Iterable<T> {
   
   private final T[] array;

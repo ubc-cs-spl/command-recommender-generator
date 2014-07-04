@@ -18,7 +18,7 @@ import java.net.UnknownHostException;
 import java.util.List;
 
 /**
- * Created by KeEr on 2014-06-09.
+ * Main class for running the command line recommendation generator
  */
 public class App {
     public static final String COMMAND_HOST = "ch";
@@ -199,6 +199,8 @@ public class App {
             try {
                 acceptance = LearningAcceptanceType.valueOf(cmd.getOptionValue('c')).getAcceptance();
             }catch (IllegalArgumentException ex){
+                //TODO: we should throw exception at around here if the acceptance is
+                //      null for a learning type algorithms.
                 throw new ParseException("Invalid acceptance type.");
             }
         }else{

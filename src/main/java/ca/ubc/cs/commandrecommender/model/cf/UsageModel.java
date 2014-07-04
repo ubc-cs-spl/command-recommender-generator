@@ -14,18 +14,26 @@ import java.util.Set;
  * but would produce too-large data structure.  It's no worse
  * than linear. 
  */
-public abstract class UsageModel extends GenericUsageModel<ToolUsePreference, ItemFactory, UserFactory>
-			implements IPreferenceMapper<ToolUsePreference> {
-	
+public abstract class UsageModel extends GenericUsageModel<ToolUsePreference, ItemFactory, UserFactory> {
 
 	public UsageModel() {
 		super(new ProgrammerFactory(),new ToolFactory());
 	}
-	
+
+    /**
+     * Recomputes preferences value, based on Matejka's paper
+     */
 	protected void recomputePreference(){
 		new MatejkaPreferenceAdjustment(this).recomputePreferences();
 	}
-	
+
+    /**
+     * Put the information about what user used which tool how many times into
+     * @param useCount
+     * @param userid
+     * @param originid
+     * @return the ToolUsePreference corresponding to the info
+     */
 	protected ToolUsePreference makeUseOf(int useCount, long userid, long originid){
 		//originid represents toolid
 		((ToolFactory)itemFactory).getOrCreateToolForName(originid);
@@ -35,10 +43,11 @@ public abstract class UsageModel extends GenericUsageModel<ToolUsePreference, It
 		Set<Long> users = itemsToUsers.get(originid);
 		if(users == null){
 			users = new HashSet<Long>();
-			itemsToUsers.put((long) originid,users);
+			itemsToUsers.put(originid,users);
 		}
-		users.add((long) userid);
+		users.add(userid);
 		
 		return use;
 	}
+
 }
