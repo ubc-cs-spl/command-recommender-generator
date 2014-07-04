@@ -107,4 +107,19 @@ public enum AlgorithmType {
         }
     }
 
+    /**
+     * @return whether the algorithm type requires a learning acceptance to be
+     * properly constructed
+     */
+    public boolean needsAcceptance() {
+        switch (this) {
+            case LEARNING_RULE:
+            case MOST_POPULAR_LEARNING_RULE:
+            case ITEM_BASED_CF_WITH_DISCOVERY:
+            case USER_BASED_CF_WITH_DISCOVERY:
+                return true;
+            default:
+                return false;
+        }
+    }
 }

@@ -199,12 +199,12 @@ public class App {
             try {
                 acceptance = LearningAcceptanceType.valueOf(cmd.getOptionValue('c')).getAcceptance();
             }catch (IllegalArgumentException ex){
-                //TODO: we should throw exception at around here if the acceptance is
-                //      null for a learning type algorithms.
                 throw new ParseException("Invalid acceptance type.");
             }
         }else{
             acceptance = null;
+            if (algorithmType.needsAcceptance())
+                throw new ParseException("Acceptance type must be specified for the selected algorithm");
         }
     }
 
