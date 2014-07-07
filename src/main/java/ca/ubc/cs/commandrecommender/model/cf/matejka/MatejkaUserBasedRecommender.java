@@ -99,9 +99,7 @@ public final class MatejkaUserBasedRecommender extends AbstractRecommender imple
 
         TopItems.Estimator<Long> estimator = new Estimator(userID, theNeighborhood);
 
-        List<RecommendedItem> topItems = TopItems.getTopItems(howMany, new LongPrimitiveArrayIterator(allItems.toArray()), rescorer, estimator);
-
-        return topItems;
+        return TopItems.getTopItems(howMany, new LongPrimitiveArrayIterator(allItems.toArray()), rescorer, estimator);
     }
 
     @Override
@@ -162,14 +160,13 @@ public final class MatejkaUserBasedRecommender extends AbstractRecommender imple
     }
 
     /**
-     * //TODO: this method should be called in some version of recommend() that returns a more detailed recommended item
      * @param userId
      * @param theNeighborhood
      * @param itemId
      * @return the related information for the recommendation
      * @throws TasteException
      */
-    private Double getProportionOfSimilarUsersWhoUsedTheItem(long userId, long[] theNeighborhood, long itemId)
+    private double getProportionOfSimilarUsersWhoUsedTheItem(long userId, long[] theNeighborhood, long itemId)
             throws TasteException{
         int numUsersWhoUsedThis = 0;
         DataModel model = getDataModel();

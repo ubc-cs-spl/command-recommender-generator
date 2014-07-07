@@ -93,18 +93,17 @@ public abstract class AbstractCFWithDiscoveryRecGen extends AbstractFilteredLear
                 long itemID = item.getItemID();
                 Pair lr = model.getLearningRuleFactory().pairForToolID(itemID) ;
 
-                int a = lr.getLeft();  //TODO: exp    these two represents the learning relationship
-                int b = lr.getRight(); //TODO: exp
+                int a = lr.getLeft();
+                int b = lr.getRight();
 
 				// Only put one of the items in there
                 rationale.setValue((double) item.getValue());
                 if(rc.toolsContain(a) && !rc.toolsContain(b)){
+                    rationale.put(Rationale.DISCOVERY_PREREQ, a);
                     rc.add(b, rationale);
-                    //TODO: exp  the a->b learning sequence is recommended for you (get reason from the recommender stuff) and since you have used a but not b we recommend command b
-                }else if(!rc.toolsContain(a)){
-                    rationale.setValue((double) item.getValue());
+                }else if(!rc.toolsContain(a)) {
+                    rationale.put(Rationale.HOOK_FOR, b);
                     rc.add(a, rationale);
-                    //TODO: exp  the a->b learning sequence is recommended for you (get reason from the recommender stuff) and since you have not used a, it might be worthwhile to try it out
                 }
 
                 if(rc.isSatisfied()){

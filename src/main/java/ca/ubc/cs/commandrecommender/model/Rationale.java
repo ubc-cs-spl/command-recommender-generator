@@ -14,6 +14,8 @@ public class Rationale extends BasicBSONObject {
     public static final String LINTON_PERCENT_USAGE = "linton percent";
     public static final String LINTON_RANK = "linton rank";
     public static final String MOST_POP_LEARNING_PERCENT = "pop learning percent";
+    public static final String DISCOVERY_PREREQ = "discovery prereq";
+    public static final String HOOK_FOR = "hook for";
     double value;
 
     public Rationale() {
