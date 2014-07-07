@@ -32,15 +32,19 @@ public abstract class AbstractLintonRecGen extends AbstractRecGen {
 	@Override
 	public void fillRecommendations(RecommendationCollector rc) {
 		checkSorting();
+        int rank = 1;
 		for(Integer toolToRecommend : mostPopularToolKeys){
 			if(!rc.toolsContain(toolToRecommend)){
                 double percentUsage = getPercentUsage(toolToRecommend);
                 Rationale rationale =  new Rationale((double) toolCount.getCount(toolToRecommend));
+                rationale.put(Rationale.LINTON_RANK, rank);
                 rationale.put(Rationale.LINTON_PERCENT_USAGE, percentUsage);
+
 				rc.add(toolToRecommend, rationale);
 				if(rc.isSatisfied())
 					break;
-			}			
+			}
+            rank++;
 		}
 	}
 

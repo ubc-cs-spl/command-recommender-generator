@@ -2,9 +2,12 @@ package ca.ubc.cs.commandrecommender.generator;
 
 import ca.pfv.spmf.Item;
 import ca.pfv.spmf.Itemset;
+import ca.ubc.cs.commandrecommender.model.Rationale;
 import ca.ubc.cs.commandrecommender.model.acceptance.AbstractLearningAcceptance;
 import org.apache.commons.collections4.Bag;
 import org.apache.commons.collections4.bag.HashBag;
+
+import java.util.List;
 
 /**
  * This algorithm recommend the most commonly "learned" or "discovered" commands that a user is not using
@@ -13,6 +16,7 @@ import org.apache.commons.collections4.bag.HashBag;
  */
 public class MostPopularLearningRuleRecGen extends AbstractLearningRuleRecGen {
 
+    private int totalLearning = 0;
     private Bag<Integer> discoveryTally = new HashBag<Integer>();
 
     public MostPopularLearningRuleRecGen(String algorithm, AbstractLearningAcceptance acceptance) {
@@ -21,13 +25,24 @@ public class MostPopularLearningRuleRecGen extends AbstractLearningRuleRecGen {
 
     @Override
     protected void processSequence(Itemset antecedent, Itemset consequent) {
-        for(Item aCons : consequent.getItems())
+        List<Item> items = consequent.getItems();
+        totalLearning += items.size();
+        for(Item aCons : items)
             discoveryTally.add(aCons.getId());
     }
 
     @Override
     protected void addRecsTo(Iterable<Integer> tools, final Bag<Integer> tempRecs) {
         tempRecs.addAll(discoveryTally);
+    }
+
+    @Override
+    protected Rationale getRationale(int toolId) {
+        Rationale rationale = new Rationale();
+        double numberOfToolUses = discoveryTally.getCount(toolId);
+        double percent = (numberOfToolUses / totalLearning) * 100;
+        rationale.put(Rationale.MOST_POP_LEARNING_PERCENT, percent);
+        return rationale;
     }
 
 }

@@ -16,7 +16,7 @@ import org.apache.commons.collections4.bag.HashBag;
 public abstract class AbstractLearningRuleRecGen extends AbstractFilteredLearningRecGen {
 
     public AbstractLearningRuleRecGen(String algorithm,
-                                      AbstractLearningAcceptance acceptance){
+                                      AbstractLearningAcceptance acceptance) {
         super(algorithm, acceptance);
     }
 
@@ -27,8 +27,8 @@ public abstract class AbstractLearningRuleRecGen extends AbstractFilteredLearnin
      */
     @Override
     public void runAlgorithm() {
-        for(Sequence s : trainer){
-            if(s.size() != 2){
+        for (Sequence s : trainer) {
+            if (s.size() != 2) {
                 System.err.println("Sequence not in form antecedent->consequent:" + s);
                 continue;
             }
@@ -54,15 +54,18 @@ public abstract class AbstractLearningRuleRecGen extends AbstractFilteredLearnin
         addRecsTo(rc.tools(), tempRecs);
 
         // remove used tools
-        for(Integer tool : rc.tools()){
+        for (Integer tool : rc.tools()) {
             tempRecs.remove(tool);
         }
 
         SortedBag<Integer> recs = SortingUtils.sortBagByCount(tempRecs);
 
-        for(Integer i : recs.uniqueSet()){
-            rc.add(i, new Rationale((double)recs.getCount(i)));
-            if(rc.isSatisfied())
+        for (Integer i : recs.uniqueSet()) {
+            double value = (double) recs.getCount(i);
+            Rationale rationale = getRationale(i);
+            rationale.setValue(value);
+            rc.add(i, rationale);
+            if (rc.isSatisfied())
                 break;
         }
     }
@@ -70,6 +73,7 @@ public abstract class AbstractLearningRuleRecGen extends AbstractFilteredLearnin
     /**
      * Store and model {@code antecedent} and {@code consequent} so that this information
      * can be properly used to generate recommendations
+     *
      * @param antecedent
      * @param consequent
      */
@@ -77,9 +81,19 @@ public abstract class AbstractLearningRuleRecGen extends AbstractFilteredLearnin
 
     /**
      * Modify {@code tempRecs} with the stored information and history of an user so that
+     *
      * @param tools
      * @param tempRecs
      */
     protected abstract void addRecsTo(Iterable<Integer> tools, final Bag<Integer> tempRecs);
+
+    /**
+     * Get the rational for recommending a command
+     * @param toolId
+     * @return cannot be null
+     */
+    protected Rationale getRationale(int toolId) {
+        return new Rationale();
+    }
 
 }
