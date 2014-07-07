@@ -1,5 +1,7 @@
 package ca.ubc.cs.commandrecommender.model.cf.matejka;
 
+import ca.ubc.cs.commandrecommender.model.RecommendedItemWithRationale;
+import ca.ubc.cs.commandrecommender.model.cf.ReasonedRecommender;
 import org.apache.mahout.cf.taste.common.Refreshable;
 import org.apache.mahout.cf.taste.common.TasteException;
 import org.apache.mahout.cf.taste.impl.common.FastIDSet;
@@ -11,8 +13,8 @@ import org.apache.mahout.cf.taste.model.Preference;
 import org.apache.mahout.cf.taste.model.PreferenceArray;
 import org.apache.mahout.cf.taste.recommender.IDRescorer;
 import org.apache.mahout.cf.taste.recommender.RecommendedItem;
-import org.apache.mahout.cf.taste.recommender.Recommender;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -23,7 +25,7 @@ import java.util.List;
  * {@link org.apache.mahout.cf.taste.impl.recommender.GenericItemBasedRecommender}
  */
 public final class MatejkaItemBasedRecommender extends AbstractRecommender implements
-		Recommender {
+        ReasonedRecommender {
 	
 	/*
 	 * Alpha tuning param from matejka p. 196
@@ -78,6 +80,17 @@ public final class MatejkaItemBasedRecommender extends AbstractRecommender imple
 
 		return topItems;
 	}
+
+    @Override
+    public List<RecommendedItemWithRationale> recommendWithRationale(long userId,
+                                                                     int howMany)
+            throws TasteException {
+        List<RecommendedItemWithRationale> itemsWithRationale = new ArrayList<RecommendedItemWithRationale>();
+        for (RecommendedItem item : recommend(userId, howMany)) {
+            itemsWithRationale.add(new RecommendedItemWithRationale(item));
+        }
+        return itemsWithRationale;
+    }
 
     // basically, the estimated preference is the average of the similarity between itemid and
     // all other items the user has preference of.

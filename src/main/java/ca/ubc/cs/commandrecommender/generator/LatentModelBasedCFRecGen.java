@@ -1,10 +1,10 @@
 package ca.ubc.cs.commandrecommender.generator;
 
+import ca.ubc.cs.commandrecommender.model.cf.ReasonedRecommender;
+import ca.ubc.cs.commandrecommender.model.cf.ReasonedSVDRecommender;
 import ca.ubc.cs.commandrecommender.model.cf.UDCUsageModel;
 import org.apache.mahout.cf.taste.common.TasteException;
 import org.apache.mahout.cf.taste.impl.recommender.svd.ALSWRFactorizer;
-import org.apache.mahout.cf.taste.impl.recommender.svd.SVDRecommender;
-import org.apache.mahout.cf.taste.recommender.Recommender;
 
 /**
  * This algorithm is like a combination of user-based and item-based collaborative filtering.
@@ -27,9 +27,10 @@ public class LatentModelBasedCFRecGen extends AbstractCFRecGen {
     }
 
     @Override
-    protected Recommender getRecommender(UDCUsageModel m) throws TasteException {
-        return new SVDRecommender(m,
-                new ALSWRFactorizer(m, numFeatures, lambda, numIterations, true, alpha));
+    protected ReasonedRecommender getRecommender(UDCUsageModel m) throws TasteException {
+        return new ReasonedSVDRecommender(m,
+                new ALSWRFactorizer(m, numFeatures, lambda, numIterations, true, alpha)) {
+        };
     }
 
 }

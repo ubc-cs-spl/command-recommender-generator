@@ -1,5 +1,8 @@
 package ca.ubc.cs.commandrecommender.model.cf.matejka;
 
+import ca.ubc.cs.commandrecommender.model.Rationale;
+import ca.ubc.cs.commandrecommender.model.RecommendedItemWithRationale;
+import ca.ubc.cs.commandrecommender.model.cf.ReasonedRecommender;
 import org.apache.mahout.cf.taste.common.Refreshable;
 import org.apache.mahout.cf.taste.common.TasteException;
 import org.apache.mahout.cf.taste.impl.common.FastIDSet;
@@ -18,6 +21,7 @@ import org.apache.mahout.cf.taste.recommender.UserBasedRecommender;
 import org.apache.mahout.cf.taste.similarity.UserSimilarity;
 import org.apache.mahout.common.LongPair;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -26,7 +30,7 @@ import java.util.List;
  * User-based recommender based on Matejka tuning and similarity.
  * Mostly copied from {@link org.apache.mahout.cf.taste.impl.recommender.GenericUserBasedRecommender}
  */
-public final class MatejkaUserBasedRecommender extends AbstractRecommender implements UserBasedRecommender {
+public final class MatejkaUserBasedRecommender extends AbstractRecommender implements UserBasedRecommender, ReasonedRecommender{
 
     private UserNeighborhood neighborhood;
     private UserSimilarity similarity;
@@ -57,15 +61,36 @@ public final class MatejkaUserBasedRecommender extends AbstractRecommender imple
     @Override
     public List<RecommendedItem> recommend(long userID, int howMany,
                                            IDRescorer rescorer) throws TasteException {
+        return recommend(userID, howMany, rescorer, checkArgumentsAndGetNeighborhood(userID, howMany));
+    }
+
+    @Override
+    public List<RecommendedItemWithRationale> recommendWithRationale(long userId, int howMany)
+            throws TasteException {
+        long[] theNeighborhood = checkArgumentsAndGetNeighborhood(userId, howMany);
+        List<RecommendedItemWithRationale> itemsWithRationale = new ArrayList<RecommendedItemWithRationale>();
+        for (RecommendedItem item : recommend(userId, howMany, null, theNeighborhood)) {
+            RecommendedItemWithRationale itemWithRationale = new RecommendedItemWithRationale(item);
+            double proportion = getProportionOfSimilarUsersWhoUsedTheItem(userId, theNeighborhood, item.getItemID());
+            UserBasedCFInfo info = new UserBasedCFInfo(proportion, theNeighborhood.length);
+            itemWithRationale.put(Rationale.USER_BASED_CF_INFO, info);
+            itemsWithRationale.add(itemWithRationale);
+        }
+        return itemsWithRationale;
+    }
+
+    private long[] checkArgumentsAndGetNeighborhood(long userID, int howMany) throws TasteException {
         if (userID < 0) {
             throw new IllegalArgumentException("userID is negative");
         }
         if (howMany < 1) {
             throw new IllegalArgumentException("howMany must be at least 1");
         }
+        return neighborhood.getUserNeighborhood(userID);
+    }
 
-        long[] theNeighborhood = neighborhood.getUserNeighborhood(userID);
-
+    private List<RecommendedItem> recommend(long userID, int howMany,
+                                           IDRescorer rescorer, long[] theNeighborhood) throws TasteException {
         if (theNeighborhood.length==0) {
             return Collections.emptyList();
         }
@@ -81,7 +106,6 @@ public final class MatejkaUserBasedRecommender extends AbstractRecommender imple
 
     @Override
     public float estimatePreference(long userID, long itemID) throws TasteException {
-        //TODO: Not obvious where or how this method is used
         DataModel model = getDataModel();
         Float actualPref = model.getPreferenceValue(userID, itemID);
         if (actualPref != null) {
@@ -135,6 +159,27 @@ public final class MatejkaUserBasedRecommender extends AbstractRecommender imple
             }
         }
         return preference == 0.0 ? Double.NaN : preference;
+    }
+
+    /**
+     * //TODO: this method should be called in some version of recommend() that returns a more detailed recommended item
+     * @param userId
+     * @param theNeighborhood
+     * @param itemId
+     * @return the related information for the recommendation
+     * @throws TasteException
+     */
+    private Double getProportionOfSimilarUsersWhoUsedTheItem(long userId, long[] theNeighborhood, long itemId)
+            throws TasteException{
+        int numUsersWhoUsedThis = 0;
+        DataModel model = getDataModel();
+        for (long uid : theNeighborhood) {
+            Float preferenceValue = model.getPreferenceValue(uid, itemId);
+            if (uid!=userId && (preferenceValue != null)) {
+                numUsersWhoUsedThis++;
+            }
+        }
+        return numUsersWhoUsedThis / (double) theNeighborhood.length;
     }
 
     //TODO: Matejka's weighting function (p. 196); undefined in paper

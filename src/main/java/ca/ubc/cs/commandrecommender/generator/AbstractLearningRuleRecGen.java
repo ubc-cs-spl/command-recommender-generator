@@ -1,6 +1,7 @@
 package ca.ubc.cs.commandrecommender.generator;
 
 import ca.pfv.spmf.Itemset;
+import ca.ubc.cs.commandrecommender.model.Rationale;
 import ca.ubc.cs.commandrecommender.model.RecommendationCollector;
 import ca.ubc.cs.commandrecommender.model.acceptance.AbstractLearningAcceptance;
 import ca.pfv.spmf.Sequence;
@@ -60,7 +61,7 @@ public abstract class AbstractLearningRuleRecGen extends AbstractFilteredLearnin
         SortedBag<Integer> recs = SortingUtils.sortBagByCount(tempRecs);
 
         for(Integer i : recs.uniqueSet()){
-            rc.add(i, (double)recs.getCount(i));
+            rc.add(i, new Rationale((double)recs.getCount(i)));
             if(rc.isSatisfied())
                 break;
         }

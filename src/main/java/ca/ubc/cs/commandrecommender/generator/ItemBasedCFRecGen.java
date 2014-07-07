@@ -1,9 +1,9 @@
 package ca.ubc.cs.commandrecommender.generator;
 
+import ca.ubc.cs.commandrecommender.model.cf.ReasonedRecommender;
 import ca.ubc.cs.commandrecommender.model.cf.UDCUsageModel;
 import ca.ubc.cs.commandrecommender.model.cf.matejka.MatejkaItemBasedRecommender;
 import ca.ubc.cs.commandrecommender.model.cf.matejka.MatejkaOptions;
-import org.apache.mahout.cf.taste.recommender.Recommender;
 
 /**
  * This algorithm determines recommendation through collaborative filtering
@@ -20,7 +20,7 @@ public class ItemBasedCFRecGen extends AbstractCFRecGen {
         this.ops = ops;
     }
 
-    protected Recommender getRecommender(UDCUsageModel m) {
+    protected ReasonedRecommender getRecommender(UDCUsageModel m) {
         return new MatejkaItemBasedRecommender(m,ops);
     }
 

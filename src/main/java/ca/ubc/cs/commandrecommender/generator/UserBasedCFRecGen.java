@@ -1,9 +1,9 @@
 package ca.ubc.cs.commandrecommender.generator;
 
+import ca.ubc.cs.commandrecommender.model.cf.ReasonedRecommender;
 import ca.ubc.cs.commandrecommender.model.cf.UDCUsageModel;
 import ca.ubc.cs.commandrecommender.model.cf.matejka.MatejkaOptions;
 import ca.ubc.cs.commandrecommender.model.cf.matejka.MatejkaUserBasedRecommender;
-import org.apache.mahout.cf.taste.recommender.Recommender;
 
 /**
  * This algorithm make recommendations by looking at the data of similar users determined by the
@@ -23,7 +23,7 @@ public class UserBasedCFRecGen extends AbstractCFRecGen {
     }
 
     @Override
-    protected Recommender getRecommender(UDCUsageModel m) {
+    protected ReasonedRecommender getRecommender(UDCUsageModel m) {
         return new MatejkaUserBasedRecommender(neighborhoodSize,m,ops);
     }
 

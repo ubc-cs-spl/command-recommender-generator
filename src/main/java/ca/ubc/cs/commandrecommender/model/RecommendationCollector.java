@@ -13,6 +13,7 @@ public class RecommendationCollector implements Iterable<Integer>{
 	private List<List<Integer>> lists;
 	private List<Integer> currentList;
 	private Double lastValue;
+    private Map<Integer, Rationale> rationaleMap;
 
 	public final int userId;
 
@@ -29,6 +30,7 @@ public class RecommendationCollector implements Iterable<Integer>{
 		this.userId = userId;
 		this.history = history;
         this.pastRecommendations = pastRecommendations;
+        rationaleMap = new HashMap<Integer, Rationale>();
 		init();
 	}
 
@@ -86,12 +88,18 @@ public class RecommendationCollector implements Iterable<Integer>{
 		};
 	}
 
+    public void add(Integer thisKey, double thisVal) {
+        add(thisKey, new Rationale(thisVal));
+    }
+
     /**
      * Add a potential recommendation. The already recommended items will not be added
      * @param thisKey
-     * @param thisValue
+     * @param rationale
      */
-	public void add(Integer thisKey, Double thisValue) {
+	public void add(Integer thisKey, Rationale rationale) {
+
+        double thisValue = rationale.getValue();
 
         //we don't add more than recSize
 		if(isSatisfied())
@@ -114,6 +122,7 @@ public class RecommendationCollector implements Iterable<Integer>{
 		}
 		lastValue = thisValue;
 		currentList.add(thisKey);
+        rationaleMap.put(thisKey, rationale);
 	}
 
 	private void flush() {

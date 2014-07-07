@@ -1,5 +1,6 @@
 package ca.ubc.cs.commandrecommender.generator;
 
+import ca.ubc.cs.commandrecommender.model.Rationale;
 import ca.ubc.cs.commandrecommender.model.RecommendationCollector;
 import ca.ubc.cs.commandrecommender.model.ToolUse;
 import ca.ubc.cs.commandrecommender.model.ToolUseCollection;
@@ -62,7 +63,7 @@ public class HotkeyRecGen extends AbstractRecGen {
         SortedBag<Integer> neverHotkeyCmdsByFrequency = SortingUtils.sortBagByCount(neverHotkey);
         for (Integer tool : neverHotkeyCmdsByFrequency) {
             if (cmdsWithShortcuts.contains(tool)) {
-                rc.add(tool, (double) neverHotkeyCmdsByFrequency.getCount(tool));
+                rc.add(tool, new Rationale((double) neverHotkeyCmdsByFrequency.getCount(tool)));
                 if (rc.isSatisfied())
                     break;
             }

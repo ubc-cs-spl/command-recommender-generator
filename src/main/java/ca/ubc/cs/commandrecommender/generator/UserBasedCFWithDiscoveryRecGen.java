@@ -2,9 +2,9 @@ package ca.ubc.cs.commandrecommender.generator;
 
 import ca.ubc.cs.commandrecommender.model.acceptance.AbstractLearningAcceptance;
 import ca.ubc.cs.commandrecommender.model.cf.LearningModel;
+import ca.ubc.cs.commandrecommender.model.cf.ReasonedRecommender;
 import ca.ubc.cs.commandrecommender.model.cf.matejka.MatejkaOptions;
 import ca.ubc.cs.commandrecommender.model.cf.matejka.MatejkaUserBasedRecommender;
-import org.apache.mahout.cf.taste.impl.recommender.AbstractRecommender;
 
 /**
  * This algorithm find similar users based on the usage history and discovery patterns
@@ -22,7 +22,7 @@ public class UserBasedCFWithDiscoveryRecGen extends AbstractCFWithDiscoveryRecGe
     }
 
     @Override
-    protected AbstractRecommender getRecommender(LearningModel model) {
+    protected ReasonedRecommender getRecommender(LearningModel model) {
         return new MatejkaUserBasedRecommender(neighborhoodSize, model, ops);
     }
 

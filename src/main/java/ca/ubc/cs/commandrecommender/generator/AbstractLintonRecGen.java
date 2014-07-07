@@ -1,5 +1,6 @@
 package ca.ubc.cs.commandrecommender.generator;
 
+import ca.ubc.cs.commandrecommender.model.Rationale;
 import ca.ubc.cs.commandrecommender.model.RecommendationCollector;
 import org.apache.commons.collections4.Bag;
 import org.apache.commons.collections4.bag.TreeBag;
@@ -20,7 +21,6 @@ public abstract class AbstractLintonRecGen extends AbstractRecGen {
 	protected Bag<Integer> toolCount = new TreeBag<Integer>();
 	protected Set<Integer> mostPopularToolKeys = new TreeSet<Integer>();
 
-
     /**
      * Fill {@code rc} with the first several legitimate commands or tools in
      * {@link ca.ubc.cs.commandrecommender.generator.AbstractLintonRecGen#mostPopularToolKeys}
@@ -35,14 +35,14 @@ public abstract class AbstractLintonRecGen extends AbstractRecGen {
 		for(Integer toolToRecommend : mostPopularToolKeys){
 			if(!rc.toolsContain(toolToRecommend)){
                 double percentUsage = getPercentUsage(toolToRecommend);
-				rc.add(toolToRecommend, (double) toolCount.getCount(toolToRecommend));
+                Rationale rationale =  new Rationale((double) toolCount.getCount(toolToRecommend));
+                rationale.put(Rationale.LINTON_PERCENT_USAGE, percentUsage);
+				rc.add(toolToRecommend, rationale);
 				if(rc.isSatisfied())
 					break;
 			}			
 		}
 	}
-
-
 
     @Override
     public void runAlgorithm() {

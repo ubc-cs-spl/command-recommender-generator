@@ -1,15 +1,16 @@
 package ca.ubc.cs.commandrecommender.generator;
 
 import ca.pfv.spmf.Item;
+import ca.pfv.spmf.Sequence;
+import ca.ubc.cs.commandrecommender.model.Rationale;
 import ca.ubc.cs.commandrecommender.model.RecommendationCollector;
+import ca.ubc.cs.commandrecommender.model.RecommendedItemWithRationale;
 import ca.ubc.cs.commandrecommender.model.acceptance.AbstractLearningAcceptance;
 import ca.ubc.cs.commandrecommender.model.cf.LearningModel;
 import ca.ubc.cs.commandrecommender.model.cf.Pair;
+import ca.ubc.cs.commandrecommender.model.cf.ReasonedRecommender;
 import ca.ubc.cs.commandrecommender.model.cf.matejka.MatejkaOptions;
 import ca.ubc.cs.commandrecommender.model.learning.MyItemset;
-import ca.pfv.spmf.Sequence;
-import org.apache.mahout.cf.taste.impl.recommender.AbstractRecommender;
-import org.apache.mahout.cf.taste.recommender.RecommendedItem;
 
 import java.util.List;
 
@@ -26,7 +27,7 @@ public abstract class AbstractCFWithDiscoveryRecGen extends AbstractFilteredLear
 
     protected MatejkaOptions ops;
 
-    private AbstractRecommender recommender;
+    private ReasonedRecommender recommender;
 
     private LearningModel model;
 
@@ -86,19 +87,24 @@ public abstract class AbstractCFWithDiscoveryRecGen extends AbstractFilteredLear
 
         try {
             //TODO: the 1000 is artibrary... how to do this better?
-            List<RecommendedItem> items = recommender.recommend(rc.userId, 1000);
-            for(RecommendedItem item : items){
+            List<RecommendedItemWithRationale> items = recommender.recommendWithRationale(rc.userId, 1000);
+            for(RecommendedItemWithRationale item : items){
+                Rationale rationale = item.getRationale();
                 long itemID = item.getItemID();
                 Pair lr = model.getLearningRuleFactory().pairForToolID(itemID) ;
 
-                int a = lr.getLeft();
-                int b = lr.getRight();
+                int a = lr.getLeft();  //TODO: exp    these two represents the learning relationship
+                int b = lr.getRight(); //TODO: exp
 
 				// Only put one of the items in there
+                rationale.setValue((double) item.getValue());
                 if(rc.toolsContain(a) && !rc.toolsContain(b)){
-                    rc.add(b, (double) item.getValue());
+                    rc.add(b, rationale);
+                    //TODO: exp  the a->b learning sequence is recommended for you (get reason from the recommender stuff) and since you have used a but not b we recommend command b
                 }else if(!rc.toolsContain(a)){
-                    rc.add(a, (double) item.getValue());
+                    rationale.setValue((double) item.getValue());
+                    rc.add(a, rationale);
+                    //TODO: exp  the a->b learning sequence is recommended for you (get reason from the recommender stuff) and since you have not used a, it might be worthwhile to try it out
                 }
 
                 if(rc.isSatisfied()){
@@ -115,6 +121,6 @@ public abstract class AbstractCFWithDiscoveryRecGen extends AbstractFilteredLear
      * @param model
      * @return
      */
-    protected abstract AbstractRecommender getRecommender(LearningModel model);
+    protected abstract ReasonedRecommender getRecommender(LearningModel model);
 
 }

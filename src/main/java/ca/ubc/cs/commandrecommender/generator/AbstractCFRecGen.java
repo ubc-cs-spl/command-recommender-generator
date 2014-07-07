@@ -1,13 +1,14 @@
 package ca.ubc.cs.commandrecommender.generator;
 
+import ca.ubc.cs.commandrecommender.model.Rationale;
 import ca.ubc.cs.commandrecommender.model.RecommendationCollector;
+import ca.ubc.cs.commandrecommender.model.RecommendedItemWithRationale;
 import ca.ubc.cs.commandrecommender.model.ToolUseCollection;
+import ca.ubc.cs.commandrecommender.model.cf.ReasonedRecommender;
 import ca.ubc.cs.commandrecommender.model.cf.UDCUsageModel;
 import org.apache.commons.collections4.Bag;
 import org.apache.mahout.cf.taste.common.TasteException;
 import org.apache.mahout.cf.taste.model.DataModel;
-import org.apache.mahout.cf.taste.recommender.RecommendedItem;
-import org.apache.mahout.cf.taste.recommender.Recommender;
 
 import java.util.List;
 
@@ -21,7 +22,7 @@ import java.util.List;
 public abstract class AbstractCFRecGen extends AbstractRecGen {
 
     private UDCUsageModel model = new UDCUsageModel();
-    private Recommender recommender;
+    private ReasonedRecommender recommender;
 
     public AbstractCFRecGen(String label) {
         super(label);
@@ -60,9 +61,11 @@ public abstract class AbstractCFRecGen extends AbstractRecGen {
     public  void fillRecommendations(RecommendationCollector rc) {
         try {
             //TODO: the 1000 is artibrary... how to do this better?
-            List<RecommendedItem> items = recommender.recommend(rc.userId, 1000);
-            for(RecommendedItem item : items){
-                rc.add((int)item.getItemID(), (double)item.getValue());
+            List<RecommendedItemWithRationale> items = recommender.recommendWithRationale(rc.userId, 1000);
+            for(RecommendedItemWithRationale item : items){
+                Rationale rationale = item.getRationale();
+                rationale.setValue((double)item.getValue());
+                rc.add((int)item.getItemID(), rationale);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -76,7 +79,7 @@ public abstract class AbstractCFRecGen extends AbstractRecGen {
      * @return
      * @throws TasteException
      */
-    protected abstract Recommender getRecommender(UDCUsageModel m) throws TasteException;
+    protected abstract ReasonedRecommender getRecommender(UDCUsageModel m) throws TasteException;
 
     DataModel getModel() {
         return model;
