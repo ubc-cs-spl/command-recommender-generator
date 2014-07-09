@@ -27,7 +27,7 @@ public abstract class AbstractRecGen implements IRecGen {
     }
 
     @Override
-    public Iterable<Integer> getRecommendationsForUser(User user, ToolUseCollection history,
+    public RecommendationCollector getRecommendationsForUser(User user, ToolUseCollection history,
                                                        int amount, int userId) {
         history.sort();
         List<Integer> historyList = history.toolsUsedInOrder().asList();

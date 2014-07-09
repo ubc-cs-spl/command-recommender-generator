@@ -4,7 +4,7 @@ import ca.ubc.cs.commandrecommender.db.AbstractRecommendationDB;
 
 import java.sql.Date;
 import java.util.Calendar;
-import java.util.Set;
+import java.util.Map;
 
 /**
  * Created by KeEr on 2014-06-19.
@@ -41,11 +41,13 @@ public class User {
             return true;
     }
 
-    public void saveRecommendations(Iterable<Integer> recommendations, String reason, IndexMap toolIndexMap) {
+    public void saveRecommendations(RecommendationCollector recommendations, String reason, String algorithmType, Double algorithmValue, IndexMap toolIndexMap) {
         recommendationDB.markRecommendationsAsOld(userId);
+        Map<Integer, Rationale> rationaleMap = recommendations.getRationales();
         for(Integer recommendation : recommendations){
             String commandId = toolIndexMap.getItemByIndex(recommendation);
-            recommendationDB.saveRecommendation(commandId, userId, reason);
+            recommendationDB.saveRecommendation(commandId, userId, reason,Double.toString((Double) rationaleMap.get(recommendation).get(Rationale.LINTON_PERCENT_USAGE)),
+                    algorithmType, algorithmValue);
         }
     }
 

@@ -16,15 +16,15 @@ public enum AlgorithmType {
     /**
      * See {@link ca.ubc.cs.commandrecommender.generator.LintonTotalRecGen}
      */
-    MOST_FREQUENTLY_USED("most frequently used"),
+    MOST_FREQUENTLY_USED("Percentage of all command usages"),
     /**
      * See {@link ca.ubc.cs.commandrecommender.generator.LintonUserRecGen}
      */
-    MOST_WIDELY_USED("most widely used"),
+    MOST_WIDELY_USED("Percentage of users that use this command"),
     /**
      * See {@link ca.ubc.cs.commandrecommender.generator.HotkeyRecGen}
      */
-    HOTKEY_NOT_USED("hotkey available but never used"),
+    HOTKEY_NOT_USED("You have not used this command with a hotkey"),
     //TODO: make the reason provided more understandable
     /**
      * See {@link ca.ubc.cs.commandrecommender.generator.LearningRuleRecGen}
@@ -57,12 +57,12 @@ public enum AlgorithmType {
 
     private String reason;
 
-    AlgorithmType(String name) {
-        this.reason = name;
+    AlgorithmType(String reason) {
+        this.reason = reason;
     }
 
     /**
-     * Get a brief explanation of the algorithm
+     * Get a rational for how the algorithm generated the recommendation
      * @return
      */
     public String getRationale() {

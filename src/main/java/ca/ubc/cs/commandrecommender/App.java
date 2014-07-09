@@ -6,6 +6,7 @@ import ca.ubc.cs.commandrecommender.db.*;
 import ca.ubc.cs.commandrecommender.generator.AlgorithmType;
 import ca.ubc.cs.commandrecommender.generator.IRecGen;
 import ca.ubc.cs.commandrecommender.model.IndexMap;
+import ca.ubc.cs.commandrecommender.model.RecommendationCollector;
 import ca.ubc.cs.commandrecommender.model.ToolUseCollection;
 import ca.ubc.cs.commandrecommender.model.User;
 import ca.ubc.cs.commandrecommender.model.acceptance.AbstractLearningAcceptance;
@@ -63,7 +64,6 @@ public class App {
         }
         initializeDatabases();
         IRecGen recGen = algorithmType.getRecGen(acceptance);
-        String reason = recGen.getAlgorithmUsed();
         long time = System.currentTimeMillis();
         List<ToolUseCollection> toolUses =  commandDB.getAllUsageData();
         logger.trace("Time to Retrieve Data From Database: {}", getAmountOfTimeTaken(time));
@@ -86,9 +86,9 @@ public class App {
                 ToolUseCollection history = commandDB.getUsersUsageData(user.getUserId());
                 logger.trace("Retrieving Usage Data for user: {}, number of entries: {}, in {}", user.getUserId(), history.size(), getAmountOfTimeTaken(time));
                 time = System.currentTimeMillis();
-                Iterable<Integer> recommendations = recGen.getRecommendationsForUser(user, history, amount, userId);
+                RecommendationCollector recommendations = recGen.getRecommendationsForUser(user, history, amount, userId);
                 logger.trace("Recommendations for user: {}, gathered in {}", user.getUserId(), getAmountOfTimeTaken(time));
-                user.saveRecommendations(recommendations, reason, toolIndexMap);
+                user.saveRecommendations(recommendations, algorithmType.getRationale(), algorithmType.name(), 0.0, toolIndexMap);
                 user.updateRecommendationStatus();
                 logger.trace("Saved and completed recommendation gathering process for user: {}", user.getUserId());
                 totalUserRecommendation++;

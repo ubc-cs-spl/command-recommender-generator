@@ -16,7 +16,7 @@ public abstract class AbstractRecommendationDB {
         this.userIndexMap = userIndexMap;
     }
 
-    public abstract void saveRecommendation(String commandId, String userId, String reason);
+    public abstract void saveRecommendation(String commandId, String userId, String reason, String reasonValue, String algorithmType, double algorithmValue);
     public abstract void markRecommendationsAsOld(String userId);
     public abstract List<User> getAllUsers();
 }

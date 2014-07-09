@@ -180,4 +180,9 @@ public class RecommendationCollector implements Iterable<Integer>{
 		return false;
 	}
 
+    public Map<Integer, Rationale> getRationales(){
+        return rationaleMap;
+    }
+
+
 }

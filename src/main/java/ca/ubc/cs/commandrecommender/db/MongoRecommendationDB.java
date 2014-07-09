@@ -28,6 +28,9 @@ public class MongoRecommendationDB extends AbstractRecommendationDB{
     public static final String LAST_UPLOADED_DATE_FIELD = "last_upload_date";
     public static final String CREATED_ON = "created_on";
     public static final String REASON_FIELD = "reason";
+    public static final String ALGORITHM_TYPE_FIELD = "algorithm_type";
+    public static final String ALGORITHM_VALUE_FIELD = "algorithm_value";
+    public static final String REASON_VALUE_FIELD = "reason_value";
 
     private MongoClient recommendationClient;
     private DBCollection userCollection;
@@ -62,7 +65,7 @@ public class MongoRecommendationDB extends AbstractRecommendationDB{
     }
 
     @Override
-    public void saveRecommendation(String commandId, String userId, String reason) {
+    public void saveRecommendation(String commandId, String userId, String reason, String reasonValue, String algorithmType, double algorithmValue) {
         if(commandId == null || commandId.equals("") || userId == null || userId.equals(""))
             return;
         DBObject query = new BasicDBObject(COMMAND_ID_FIELD, commandId);
@@ -74,7 +77,11 @@ public class MongoRecommendationDB extends AbstractRecommendationDB{
                 .append(COMMAND_DETAIL_ID_FIELD, commandDetail.get(COMMAND_DETAIL_OBJECT_ID_FIELD))
                 .append(NEW_RECOMMENDATION_FIELD, true)
                 .append(REASON_FIELD, reason)
-                .append(CREATED_ON, new Date(System.currentTimeMillis()));
+                .append(CREATED_ON, new Date(System.currentTimeMillis()))
+                .append(COMMAND_ID_FIELD, commandId)
+                .append(ALGORITHM_TYPE_FIELD, algorithmType)
+                .append(ALGORITHM_VALUE_FIELD, algorithmValue)
+                .append(REASON_VALUE_FIELD, reasonValue);
         recommendationCollection.insert(recommendationToSave);
     }
 

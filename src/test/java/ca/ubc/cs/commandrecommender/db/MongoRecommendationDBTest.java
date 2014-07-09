@@ -32,7 +32,7 @@ public class MongoRecommendationDBTest {
     private DBCollection commandDetailsCollection;
     private AbstractCommandToolConverter toolConverter;
     private String DB_URL = "localhost";
-    private int DB_PORT = 27017;
+    private int DB_PORT = 27000;
     private String DB_NAME = "commands-test";
     private AbstractRecommendationDB recommendationDB;
     private ConnectionParameters connectionParameters;
@@ -41,6 +41,9 @@ public class MongoRecommendationDBTest {
     private String USER_ID1 = "NEW_USER1";
     private String USER_ID = "NEW_USER";
     private String REASON1 = "REASON1";
+    private String ALGORITHM_TYPE1 = "ALGOTYPE1";
+    private double ALGORITHM_VALUE1 = 0.28f;
+    private String REASON_VALUE1 = "REASON_VALUE1";
     private ObjectId command_detail_object_id_1;
     private List<Integer> recommendations;
     private ToolUseCollection toolUses;
@@ -79,7 +82,7 @@ public class MongoRecommendationDBTest {
 
     @Test
     public void testSaveRecommendationValid(){
-        recommendationDB.saveRecommendation(COMMAND_ID1, USER_ID1, REASON1);
+        recommendationDB.saveRecommendation(COMMAND_ID1, USER_ID1, REASON1, REASON_VALUE1, ALGORITHM_TYPE1, ALGORITHM_VALUE1);
         DBObject recommendationQuery = new BasicDBObject(MongoRecommendationDB.USER_ID_FIELD, USER_ID1);
         DBCursor cursor = recommendationCollection.find(recommendationQuery);
         int numRecommendationsFound = 0;
@@ -88,6 +91,8 @@ public class MongoRecommendationDBTest {
             assertEquals(command_detail_object_id_1, (ObjectId) recommendation.get(MongoRecommendationDB.COMMAND_DETAIL_ID_FIELD));
             assertEquals(USER_ID1, (String) recommendation.get(MongoRecommendationDB.USER_ID_FIELD));
             assertEquals(REASON1, (String) recommendation.get(MongoRecommendationDB.REASON_FIELD));
+            assertEquals(ALGORITHM_TYPE1, (String) recommendation.get(MongoRecommendationDB.ALGORITHM_TYPE_FIELD));
+            assertEquals(ALGORITHM_VALUE1, (Double) recommendation.get(MongoRecommendationDB.ALGORITHM_VALUE_FIELD), 0.0);
             numRecommendationsFound++;
         }
         assertEquals(numRecommendationsFound, 1);
@@ -95,7 +100,7 @@ public class MongoRecommendationDBTest {
 
     @Test
     public void testSaveRecommendationCommandIdNull(){
-        recommendationDB.saveRecommendation(null, USER_ID1, REASON1);
+        recommendationDB.saveRecommendation(null, USER_ID1, REASON1, REASON_VALUE1, ALGORITHM_TYPE1, ALGORITHM_VALUE1);
         DBObject recommendationQuery = new BasicDBObject(MongoRecommendationDB.USER_ID_FIELD, USER_ID1);
         DBCursor cursor = recommendationCollection.find(recommendationQuery);
         int numRecommendationsFound = 0;
@@ -108,7 +113,7 @@ public class MongoRecommendationDBTest {
 
     @Test
     public void testSaveRecommendationUserIdEmpty(){
-        recommendationDB.saveRecommendation(COMMAND_ID1, "", REASON1);
+        recommendationDB.saveRecommendation(COMMAND_ID1, "", REASON1, REASON_VALUE1, ALGORITHM_TYPE1, ALGORITHM_VALUE1);
         DBObject recommendationQuery = new BasicDBObject(MongoRecommendationDB.USER_ID_FIELD, USER_ID1);
         DBCursor cursor = recommendationCollection.find(recommendationQuery);
         int numRecommendationsFound = 0;

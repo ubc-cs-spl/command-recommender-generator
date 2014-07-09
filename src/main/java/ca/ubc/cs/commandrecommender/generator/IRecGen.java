@@ -1,5 +1,6 @@
 package ca.ubc.cs.commandrecommender.generator;
 
+import ca.ubc.cs.commandrecommender.model.RecommendationCollector;
 import ca.ubc.cs.commandrecommender.model.ToolUseCollection;
 import ca.ubc.cs.commandrecommender.model.User;
 
@@ -49,6 +50,6 @@ public interface IRecGen {
      * @param amount  the number of recommendation we want to generate
      * @param userId
      */
-    Iterable<Integer> getRecommendationsForUser(User user, ToolUseCollection history, int amount, int userId);
+    RecommendationCollector getRecommendationsForUser(User user, ToolUseCollection history, int amount, int userId);
 
 }
