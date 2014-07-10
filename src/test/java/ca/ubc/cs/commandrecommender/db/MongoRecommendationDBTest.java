@@ -3,8 +3,6 @@ package ca.ubc.cs.commandrecommender.db;
 import ca.ubc.cs.commandrecommender.Exception.DBConnectionException;
 import ca.ubc.cs.commandrecommender.mocks.MockRecommendationDB;
 import ca.ubc.cs.commandrecommender.model.IndexMap;
-import ca.ubc.cs.commandrecommender.model.ToolUse;
-import ca.ubc.cs.commandrecommender.model.ToolUseCollection;
 import ca.ubc.cs.commandrecommender.model.User;
 import com.mongodb.*;
 import org.bson.types.ObjectId;
@@ -14,13 +12,11 @@ import org.junit.Test;
 
 import java.net.UnknownHostException;
 import java.sql.Date;
-import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.*;
 
 /**
  * Created by Spencer on 6/23/2014.
@@ -45,6 +41,7 @@ public class MongoRecommendationDBTest {
     private double REASON_VALUE1 = 0.3;
     private ObjectId command_detail_object_id_1;
     private List<Integer> recommendations;
+    private HashSet<Integer> recs;
     private Date willUpdate;
 
     @Before
@@ -136,12 +133,10 @@ public class MongoRecommendationDBTest {
     private void compareUsers(User retrievedUser, List<User> users) {
         for(User savedUser : users){
             if(savedUser.getUserId().equals(retrievedUser.getUserId())){
-                ToolUseCollection savedUserRecs = savedUser.getPastRecommendations();
-                ToolUseCollection retrievedUserRecs = retrievedUser.getPastRecommendations();
+                HashSet<Integer> savedUserRecs = savedUser.getPastRecommendations();
+                HashSet<Integer> retrievedUserRecs = retrievedUser.getPastRecommendations();
                 assertEquals(savedUserRecs.size(), retrievedUserRecs.size());
-                for(ToolUse savedToolUse : savedUserRecs){
-                    assertTrue(retrievedUserRecs.contains(savedToolUse));
-                }
+                assertTrue(savedUserRecs.containsAll(retrievedUserRecs));
             }
         }
     }
@@ -151,33 +146,32 @@ public class MongoRecommendationDBTest {
         for(int i=0; i < 5; i++){
             willUpdate = new Date(System.currentTimeMillis());
             recommendations = new ArrayList<Integer>();
-            ToolUseCollection toolUses = createToolUses(i, itemIndex);
-            users.add(createNewUser(i, toolUses));
+            recs = createRecs(i, itemIndex);
+            users.add(createNewUser(i, recs));
         }
         return users;
     }
 
-    private User createNewUser(int i, ToolUseCollection toolUses) {
+    private User createNewUser(int i, HashSet<Integer> recs) {
         String userId =  USER_ID + i;
         BasicDBObject new_user = new BasicDBObject()
                 .append(MongoRecommendationDB.USER_ID_FIELD, userId)
                 .append(MongoRecommendationDB.LAST_UPLOADED_DATE_FIELD, willUpdate);
         userCollection.insert(new_user);
-        return new User(userId, willUpdate, toolUses, new MockRecommendationDB(toolIndexMap));
+        return new User(userId, willUpdate, willUpdate, recs, new MockRecommendationDB(toolIndexMap));
     }
 
-    private ToolUseCollection createToolUses(int i, Integer itemIndex) {
+    private HashSet<Integer> createRecs(int i, Integer itemIndex) {
         String userId =  USER_ID + i;
-        ToolUseCollection toolUseCollection = new ToolUseCollection(userIndexMap.getItemByItemId(userId));
         BasicDBObject new_recommendation = new BasicDBObject()
                 .append(MongoRecommendationDB.USER_ID_FIELD, userId)
                 .append(MongoRecommendationDB.COMMAND_DETAIL_ID_FIELD, command_detail_object_id_1)
+                .append(MongoRecommendationDB.COMMAND_ID_FIELD, COMMAND_ID1)
                 .append(MongoRecommendationDB.NEW_RECOMMENDATION_FIELD, true)
                 .append(MongoRecommendationDB.REASON_FIELD, REASON1);
         recommendationCollection.insert(new_recommendation);
-
-        toolUseCollection.add(new ToolUse(new Timestamp(System.currentTimeMillis()), itemIndex, true));
-
-        return toolUseCollection;
+        HashSet<Integer> recs = new HashSet<Integer>();
+        recs.add(itemIndex);
+        return recs;
     }
 }

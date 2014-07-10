@@ -18,13 +18,16 @@ public class MongoCommandDB extends AbstractCommandDB {
     private MongoClient client;
     private String cmdDbName;
     private DBCollection commandCollection;
+    private boolean useCache;
+    private HashMap<Integer, ToolUseCollection> userToolUsesMap;
 
     public static final String COMMANDS_COLLECTION = "commands";
     public static final String KIND = "kind";
     public static final String COMMAND = "command";
 
-    public MongoCommandDB(ConnectionParameters connectionParameters, AbstractCommandToolConverter toolConverter, IndexMap userIndexMap) throws DBConnectionException{
+    public MongoCommandDB(ConnectionParameters connectionParameters, AbstractCommandToolConverter toolConverter, IndexMap userIndexMap, boolean useCache) throws DBConnectionException{
         super(toolConverter, userIndexMap);
+        this.useCache = useCache;
         this.cmdDbName = connectionParameters.getdBName();
         try {
             client = new MongoClient(connectionParameters.getDbUrl(), connectionParameters.getDbPort());
@@ -38,15 +41,24 @@ public class MongoCommandDB extends AbstractCommandDB {
 
     private void ensureIndex() {
         if(commandCollection != null) {
-            commandCollection.createIndex(new BasicDBObject(toolConverter.getUserIdField(), 1).append(KIND, 1));
+            //Note that the order of the compound index is really important
+            commandCollection.createIndex(new BasicDBObject(KIND, 1).append(toolConverter.getUserIdField(), 1));
         }
     }
 
     @Override
     public List<ToolUseCollection> getAllUsageData() {
         HashMap<Integer, ToolUseCollection> toolUses = new HashMap<Integer, ToolUseCollection>();
+
         //We might want to adjust this later to recommend bundles
-        DBCursor cursor = commandCollection.find(new BasicDBObject(KIND, COMMAND));
+        DBObject query = new BasicDBObject(KIND, COMMAND);
+        DBObject fieldsToReturn = new BasicDBObject();
+        fieldsToReturn.put(toolConverter.getHotkeyField(), 1);
+        fieldsToReturn.put(toolConverter.getTimeField(), 1);
+        fieldsToReturn.put(toolConverter.getCommandIdField(), 1);
+        fieldsToReturn.put(toolConverter.getUserIdField(), 1);
+        DBCursor cursor = commandCollection.find(query);
+
         while(cursor.hasNext()){
             DBObject row = cursor.next();
             String userIdString = (String) row.get(toolConverter.getUserIdField());
@@ -60,15 +72,26 @@ public class MongoCommandDB extends AbstractCommandDB {
                 toolUses.get(userId).add(toolUse);
             }
         }
+
+        if (useCache)
+            this.userToolUsesMap = toolUses;
         return new ArrayList<ToolUseCollection>(toolUses.values());
     }
 
     @Override
     public ToolUseCollection getUsersUsageData(String userId) {
+        Integer userIdIndex = userIndexMap.getItemByItemId(userId);
+        if (userToolUsesMap != null) { // cache exists
+            ToolUseCollection toolUses = userToolUsesMap.get(userIdIndex);
+            return (toolUses == null) ? new ToolUseCollection(userIdIndex) : toolUses;
+        }
         DBObject query = new BasicDBObject(toolConverter.getUserIdField(), userId)
                 .append(KIND, COMMAND);
+        DBObject fieldsToReturn = new BasicDBObject();
+        fieldsToReturn.put(toolConverter.getCommandIdField(), 1);
+        fieldsToReturn.put(toolConverter.getHotkeyField(), 1);
+        fieldsToReturn.put(toolConverter.getTimeField(), 1);
         DBCursor userCommandCursor = commandCollection.find(query);
-        Integer userIdIndex = userIndexMap.getItemByItemId(userId);
         ToolUseCollection toolUses = new ToolUseCollection(userIdIndex);
         while(userCommandCursor.hasNext()){
             ToolUse toolUse = toolConverter.convertToToolUse(userCommandCursor.next().toMap());
@@ -76,4 +99,5 @@ public class MongoCommandDB extends AbstractCommandDB {
         }
         return toolUses;
     }
+
 }

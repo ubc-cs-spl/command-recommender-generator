@@ -4,7 +4,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.sql.Date;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashSet;
@@ -17,34 +16,32 @@ public class UserTest {
     private String USER_ID = "USER_ID";
     private User user;
     private IndexMap toolIndexMap;
-    private MockRecommendationDB mockRecommendaitonDb;
+    private MockRecommendationDB mockRecommendationDb;
     private Date willUpdate;
-    private ToolUseCollection toolUses;
+    private HashSet<Integer> toolUses;
     private String REASON = "REASON";
     private String ALGORITHM_TYPE = "ALGORITHM_TYPE";
     private double ALGORITHM_VALUE = 1.0;
     private RecommendationCollector recommendations;
-    private double REASON_VALUE = 0.0;
+    private double REASON_VALUE = 1.0;
 
     @Before
     public void setUp(){
+        recommendations = new RecommendationCollector(1, new ArrayList<Integer>(), new HashSet<Integer>(), 5);
         toolIndexMap = new IndexMap();
-        mockRecommendaitonDb = new MockRecommendationDB(toolIndexMap);
+        mockRecommendationDb = new MockRecommendationDB(toolIndexMap);
         willUpdate = new Date(System.currentTimeMillis());
-        toolUses = createToolUses();
-        user = new User(USER_ID, willUpdate, toolUses, mockRecommendaitonDb);
+        toolUses = createRecs();
+        user = new User(USER_ID, willUpdate, willUpdate, toolUses, mockRecommendationDb);
 
     }
 
-    private ToolUseCollection createToolUses() {
-        recommendations = new RecommendationCollector(1, new ArrayList<Integer>(), new HashSet<Integer>());
-        ToolUseCollection toolUseCollection = new ToolUseCollection(1);
+    private HashSet<Integer> createRecs() {
+        HashSet<Integer> recs = new HashSet<Integer>();
         for(int i=0; i < 20; i++){
-            recommendations.add(i, REASON_VALUE);
-            Integer itemIndex = toolIndexMap.addItem(String.valueOf(i));
-            toolUseCollection.add(new ToolUse(new Timestamp(System.currentTimeMillis()), itemIndex, true));
+            recs.add(i);
         }
-        return toolUseCollection;
+        return recs;
     }
 
     @Test
@@ -62,7 +59,7 @@ public class UserTest {
         Calendar sixDaysAgo = Calendar.getInstance();
         sixDaysAgo.add(Calendar.DATE, -6);
         Date willNotUpdate = new Date(sixDaysAgo.getTimeInMillis());
-        user = new User(USER_ID, willNotUpdate, toolUses, mockRecommendaitonDb);
+        user = new User(USER_ID, willNotUpdate, willNotUpdate, toolUses, mockRecommendationDb);
         assertFalse(user.isTimeToGenerateRecs());
     }
 
@@ -70,28 +67,28 @@ public class UserTest {
     public void testSaveValidListRecommendation(){
         user.saveRecommendations(recommendations, REASON, ALGORITHM_TYPE, toolIndexMap);
         for(Integer recommendationToSave : recommendations){
-            assertTrue(mockRecommendaitonDb.savedRecommendations
+            assertTrue(mockRecommendationDb.savedRecommendations
                     .contains(toolIndexMap.getItemByIndex(recommendationToSave)));
         }
 
-        for(String userId : mockRecommendaitonDb.savedUserIds)
+        for(String userId : mockRecommendationDb.savedUserIds)
             assertEquals(USER_ID, userId);
-        for(String reason : mockRecommendaitonDb.savedReasons)
+        for(String reason : mockRecommendationDb.savedReasons)
             assertEquals(REASON, reason);
-        for(String algorithmType : mockRecommendaitonDb.savedAlgorithmTypes)
+        for(String algorithmType : mockRecommendationDb.savedAlgorithmTypes)
             assertEquals(ALGORITHM_TYPE, algorithmType);
-        for(double algorithmValue : mockRecommendaitonDb.savedAlgorithmValues)
-            assertEquals(algorithmValue, ALGORITHM_VALUE, 1.0);
-        for(Double reasonValue : mockRecommendaitonDb.savedReasonValues)
-            assertEquals(reasonValue, REASON_VALUE, 0);
+        for(double algorithmValue : mockRecommendationDb.savedAlgorithmValues)
+            assertEquals(algorithmValue, ALGORITHM_VALUE, 0);
+        for(double reasonValue : mockRecommendationDb.savedReasonValues)
+            assertEquals(reasonValue, Double.toString(REASON_VALUE));
     }
 
     @Test
     public void testSaveEmptyRecommendationList(){
         recommendations = new RecommendationCollector(1, null, null);
         user.saveRecommendations(recommendations, REASON, ALGORITHM_TYPE, toolIndexMap);
-        assertTrue(mockRecommendaitonDb.savedRecommendations.isEmpty());
-        assertTrue(mockRecommendaitonDb.savedReasons.isEmpty());
-        assertTrue(mockRecommendaitonDb.savedUserIds.isEmpty());
+        assertTrue(mockRecommendationDb.savedRecommendations.isEmpty());
+        assertTrue(mockRecommendationDb.savedReasons.isEmpty());
+        assertTrue(mockRecommendationDb.savedUserIds.isEmpty());
     }
 }

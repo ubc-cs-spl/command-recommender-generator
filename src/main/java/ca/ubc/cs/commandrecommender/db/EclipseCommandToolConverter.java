@@ -14,12 +14,12 @@ public class EclipseCommandToolConverter extends AbstractCommandToolConverter {
     public static final String DESCRIPTION = "description";
     public static final String BINDING_USED = "bindingUsed";
     public static final String TIME = "time";
-    public static final String COMMAND_ID = "command_id";
 
     public EclipseCommandToolConverter(IndexMap toolUseMap){
         super(toolUseMap);
     }
 
+    @Override
     public ToolUse convertToToolUse(Map<String, Object> toolUse) {
         Integer tool = toolUseMap.getItemByItemId((String) toolUse.get(DESCRIPTION));
         Timestamp time = new Timestamp((Long) toolUse.get(TIME));
@@ -27,14 +27,24 @@ public class EclipseCommandToolConverter extends AbstractCommandToolConverter {
         return new ToolUse(time, tool, hotKey);
     }
 
-    public ToolUse convertRecommendationToToolUse(Map<String, Object> toolUse){
-        Integer tool = toolUseMap.getItemByItemId((String) toolUse.get(COMMAND_ID));
-        return new ToolUse(null, tool, false);
-    }
-
-
+    @Override
     public String getUserIdField() {
         return USER_ID;
+    }
+
+    @Override
+    public String getCommandIdField() {
+        return DESCRIPTION;
+    }
+
+    @Override
+    public String getHotkeyField() {
+        return BINDING_USED;
+    }
+
+    @Override
+    public String getTimeField() {
+        return TIME;
     }
 
 }

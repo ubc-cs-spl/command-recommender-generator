@@ -2,8 +2,9 @@ package ca.ubc.cs.commandrecommender.model;
 
 import ca.ubc.cs.commandrecommender.db.AbstractRecommendationDB;
 
-import java.sql.Date;
+import java.util.Date;
 import java.util.Calendar;
+import java.util.HashSet;
 import java.util.Map;
 
 /**
@@ -12,24 +13,26 @@ import java.util.Map;
 public class User {
     private String userId;
     private Date lastUpdate;
-    private ToolUseCollection pastRecommendations;
+    private Date lastRecommendationDate;
+    private HashSet<Integer> pastRecommendations;
     private AbstractRecommendationDB recommendationDB;
     private int WINDOW_IN_DAYS = 5;
 
-    public User(String userId, Date lastUpdate,
-                ToolUseCollection toolUses,
+    public User(String userId, Date lastUpdate, 
+                Date lastRecommendationDate, HashSet<Integer> pastRecommendations, 
                 AbstractRecommendationDB recommendationDB){
         this.userId = userId;
         this.lastUpdate = lastUpdate;
-        this.pastRecommendations = toolUses;
+        this.pastRecommendations = pastRecommendations;
         this.recommendationDB = recommendationDB;
+        this.lastRecommendationDate = lastRecommendationDate;
     }
 
     public String getUserId() {
         return userId;
     }
 
-    public ToolUseCollection getPastRecommendations() {
+    public HashSet<Integer> getPastRecommendations() {
         return pastRecommendations;
     }
 
@@ -37,10 +40,7 @@ public class User {
         Calendar now = Calendar.getInstance();
         now.add(Calendar.DATE, -WINDOW_IN_DAYS);
         Date beginningOfWindow = new Date(now.getTimeInMillis());
-        if(lastUpdate.before(beginningOfWindow))
-            return false;
-        else
-            return true;
+        return lastUpdate.after(beginningOfWindow);
     }
 
     public void saveRecommendations(RecommendationCollector recommendations,
@@ -63,6 +63,6 @@ public class User {
 
 
     public void updateRecommendationStatus() {
-        //TODO: do we want to update the last recommendation date on the user table?
+        recommendationDB.updateRecommendationStatus(userId);
     }
 }

@@ -19,4 +19,6 @@ public abstract class AbstractRecommendationDB {
     public abstract void saveRecommendation(String commandId, String userId, String reason, double reasonValue, String algorithmType, double algorithmValue);
     public abstract void markRecommendationsAsOld(String userId);
     public abstract List<User> getAllUsers();
+
+    public abstract void updateRecommendationStatus(String userId);
 }

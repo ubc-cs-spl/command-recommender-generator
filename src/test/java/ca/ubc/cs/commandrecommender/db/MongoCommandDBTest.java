@@ -18,7 +18,6 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
 
 /**
  * Created by Spencer on 6/24/2014.
@@ -27,7 +26,7 @@ public class MongoCommandDBTest {
     private List<ToolUseCollection> savedToolUseCollections;
     private MongoClient client;
     private String DB_URL = "localhost";
-    private int DB_PORT = 27017;
+    private int DB_PORT = 27000;
     private DBCollection commandCollection;
     private String DB_NAME = "commands-test";
     private IndexMap toolIndexMap, userIndexMap;
@@ -46,7 +45,7 @@ public class MongoCommandDBTest {
         toolConverter = new EclipseCommandToolConverter(toolIndexMap);
 
         ConnectionParameters connectionParameters = new ConnectionParameters(DB_URL, DB_PORT, DB_NAME, "", "");
-        commandDB = new MongoCommandDB(connectionParameters,toolConverter, userIndexMap);
+        commandDB = new MongoCommandDB(connectionParameters,toolConverter, userIndexMap, false);
         savedToolUseCollections = generateToolUses();
     }
 

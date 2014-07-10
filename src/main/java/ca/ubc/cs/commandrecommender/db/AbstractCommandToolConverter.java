@@ -15,7 +15,13 @@ public abstract class AbstractCommandToolConverter {
         this.toolUseMap = toolUseMap;
     }
 
+    public Integer convertCommandIdToIndex(String commandId) {
+        return toolUseMap.getItemByItemId(commandId);
+    }
+
     abstract ToolUse convertToToolUse(Map<String, Object> toolUse);
-    abstract ToolUse convertRecommendationToToolUse(Map<String, Object> toolUse);
     abstract String getUserIdField();
+    abstract String getCommandIdField();
+    abstract String getHotkeyField();
+    abstract String getTimeField();
 }

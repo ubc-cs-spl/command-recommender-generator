@@ -35,6 +35,7 @@ public class App {
     public static final String AMOUNT = "a";
     public static final String ALGORITHM_TYPE = "t";
     public static final String ACCEPTANCE_TYPE = "c";
+    public static final String USE_CACHE = "u";
     private static AbstractCommandToolConverter toolConverter;
     private static ConnectionParameters commandConnectionParameters;
     private static ConnectionParameters recommendationConnectionParameters;
@@ -50,6 +51,7 @@ public class App {
     private static AlgorithmType algorithmType;
     private static AbstractLearningAcceptance acceptance;
     private static Logger logger = LogManager.getLogger(App.class);
+    private static boolean useCache = false;
 
     public static void main(String[] args) throws UnknownHostException, DBConnectionException {
         //establish connection
@@ -66,18 +68,18 @@ public class App {
         IRecGen recGen = algorithmType.getRecGen(acceptance);
         long time = System.currentTimeMillis();
         List<ToolUseCollection> toolUses =  commandDB.getAllUsageData();
-        logger.trace("Time to Retrieve Data From Database: {}", getAmountOfTimeTaken(time));
+        logger.debug("Time to Retrieve Data From Database: {}", getAmountOfTimeTaken(time));
         time = System.currentTimeMillis();
         for (ToolUseCollection uses : toolUses)
             recGen.trainWith(uses);
-        logger.trace("Trained with {}, in {}", toolUses.size(), getAmountOfTimeTaken(time));
+        logger.debug("Trained with {}, in {}", toolUses.size(), getAmountOfTimeTaken(time));
         time = System.currentTimeMillis();
         recGen.runAlgorithm();
-        logger.trace("Ran Algorithm {} in {}", algorithmType.getRationale(), getAmountOfTimeTaken(time));
+        logger.debug("Ran Algorithm {} in {}", algorithmType.getRationale(), getAmountOfTimeTaken(time));
         int totalUserRecommendation = 0;
         long allUsersTime = System.currentTimeMillis();
         List<User> users = recommendationDB.getAllUsers();
-        logger.trace("Retrieved all users in {}", getAmountOfTimeTaken(allUsersTime));
+        logger.debug("Retrieved all users in {}", getAmountOfTimeTaken(allUsersTime));
         for (User user : users) {
             if (user.isTimeToGenerateRecs()) {
                 logger.trace("Generating recommendation process for user: {}", user.getUserId());
@@ -94,7 +96,7 @@ public class App {
                 totalUserRecommendation++;
             }
         }
-        logger.trace("Finished generating recommendations for {} users in {}", totalUserRecommendation, getAmountOfTimeTaken(allUsersTime));
+        logger.debug("Finished generating recommendations for {} users in {}", totalUserRecommendation, getAmountOfTimeTaken(allUsersTime));
     }
 
     private static String getAmountOfTimeTaken(long time) {
@@ -120,6 +122,7 @@ public class App {
         options.addOption(AMOUNT, true, "Number of recommendations to generate for each user. Default: " + amount);
         options.addOption(ALGORITHM_TYPE, true, "Type of algorithm you want to use to generate the recommendations. Default: " + algorithmName);
         options.addOption(ACCEPTANCE_TYPE, true, "Acceptance type for the algorithm. Default: none");
+        options.addOption(USE_CACHE, true, "Whether to cache the all usage data. Default: false");
         return options;
     }
 
@@ -177,6 +180,10 @@ public class App {
             recommendationConnectionParameters.setDbPassword(commandConnectionParameters.getDbPassword());
         }
 
+        if(cmd.hasOption(USE_CACHE)){
+            useCache = Boolean.parseBoolean(cmd.getOptionValue(USE_CACHE));
+        }
+
         if(cmd.hasOption(AMOUNT)){
             try {
                 amount = Integer.parseInt(cmd.getOptionValue(AMOUNT));
@@ -213,7 +220,7 @@ public class App {
         toolIndexMap = new IndexMap();
         toolConverter = new EclipseCommandToolConverter(toolIndexMap);
         logger.debug("Connecting to Command database with: " + commandConnectionParameters.toString());
-        commandDB = new MongoCommandDB(commandConnectionParameters, toolConverter, userIndexMap);
+        commandDB = new MongoCommandDB(commandConnectionParameters, toolConverter, userIndexMap, useCache);
         logger.debug("Connecting to Recommendation database with: " + recommendationConnectionParameters.toString());
         recommendationDB = new MongoRecommendationDB(recommendationConnectionParameters, toolConverter, userIndexMap);
     }

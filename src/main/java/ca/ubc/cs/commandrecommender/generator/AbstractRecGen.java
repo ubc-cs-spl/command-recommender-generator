@@ -31,7 +31,7 @@ public abstract class AbstractRecGen implements IRecGen {
                                                        int amount, int userId) {
         history.sort();
         List<Integer> historyList = history.toolsUsedInOrder().asList();
-        HashSet<Integer> recommended = user.getPastRecommendations().toolsUsedHashSet();
+        HashSet<Integer> recommended = user.getPastRecommendations();
         RecommendationCollector collector = new RecommendationCollector(userId, historyList, recommended, amount);
         fillRecommendations(collector);
         return collector;

@@ -2,13 +2,13 @@ package ca.ubc.cs.commandrecommender.db;
 
 import ca.ubc.cs.commandrecommender.Exception.DBConnectionException;
 import ca.ubc.cs.commandrecommender.model.IndexMap;
-import ca.ubc.cs.commandrecommender.model.ToolUseCollection;
 import ca.ubc.cs.commandrecommender.model.User;
 import com.mongodb.*;
 
 import java.net.UnknownHostException;
-import java.sql.Date;
+import java.util.Date;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -26,6 +26,7 @@ public class MongoRecommendationDB extends AbstractRecommendationDB{
     public static final String COMMAND_DETAILS_COLLECTION = "command_details";
     public static final String COMMAND_ID_FIELD = "command_id";
     public static final String LAST_UPLOADED_DATE_FIELD = "last_upload_date";
+    public static final String LAST_RECOMMENDATION_DATE_FIELD = "last_recommendation_date";
     public static final String CREATED_ON = "created_on";
     public static final String REASON_FIELD = "reason";
     public static final String ALGORITHM_TYPE_FIELD = "algorithm_type";
@@ -107,23 +108,30 @@ public class MongoRecommendationDB extends AbstractRecommendationDB{
         while(userCursor.hasNext()){
             DBObject userDbObject = userCursor.next();
             String userId = (String) userDbObject.get(USER_ID_FIELD);
-            java.util.Date lastUpdate = (java.util.Date) userDbObject.get(LAST_UPLOADED_DATE_FIELD);
-            ToolUseCollection userPastRecommendations = getToolUses(userId);
-            users.add(new User(userId, new Date(lastUpdate.getTime()), userPastRecommendations, this));
+            Date lastUpdate = (Date) userDbObject.get(LAST_UPLOADED_DATE_FIELD);
+            Date lastRecommendationDate = (Date) userDbObject.get(LAST_RECOMMENDATION_DATE_FIELD);
+            users.add(new User(userId, lastUpdate, lastRecommendationDate, getPastRecommendations(userId), this));
         }
         return users;
     }
 
-    private ToolUseCollection getToolUses(String userId) {
+    @Override
+    public void updateRecommendationStatus(String userId) {
         DBObject query = new BasicDBObject(USER_ID_FIELD, userId);
-        DBCursor cursor = recommendationCollection.find(query);
-        ToolUseCollection toolUses = new ToolUseCollection(userIndexMap.getItemByItemId(userId));
-        while(cursor.hasNext()){
-            DBObject recommendation = cursor.next();
-            query = new BasicDBObject(COMMAND_DETAIL_OBJECT_ID_FIELD, recommendation.get(COMMAND_DETAIL_ID_FIELD));
-            DBObject toolUse = commandDetailsCollection.findOne(query);
-            toolUses.add(toolConverter.convertRecommendationToToolUse(toolUse.toMap()));
+        DBObject update = new BasicDBObject("$set",
+                new BasicDBObject(LAST_RECOMMENDATION_DATE_FIELD, new Date()));
+        userCollection.update(query, update, true, false);
+    }
+
+    private HashSet<Integer> getPastRecommendations(String userId) {
+        HashSet<Integer> pastRecommendations = new HashSet<Integer>();
+        DBObject query = new BasicDBObject(USER_ID_FIELD, userId);
+        DBObject fieldsToReturn = new BasicDBObject(COMMAND_ID_FIELD, 1);
+        DBCursor cursor = recommendationCollection.find(query, fieldsToReturn);
+        for (DBObject recommendation : cursor) {
+            String commandId = (String) recommendation.get(COMMAND_ID_FIELD);
+            pastRecommendations.add(toolConverter.convertCommandIdToIndex(commandId));
         }
-        return toolUses;
+        return pastRecommendations;
     }
 }

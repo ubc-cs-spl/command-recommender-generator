@@ -47,4 +47,9 @@ public class MockRecommendationDB extends AbstractRecommendationDB {
     public List<User> getAllUsers() {
         return null;
     }
+
+    @Override
+    public void updateRecommendationStatus(String userId) {
+
+    }
 }
