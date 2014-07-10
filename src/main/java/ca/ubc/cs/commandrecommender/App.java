@@ -88,7 +88,7 @@ public class App {
                 time = System.currentTimeMillis();
                 RecommendationCollector recommendations = recGen.getRecommendationsForUser(user, history, amount, userId);
                 logger.trace("Recommendations for user: {}, gathered in {}", user.getUserId(), getAmountOfTimeTaken(time));
-                user.saveRecommendations(recommendations, algorithmType.getRationale(), algorithmType.name(), 0.0, toolIndexMap);
+                user.saveRecommendations(recommendations, algorithmType.getRationale(), algorithmType.name(), toolIndexMap);
                 user.updateRecommendationStatus();
                 logger.trace("Saved and completed recommendation gathering process for user: {}", user.getUserId());
                 totalUserRecommendation++;

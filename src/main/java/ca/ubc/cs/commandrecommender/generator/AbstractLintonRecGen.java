@@ -37,6 +37,7 @@ public abstract class AbstractLintonRecGen extends AbstractRecGen {
 			if(!rc.toolsContain(toolToRecommend)){
                 double percentUsage = getPercentUsage(toolToRecommend);
                 Rationale rationale =  new Rationale((double) toolCount.getCount(toolToRecommend));
+                rationale.setValueForTypeSpecificReason(percentUsage);
                 rationale.put(Rationale.LINTON_RANK, rank);
                 rationale.put(Rationale.LINTON_PERCENT_USAGE, percentUsage);
 

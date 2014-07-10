@@ -16,13 +16,13 @@ public class Rationale extends BasicBSONObject {
     public static final String MOST_POP_LEARNING_PERCENT = "pop learning percent";
     public static final String DISCOVERY_PREREQ = "discovery prereq";
     public static final String HOOK_FOR = "hook for";
-    double value;
 
-    public Rationale() {
-    }
+    private final double decisionPointValue;
 
-    public Rationale(double value) {
-        setValue(value);
+    private double valueForTypeSpecificReason;
+
+    public Rationale(double decisionPointValue) {
+        this.decisionPointValue = decisionPointValue;
     }
 
     /**
@@ -33,15 +33,19 @@ public class Rationale extends BasicBSONObject {
      * MostPrereqLearningRule:  number of prerequisite a user satisfy for learning a new command
      * ItemBasedCF/Discovery:   item based estimated preference for the command or the learning sequence
      * UserBasedCF/Discovery:   user based estimated preference for the command or the learning sequence
-     *
+     * Hotkey:                  number of times the command has been used
      * @return
      */
-    public double getValue() {
-        return value;
+    public double getDecisionPointValue() {
+        return decisionPointValue;
     }
 
-    public void setValue(double value) {
-        this.value = value;
+    public double getValueForTypeSpecificReason() {
+        return valueForTypeSpecificReason;
+    }
+
+    public void setValueForTypeSpecificReason(double valueForTypeSpecificReason) {
+        this.valueForTypeSpecificReason = valueForTypeSpecificReason;
     }
 
 }

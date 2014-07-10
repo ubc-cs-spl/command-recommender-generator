@@ -16,7 +16,9 @@ public class User {
     private AbstractRecommendationDB recommendationDB;
     private int WINDOW_IN_DAYS = 5;
 
-    public User(String userId, Date lastUpdate, ToolUseCollection toolUses, AbstractRecommendationDB recommendationDB){
+    public User(String userId, Date lastUpdate,
+                ToolUseCollection toolUses,
+                AbstractRecommendationDB recommendationDB){
         this.userId = userId;
         this.lastUpdate = lastUpdate;
         this.pastRecommendations = toolUses;
@@ -41,13 +43,21 @@ public class User {
             return true;
     }
 
-    public void saveRecommendations(RecommendationCollector recommendations, String reason, String algorithmType, Double algorithmValue, IndexMap toolIndexMap) {
+    public void saveRecommendations(RecommendationCollector recommendations,
+                                    String reason,
+                                    String algorithmType,
+                                    IndexMap toolIndexMap) {
         recommendationDB.markRecommendationsAsOld(userId);
         Map<Integer, Rationale> rationaleMap = recommendations.getRationales();
         for(Integer recommendation : recommendations){
             String commandId = toolIndexMap.getItemByIndex(recommendation);
-            recommendationDB.saveRecommendation(commandId, userId, reason,Double.toString((Double) rationaleMap.get(recommendation).get(Rationale.LINTON_PERCENT_USAGE)),
-                    algorithmType, algorithmValue);
+            Rationale rationale = rationaleMap.get(recommendation);
+            recommendationDB.saveRecommendation(commandId,
+                    userId,
+                    reason,
+                    rationale.getValueForTypeSpecificReason(),
+                    algorithmType,
+                    rationale.getDecisionPointValue());
         }
     }
 

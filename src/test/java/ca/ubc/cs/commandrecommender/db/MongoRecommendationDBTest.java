@@ -35,7 +35,6 @@ public class MongoRecommendationDBTest {
     private int DB_PORT = 27000;
     private String DB_NAME = "commands-test";
     private AbstractRecommendationDB recommendationDB;
-    private ConnectionParameters connectionParameters;
     private IndexMap userIndexMap, toolIndexMap;
     private String COMMAND_ID1 = "NEW_COMMAND1";
     private String USER_ID1 = "NEW_USER1";
@@ -43,10 +42,9 @@ public class MongoRecommendationDBTest {
     private String REASON1 = "REASON1";
     private String ALGORITHM_TYPE1 = "ALGOTYPE1";
     private double ALGORITHM_VALUE1 = 0.28f;
-    private String REASON_VALUE1 = "REASON_VALUE1";
+    private double REASON_VALUE1 = 0.3;
     private ObjectId command_detail_object_id_1;
     private List<Integer> recommendations;
-    private ToolUseCollection toolUses;
     private Date willUpdate;
 
     @Before
@@ -57,7 +55,7 @@ public class MongoRecommendationDBTest {
         this.commandDetailsCollection = getCollection(MongoRecommendationDB.COMMAND_DETAILS_COLLECTION);
         userIndexMap = new IndexMap();
         toolIndexMap = new IndexMap();
-        connectionParameters = new ConnectionParameters(DB_URL, DB_PORT, DB_NAME, "", "");
+        ConnectionParameters connectionParameters = new ConnectionParameters(DB_URL, DB_PORT, DB_NAME, "", "");
         toolConverter = new EclipseCommandToolConverter(toolIndexMap);
         initializeDataBase();
         recommendationDB = new MongoRecommendationDB(connectionParameters, toolConverter, userIndexMap);
@@ -88,10 +86,10 @@ public class MongoRecommendationDBTest {
         int numRecommendationsFound = 0;
         while(cursor.hasNext()){
             DBObject recommendation = cursor.next();
-            assertEquals(command_detail_object_id_1, (ObjectId) recommendation.get(MongoRecommendationDB.COMMAND_DETAIL_ID_FIELD));
-            assertEquals(USER_ID1, (String) recommendation.get(MongoRecommendationDB.USER_ID_FIELD));
-            assertEquals(REASON1, (String) recommendation.get(MongoRecommendationDB.REASON_FIELD));
-            assertEquals(ALGORITHM_TYPE1, (String) recommendation.get(MongoRecommendationDB.ALGORITHM_TYPE_FIELD));
+            assertEquals(command_detail_object_id_1, recommendation.get(MongoRecommendationDB.COMMAND_DETAIL_ID_FIELD));
+            assertEquals(USER_ID1, recommendation.get(MongoRecommendationDB.USER_ID_FIELD));
+            assertEquals(REASON1, recommendation.get(MongoRecommendationDB.REASON_FIELD));
+            assertEquals(ALGORITHM_TYPE1, recommendation.get(MongoRecommendationDB.ALGORITHM_TYPE_FIELD));
             assertEquals(ALGORITHM_VALUE1, (Double) recommendation.get(MongoRecommendationDB.ALGORITHM_VALUE_FIELD), 0.0);
             numRecommendationsFound++;
         }
@@ -153,7 +151,7 @@ public class MongoRecommendationDBTest {
         for(int i=0; i < 5; i++){
             willUpdate = new Date(System.currentTimeMillis());
             recommendations = new ArrayList<Integer>();
-            toolUses = createToolUses(i, itemIndex);
+            ToolUseCollection toolUses = createToolUses(i, itemIndex);
             users.add(createNewUser(i, toolUses));
         }
         return users;

@@ -14,7 +14,7 @@ public class RecommendedItemWithRationale implements RecommendedItem{
 
     public RecommendedItemWithRationale(RecommendedItem recommendedItem) {
         this.recommendedItem = recommendedItem;
-        reasonMap = new Rationale();
+        reasonMap = new Rationale(recommendedItem.getValue());
     }
 
     @Override
@@ -38,6 +38,10 @@ public class RecommendedItemWithRationale implements RecommendedItem{
     public RecommendedItemWithRationale append(String key, Object val) {
         put(key, val);
         return this;
+    }
+
+    public void setReasonValue(double value) {
+        reasonMap.setValueForTypeSpecificReason(value);
     }
 
 }

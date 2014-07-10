@@ -64,7 +64,6 @@ public abstract class AbstractCFRecGen extends AbstractRecGen {
             List<RecommendedItemWithRationale> items = recommender.recommendWithRationale(rc.userId, 1000);
             for(RecommendedItemWithRationale item : items){
                 Rationale rationale = item.getRationale();
-                rationale.setValue((double)item.getValue());
                 rc.add((int)item.getItemID(), rationale);
             }
         } catch (Exception e) {

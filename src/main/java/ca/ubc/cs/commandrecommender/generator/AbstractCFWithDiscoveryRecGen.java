@@ -97,7 +97,6 @@ public abstract class AbstractCFWithDiscoveryRecGen extends AbstractFilteredLear
                 int b = lr.getRight();
 
 				// Only put one of the items in there
-                rationale.setValue((double) item.getValue());
                 if(rc.toolsContain(a) && !rc.toolsContain(b)){
                     rationale.put(Rationale.DISCOVERY_PREREQ, a);
                     rc.add(b, rationale);

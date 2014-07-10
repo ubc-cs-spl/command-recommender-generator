@@ -14,7 +14,7 @@ public class MockRecommendationDB extends AbstractRecommendationDB {
     public List<String> savedRecommendations;
     public List<String> savedReasons;
     public List<String> savedUserIds;
-    public List<String> savedReasonValues;
+    public List<Double> savedReasonValues;
     public List<Double> savedAlgorithmValues;
     public List<String> savedAlgorithmTypes;
 
@@ -23,13 +23,13 @@ public class MockRecommendationDB extends AbstractRecommendationDB {
         savedRecommendations = new ArrayList<String>();
         savedReasons = new ArrayList<String>();
         savedUserIds = new ArrayList<String>();
-        savedReasonValues = new ArrayList<String>();
+        savedReasonValues = new ArrayList<Double>();
         savedAlgorithmTypes = new ArrayList<String>();
         savedAlgorithmValues = new ArrayList<Double>();
     }
 
     @Override
-    public void saveRecommendation(String commandId, String userId, String reason, String reasonValue, String algorithmType, double algorithmValue) {
+    public void saveRecommendation(String commandId, String userId, String reason, double reasonValue, String algorithmType, double algorithmValue) {
         savedRecommendations.add(commandId);
         savedUserIds.add(userId);
         savedReasons.add(reason);

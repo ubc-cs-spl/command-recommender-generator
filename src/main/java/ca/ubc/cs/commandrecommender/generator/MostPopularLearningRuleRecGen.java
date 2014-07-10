@@ -37,12 +37,11 @@ public class MostPopularLearningRuleRecGen extends AbstractLearningRuleRecGen {
     }
 
     @Override
-    protected Rationale getRationale(int toolId) {
-        Rationale rationale = new Rationale();
+    protected void updateRationale(Rationale rationale, int toolId) {
         double numberOfToolUses = discoveryTally.getCount(toolId);
         double percent = (numberOfToolUses / totalLearning) * 100;
         rationale.put(Rationale.MOST_POP_LEARNING_PERCENT, percent);
-        return rationale;
+        rationale.setValueForTypeSpecificReason(percent);
     }
 
 }

@@ -39,15 +39,17 @@ public class MongoRecommendationDB extends AbstractRecommendationDB{
     private AbstractCommandToolConverter toolConverter;
 
 
-    public MongoRecommendationDB(ConnectionParameters recommendationConnectionParameters,
-                                 AbstractCommandToolConverter toolConverter, IndexMap userIndexMap) throws DBConnectionException{
+    public MongoRecommendationDB(ConnectionParameters connectionParameters,
+                                 AbstractCommandToolConverter toolConverter, IndexMap userIndexMap)
+            throws DBConnectionException{
         super(userIndexMap);
         this.toolConverter = toolConverter;
         try {
-            recommendationClient = new MongoClient(recommendationConnectionParameters.getDbUrl(), recommendationConnectionParameters.getDbPort());
-            this.userCollection = getCollection(recommendationConnectionParameters, USER_COLLECTION);
-            this.recommendationCollection = getCollection(recommendationConnectionParameters, USER_RECOMMENDATION_COLLECTION);
-            this.commandDetailsCollection = getCollection(recommendationConnectionParameters, COMMAND_DETAILS_COLLECTION);
+            recommendationClient = new MongoClient(connectionParameters.getDbUrl(),
+                    connectionParameters.getDbPort());
+            this.userCollection = getCollection(connectionParameters, USER_COLLECTION);
+            this.recommendationCollection = getCollection(connectionParameters, USER_RECOMMENDATION_COLLECTION);
+            this.commandDetailsCollection = getCollection(connectionParameters, COMMAND_DETAILS_COLLECTION);
             ensureIndex();
         }catch(UnknownHostException ex){
             throw new DBConnectionException(ex);
@@ -65,7 +67,12 @@ public class MongoRecommendationDB extends AbstractRecommendationDB{
     }
 
     @Override
-    public void saveRecommendation(String commandId, String userId, String reason, String reasonValue, String algorithmType, double algorithmValue) {
+    public void saveRecommendation(String commandId,
+                                   String userId,
+                                   String reason,
+                                   double reasonValue,
+                                   String algorithmType,
+                                   double algorithmValue) {
         if(commandId == null || commandId.equals("") || userId == null || userId.equals(""))
             return;
         DBObject query = new BasicDBObject(COMMAND_ID_FIELD, commandId);
@@ -88,7 +95,8 @@ public class MongoRecommendationDB extends AbstractRecommendationDB{
     @Override
     public void markRecommendationsAsOld(String userId) {
         BasicDBObject query = new BasicDBObject(USER_ID_FIELD, userId);
-        BasicDBObject update = new BasicDBObject().append("$set", new BasicDBObject(NEW_RECOMMENDATION_FIELD, false));
+        BasicDBObject update = new BasicDBObject().append("$set",
+                new BasicDBObject(NEW_RECOMMENDATION_FIELD, false));
         recommendationCollection.update(query, update, false, true);
     }
 

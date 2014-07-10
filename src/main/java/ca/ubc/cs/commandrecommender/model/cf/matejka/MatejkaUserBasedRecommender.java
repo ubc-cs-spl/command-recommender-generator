@@ -72,6 +72,7 @@ public final class MatejkaUserBasedRecommender extends AbstractRecommender imple
         for (RecommendedItem item : recommend(userId, howMany, null, theNeighborhood)) {
             RecommendedItemWithRationale itemWithRationale = new RecommendedItemWithRationale(item);
             double proportion = getProportionOfSimilarUsersWhoUsedTheItem(userId, theNeighborhood, item.getItemID());
+            itemWithRationale.setReasonValue(proportion);
             UserBasedCFInfo info = new UserBasedCFInfo(proportion, theNeighborhood.length);
             itemWithRationale.put(Rationale.USER_BASED_CF_INFO, info);
             itemsWithRationale.add(itemWithRationale);

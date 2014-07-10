@@ -99,7 +99,7 @@ public class RecommendationCollector implements Iterable<Integer>{
      */
 	public void add(Integer thisKey, Rationale rationale) {
 
-        double thisValue = rationale.getValue();
+        double thisValue = rationale.getDecisionPointValue();
 
         //we don't add more than recSize
 		if(isSatisfied())

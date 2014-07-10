@@ -25,31 +25,35 @@ public enum AlgorithmType {
      * See {@link ca.ubc.cs.commandrecommender.generator.HotkeyRecGen}
      */
     HOTKEY_NOT_USED("You have not used this command with a hotkey"),
+    /**
+     * See {@link ca.ubc.cs.commandrecommender.generator.MostPopularLearningRuleRecGen}
+     */
+    MOST_POPULAR_LEARNING_RULE("Percentage of all learning where this command is learned"),
+    /**
+     * See {@link ca.ubc.cs.commandrecommender.generator.ItemBasedCFRecGen}
+     */
+    USER_BASED_CF("Proportion of similar users who used this command"),
+    /**
+     * See {@link ca.ubc.cs.commandrecommender.generator.ItemBasedCFWithDiscoveryRecGen}
+     */
+    USER_BASED_CF_WITH_DISCOVERY("Proportion of all users who learned A from B"),
     //TODO: make the reason provided more understandable
     /**
      * See {@link ca.ubc.cs.commandrecommender.generator.LearningRuleRecGen}
      */
     LEARNING_RULE("advanced discovery"),
     /**
-     * See {@link ca.ubc.cs.commandrecommender.generator.MostPopularLearningRuleRecGen}
+     * See {@link ca.ubc.cs.commandrecommender.generator.MostPrereqLearningRuleRecGen}
      */
-    MOST_POPULAR_LEARNING_RULE("most popular discovery"),
-    /**
-     * See {@link ca.ubc.cs.commandrecommender.generator.ItemBasedCFWithDiscoveryRecGen}
-     */
-    ITEM_BASED_CF_WITH_DISCOVERY("item based CF with discovery"),
+    MOST_PREREQ_LEARNING_RULE("most learning prerequisites"),
     /**
      * See {@link ca.ubc.cs.commandrecommender.generator.UserBasedCFWithDiscoveryRecGen}
      */
-    USER_BASED_CF_WITH_DISCOVERY("user based CF with discovery"),
-    /**
-     * See {@link ca.ubc.cs.commandrecommender.generator.ItemBasedCFRecGen}
-     */
-    ITEM_BASED_CF("item based CF"),
+    ITEM_BASED_CF_WITH_DISCOVERY("item based CF with discovery"),
     /**
      * See {@link ca.ubc.cs.commandrecommender.generator.UserBasedCFRecGen}
      */
-    USER_BASED_CF("user based CF"),
+    ITEM_BASED_CF("item based CF"),
     /**
      * See {@link ca.ubc.cs.commandrecommender.generator.LatentModelBasedCFRecGen}
      */
@@ -87,6 +91,8 @@ public enum AlgorithmType {
                 return new LearningRuleRecGen(reason, acceptance);
             case MOST_POPULAR_LEARNING_RULE:
                 return new MostPopularLearningRuleRecGen(reason, acceptance);
+            case MOST_PREREQ_LEARNING_RULE:
+                return new MostPrereqLearningRuleRecGen(reason, acceptance);
             case ITEM_BASED_CF_WITH_DISCOVERY:
                 return new ItemBasedCFWithDiscoveryRecGen(reason, acceptance,
                         new MatejkaOptions(false, true, 1.0));
@@ -117,6 +123,7 @@ public enum AlgorithmType {
             case MOST_POPULAR_LEARNING_RULE:
             case ITEM_BASED_CF_WITH_DISCOVERY:
             case USER_BASED_CF_WITH_DISCOVERY:
+            case MOST_PREREQ_LEARNING_RULE:
                 return true;
             default:
                 return false;

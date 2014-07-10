@@ -62,8 +62,8 @@ public abstract class AbstractLearningRuleRecGen extends AbstractFilteredLearnin
 
         for (Integer i : recs.uniqueSet()) {
             double value = (double) recs.getCount(i);
-            Rationale rationale = getRationale(i);
-            rationale.setValue(value);
+            Rationale rationale = new Rationale(value);
+            updateRationale(rationale, i);
             rc.add(i, rationale);
             if (rc.isSatisfied())
                 break;
@@ -90,10 +90,11 @@ public abstract class AbstractLearningRuleRecGen extends AbstractFilteredLearnin
     /**
      * Get the rational for recommending a command
      * @param toolId
+     * @param rationale the rationale to be modified
      * @return cannot be null
      */
-    protected Rationale getRationale(int toolId) {
-        return new Rationale();
+    protected void updateRationale(Rationale rationale, int toolId) {
+        //Do nothing by default
     }
 
 }

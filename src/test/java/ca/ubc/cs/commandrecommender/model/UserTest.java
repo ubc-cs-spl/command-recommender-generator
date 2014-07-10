@@ -8,10 +8,8 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashSet;
-import java.util.List;
 
 import static org.junit.Assert.*;
-import static org.junit.Assert.assertEquals;
 /**
  * Created by Spencer on 6/23/2014.
  */
@@ -26,7 +24,7 @@ public class UserTest {
     private String ALGORITHM_TYPE = "ALGORITHM_TYPE";
     private double ALGORITHM_VALUE = 1.0;
     private RecommendationCollector recommendations;
-    private double REASON_VALUE = 1.0;
+    private double REASON_VALUE = 0.0;
 
     @Before
     public void setUp(){
@@ -70,7 +68,7 @@ public class UserTest {
 
     @Test
     public void testSaveValidListRecommendation(){
-        user.saveRecommendations(recommendations, REASON, ALGORITHM_TYPE, ALGORITHM_VALUE, toolIndexMap);
+        user.saveRecommendations(recommendations, REASON, ALGORITHM_TYPE, toolIndexMap);
         for(Integer recommendationToSave : recommendations){
             assertTrue(mockRecommendaitonDb.savedRecommendations
                     .contains(toolIndexMap.getItemByIndex(recommendationToSave)));
@@ -83,15 +81,15 @@ public class UserTest {
         for(String algorithmType : mockRecommendaitonDb.savedAlgorithmTypes)
             assertEquals(ALGORITHM_TYPE, algorithmType);
         for(double algorithmValue : mockRecommendaitonDb.savedAlgorithmValues)
-            assertEquals(algorithmValue, ALGORITHM_VALUE, 0);
-        for(String reasonValue : mockRecommendaitonDb.savedReasonValues)
-            assertEquals(reasonValue, Double.toString(REASON_VALUE));
+            assertEquals(algorithmValue, ALGORITHM_VALUE, 1.0);
+        for(Double reasonValue : mockRecommendaitonDb.savedReasonValues)
+            assertEquals(reasonValue, REASON_VALUE, 0);
     }
 
     @Test
     public void testSaveEmptyRecommendationList(){
         recommendations = new RecommendationCollector(1, null, null);
-        user.saveRecommendations(recommendations, REASON, ALGORITHM_TYPE, ALGORITHM_VALUE, toolIndexMap);
+        user.saveRecommendations(recommendations, REASON, ALGORITHM_TYPE, toolIndexMap);
         assertTrue(mockRecommendaitonDb.savedRecommendations.isEmpty());
         assertTrue(mockRecommendaitonDb.savedReasons.isEmpty());
         assertTrue(mockRecommendaitonDb.savedUserIds.isEmpty());
