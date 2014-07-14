@@ -27,7 +27,7 @@ public class UserTest {
 
     @Before
     public void setUp(){
-        recommendations = new RecommendationCollector(1, new ArrayList<Integer>(), new HashSet<Integer>(), 5);
+        recommendations = new RecommendationCollector(1, new ArrayList<Integer>(), new HashSet<Integer>(), 5, false);
         toolIndexMap = new IndexMap();
         mockRecommendationDb = new MockRecommendationDB(toolIndexMap);
         willUpdate = new Date(System.currentTimeMillis());

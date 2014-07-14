@@ -26,7 +26,7 @@ public class UserBasedCFRecGenTest extends AbstractCFRecGenTest {
 		rec.runAlgorithm();
 		
 		RecommendationCollector rc = new RecommendationCollector(
-                2, null, new HashSet<Integer>(), 1);
+                2, null, new HashSet<Integer>(), 1, false);
 		rec.fillRecommendations(rc);
 		assertEquals(new Integer(3),rc.iterator().next());
 	}

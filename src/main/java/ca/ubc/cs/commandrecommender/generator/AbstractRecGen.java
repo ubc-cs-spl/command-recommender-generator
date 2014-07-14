@@ -28,12 +28,14 @@ public abstract class AbstractRecGen implements IRecGen {
 
     @Override
     public RecommendationCollector getRecommendationsForUser(User user, ToolUseCollection history,
-                                                       int amount, int userId) {
+                                                       int amount, int userId, boolean genAll) {
         history.sort();
         List<Integer> historyList = history.toolsUsedInOrder().asList();
         HashSet<Integer> recommended = user.getPastRecommendations();
-        RecommendationCollector collector = new RecommendationCollector(userId, historyList, recommended, amount);
+        RecommendationCollector collector = new RecommendationCollector(userId, historyList,
+                recommended, amount, genAll);
         fillRecommendations(collector);
+        collector.done();
         return collector;
     }
 
@@ -45,6 +47,8 @@ public abstract class AbstractRecGen implements IRecGen {
      *
      * @param rc is modified
      */
+    //TODO: we are currently filtering out used commands before putting a candidate recommendation
+    //      into the collector; we may or may not want to change this behaviour
     protected abstract void fillRecommendations(RecommendationCollector rc);
 
 }

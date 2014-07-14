@@ -14,6 +14,7 @@ public class RecommendationCollector implements Iterable<Integer>{
 	private List<Integer> currentList;
 	private Double lastValue;
     private Map<Integer, Rationale> rationaleMap;
+    private boolean genAll;
 
 	public final int userId;
 
@@ -30,7 +31,7 @@ public class RecommendationCollector implements Iterable<Integer>{
 		this.userId = userId;
 		this.history = history;
         this.pastRecommendations = pastRecommendations;
-        rationaleMap = new HashMap<Integer, Rationale>();
+        this.genAll = false;
 		init();
 	}
 
@@ -40,14 +41,17 @@ public class RecommendationCollector implements Iterable<Integer>{
      * @param history usage data of the target user
      * @param size # of items to recommend
      */
-	public RecommendationCollector(int userId, List<Integer> history, HashSet<Integer> recommendations, int size) {
+	public RecommendationCollector(int userId, List<Integer> history,
+                                   HashSet<Integer> recommendations, int size, boolean genAll) {
 		this(userId,history,recommendations);
 		recSize = size;
+        this.genAll = genAll;
 	}
 
 	private void init(){
 		lists = new ArrayList<List<Integer>>();
 		currentList = new ArrayList<Integer>();
+        rationaleMap = new HashMap<Integer, Rationale>();
 		lastValue = null;
 	}
 
@@ -106,7 +110,7 @@ public class RecommendationCollector implements Iterable<Integer>{
             return;
 
         //filter out the already recommended ones
-        if (pastRecommendations.contains(thisKey))
+        if (pastRecommendations.contains(thisKey) && !genAll)
             return;
 
 		//make sure we haven't already added it
@@ -122,26 +126,37 @@ public class RecommendationCollector implements Iterable<Integer>{
 		}
 		lastValue = thisValue;
 		currentList.add(thisKey);
-        rationaleMap.put(thisKey, rationale);
+        //It makes sense to embed the ranking logic here because the rank is not
+        //only specific to the algorithm used but also to the user
+        rationaleMap.put(thisKey, rationale.setRank(size() + 1));
 	}
 
 	private void flush() {
 		if (!currentList.isEmpty()) {
 			Collections.sort(currentList);
-			if(size()+currentList.size()>recSize)
-				lists.add(currentList.subList(0, recSize-size()));
+			if(genAll || ((size() + currentList.size()) <= recSize))
+                lists.add(currentList);
 			else
-				lists.add(currentList);
+                lists.add(currentList.subList(0, recSize-size()));
 			currentList = new ArrayList<Integer>();
 		}
 	}
+
+    /**
+     * This method should be call only once when all candidate recommendations
+     * have been added in to the collector
+     */
+    public void done() {
+        flush();
+    }
+
 
     /**
      *
      * @return whether or not we have made enough recommendations for the user
      */
 	public boolean isSatisfied() {
-		return size() >= recSize;
+		return !genAll && size() >= recSize;
 	}
 
     // TODO: this method recomputes the current size of recommendation every time

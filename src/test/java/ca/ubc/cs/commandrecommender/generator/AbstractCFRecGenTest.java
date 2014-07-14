@@ -22,7 +22,7 @@ public abstract class AbstractCFRecGenTest extends AbstractRecGenTest {
 		rec.runAlgorithm();
 
 		RecommendationCollector rc = new RecommendationCollector(
-                2, null, new HashSet<Integer>(), 2);
+                2, null, new HashSet<Integer>(), 2, false);
 		rec.fillRecommendations(rc);
 		assertTrue(rc.containsRec(3));
 		assertTrue(rc.containsRec(4));
@@ -38,7 +38,7 @@ public abstract class AbstractCFRecGenTest extends AbstractRecGenTest {
 		rec.runAlgorithm();
 
 		RecommendationCollector rc = new RecommendationCollector(
-                2, null, new HashSet<Integer>(), 1000);
+                2, null, new HashSet<Integer>(), 1000, false);
 		rec.fillRecommendations(rc);
 
 		assertTrue(rc.containsRec(2));
@@ -60,7 +60,7 @@ public abstract class AbstractCFRecGenTest extends AbstractRecGenTest {
 		rec.runAlgorithm();
 
 		RecommendationCollector rc = new RecommendationCollector(
-                2, null, new HashSet<Integer>(), 1000);
+                2, null, new HashSet<Integer>(), 1000, false);
 		rec.fillRecommendations(rc);
 		assertFalse(rc.iterator().hasNext());
 	}
@@ -75,7 +75,7 @@ public abstract class AbstractCFRecGenTest extends AbstractRecGenTest {
 		rec.runAlgorithm();
 
 		RecommendationCollector rc = new RecommendationCollector(
-                2, null, new HashSet<Integer>(), 1000);
+                2, null, new HashSet<Integer>(), 1000, false);
 		rec.fillRecommendations(rc);
 
 		assertEquals(new Integer(3),rc.iterator().next());
@@ -94,7 +94,7 @@ public abstract class AbstractCFRecGenTest extends AbstractRecGenTest {
 		rec.runAlgorithm();
 
 		RecommendationCollector rc = new RecommendationCollector(
-                2, null, new HashSet<Integer>(), 1000);
+                2, null, new HashSet<Integer>(), 1000, false);
 		rec.fillRecommendations(rc);
 
 		assertTrue(rc.containsRec(2));

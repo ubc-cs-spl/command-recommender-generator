@@ -36,6 +36,8 @@ public class App {
     public static final String ALGORITHM_TYPE = "t";
     public static final String ACCEPTANCE_TYPE = "c";
     public static final String USE_CACHE = "u";
+    public static final String GEN_ALL = "g";
+
     private static AbstractCommandToolConverter toolConverter;
     private static ConnectionParameters commandConnectionParameters;
     private static ConnectionParameters recommendationConnectionParameters;
@@ -52,6 +54,7 @@ public class App {
     private static AbstractLearningAcceptance acceptance;
     private static Logger logger = LogManager.getLogger(App.class);
     private static boolean useCache = false;
+    private static boolean genAll = false;
 
     public static void main(String[] args) throws UnknownHostException, DBConnectionException {
         //establish connection
@@ -88,7 +91,7 @@ public class App {
                 ToolUseCollection history = commandDB.getUsersUsageData(user.getUserId());
                 logger.trace("Retrieving Usage Data for user: {}, number of entries: {}, in {}", user.getUserId(), history.size(), getAmountOfTimeTaken(time));
                 time = System.currentTimeMillis();
-                RecommendationCollector recommendations = recGen.getRecommendationsForUser(user, history, amount, userId);
+                RecommendationCollector recommendations = recGen.getRecommendationsForUser(user, history, amount, userId, genAll);
                 logger.trace("Recommendations for user: {}, gathered in {}", user.getUserId(), getAmountOfTimeTaken(time));
                 user.saveRecommendations(recommendations, algorithmType.getRationale(), algorithmType.name(), toolIndexMap);
                 user.updateRecommendationStatus();
@@ -122,7 +125,8 @@ public class App {
         options.addOption(AMOUNT, true, "Number of recommendations to generate for each user. Default: " + amount);
         options.addOption(ALGORITHM_TYPE, true, "Type of algorithm you want to use to generate the recommendations. Default: " + algorithmName);
         options.addOption(ACCEPTANCE_TYPE, true, "Acceptance type for the algorithm. Default: none");
-        options.addOption(USE_CACHE, true, "Whether to cache the all usage data. Default: false");
+        options.addOption(USE_CACHE, false, "Cache all usage data");
+        options.addOption(GEN_ALL, false, "Generate as many recommendations as possible"); //TODO: this options is not completely supported yet
         return options;
     }
 
@@ -181,7 +185,11 @@ public class App {
         }
 
         if(cmd.hasOption(USE_CACHE)){
-            useCache = Boolean.parseBoolean(cmd.getOptionValue(USE_CACHE));
+            useCache = true;
+        }
+
+        if(cmd.hasOption(GEN_ALL)) {
+            genAll = true;
         }
 
         if(cmd.hasOption(AMOUNT)){

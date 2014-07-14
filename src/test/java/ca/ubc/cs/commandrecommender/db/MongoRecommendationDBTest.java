@@ -3,6 +3,7 @@ package ca.ubc.cs.commandrecommender.db;
 import ca.ubc.cs.commandrecommender.Exception.DBConnectionException;
 import ca.ubc.cs.commandrecommender.mocks.MockRecommendationDB;
 import ca.ubc.cs.commandrecommender.model.IndexMap;
+import ca.ubc.cs.commandrecommender.model.Rationale;
 import ca.ubc.cs.commandrecommender.model.User;
 import com.mongodb.*;
 import org.bson.types.ObjectId;
@@ -75,9 +76,15 @@ public class MongoRecommendationDBTest {
         return client.getDB(DB_NAME).getCollection(collection);
     }
 
+    private void saveRecommendation(String cmdId, String userId) {
+        Rationale rationale = new Rationale(ALGORITHM_VALUE1);
+        rationale.setValueForTypeSpecificReason(REASON_VALUE1);
+        recommendationDB.saveRecommendation(cmdId, userId, REASON1, ALGORITHM_TYPE1, rationale);
+    }
+
     @Test
     public void testSaveRecommendationValid(){
-        recommendationDB.saveRecommendation(COMMAND_ID1, USER_ID1, REASON1, REASON_VALUE1, ALGORITHM_TYPE1, ALGORITHM_VALUE1);
+        saveRecommendation(COMMAND_ID1, USER_ID1);
         DBObject recommendationQuery = new BasicDBObject(MongoRecommendationDB.USER_ID_FIELD, USER_ID1);
         DBCursor cursor = recommendationCollection.find(recommendationQuery);
         int numRecommendationsFound = 0;
@@ -95,7 +102,7 @@ public class MongoRecommendationDBTest {
 
     @Test
     public void testSaveRecommendationCommandIdNull(){
-        recommendationDB.saveRecommendation(null, USER_ID1, REASON1, REASON_VALUE1, ALGORITHM_TYPE1, ALGORITHM_VALUE1);
+        saveRecommendation(null, USER_ID1);
         DBObject recommendationQuery = new BasicDBObject(MongoRecommendationDB.USER_ID_FIELD, USER_ID1);
         DBCursor cursor = recommendationCollection.find(recommendationQuery);
         int numRecommendationsFound = 0;
@@ -108,7 +115,7 @@ public class MongoRecommendationDBTest {
 
     @Test
     public void testSaveRecommendationUserIdEmpty(){
-        recommendationDB.saveRecommendation(COMMAND_ID1, "", REASON1, REASON_VALUE1, ALGORITHM_TYPE1, ALGORITHM_VALUE1);
+        saveRecommendation(COMMAND_ID1, "");
         DBObject recommendationQuery = new BasicDBObject(MongoRecommendationDB.USER_ID_FIELD, USER_ID1);
         DBCursor cursor = recommendationCollection.find(recommendationQuery);
         int numRecommendationsFound = 0;

@@ -20,7 +20,7 @@ public class ItemBasedCFRecGenTest extends AbstractCFRecGenTest {
 		rec.runAlgorithm();
 		
 		RecommendationCollector rc = new RecommendationCollector(
-                2, null, new HashSet<Integer>(), 1);
+                2, null, new HashSet<Integer>(), 1, false);
 		rec.fillRecommendations(rc);
 		assertTrue(rc.containsRec(3));
 	}
@@ -36,7 +36,7 @@ public class ItemBasedCFRecGenTest extends AbstractCFRecGenTest {
 		rec.runAlgorithm();
 		
 		RecommendationCollector rc = new RecommendationCollector(
-                2, null, new HashSet<Integer>(), 5);
+                2, null, new HashSet<Integer>(), 5, false);
 		rec.fillRecommendations(rc);
 		assertEquals(new Integer(6),rc.iterator().next());
 		assertTrue(rc.containsRec(2));

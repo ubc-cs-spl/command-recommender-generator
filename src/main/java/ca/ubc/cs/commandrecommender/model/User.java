@@ -55,9 +55,8 @@ public class User {
             recommendationDB.saveRecommendation(commandId,
                     userId,
                     reason,
-                    rationale.getValueForTypeSpecificReason(),
                     algorithmType,
-                    rationale.getDecisionPointValue());
+                    rationale);
         }
     }
 

@@ -21,6 +21,8 @@ public class Rationale extends BasicBSONObject {
 
     private double valueForTypeSpecificReason;
 
+    private int rank;
+
     public Rationale(double decisionPointValue) {
         this.decisionPointValue = decisionPointValue;
     }
@@ -46,6 +48,20 @@ public class Rationale extends BasicBSONObject {
 
     public void setValueForTypeSpecificReason(double valueForTypeSpecificReason) {
         this.valueForTypeSpecificReason = valueForTypeSpecificReason;
+    }
+
+    public Rationale setRank(int rank) {
+        this.rank = rank;
+        return this;
+    }
+
+    /**
+     * The ranking is only the ranking determined by the current algorithm
+     * for the specific user at a specific time
+     * @return
+     */
+    public int getRank() {
+        return rank;
     }
 
 }

@@ -105,9 +105,8 @@ public abstract class AbstractCFWithDiscoveryRecGen extends AbstractFilteredLear
                     rc.add(a, rationale);
                 }
 
-                if(rc.isSatisfied()){
-                    return;
-                }
+                if(rc.isSatisfied())
+                    break;
             }
         } catch (Exception e) {
             e.printStackTrace();

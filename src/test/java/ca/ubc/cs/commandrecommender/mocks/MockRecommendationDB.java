@@ -2,6 +2,7 @@ package ca.ubc.cs.commandrecommender.mocks;
 
 import ca.ubc.cs.commandrecommender.db.AbstractRecommendationDB;
 import ca.ubc.cs.commandrecommender.model.IndexMap;
+import ca.ubc.cs.commandrecommender.model.Rationale;
 import ca.ubc.cs.commandrecommender.model.User;
 
 import java.util.ArrayList;
@@ -29,13 +30,13 @@ public class MockRecommendationDB extends AbstractRecommendationDB {
     }
 
     @Override
-    public void saveRecommendation(String commandId, String userId, String reason, double reasonValue, String algorithmType, double algorithmValue) {
+    public void saveRecommendation(String commandId, String userId, String reason, String algorithmType, Rationale rationale) {
         savedRecommendations.add(commandId);
         savedUserIds.add(userId);
         savedReasons.add(reason);
-        savedReasonValues.add(reasonValue);
+        savedReasonValues.add(rationale.getValueForTypeSpecificReason());
         savedAlgorithmTypes.add(algorithmType);
-        savedAlgorithmValues.add(algorithmValue);
+        savedAlgorithmValues.add(rationale.getDecisionPointValue());
     }
 
     @Override

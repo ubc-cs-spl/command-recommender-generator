@@ -2,6 +2,7 @@ package ca.ubc.cs.commandrecommender.db;
 
 import ca.ubc.cs.commandrecommender.Exception.DBConnectionException;
 import ca.ubc.cs.commandrecommender.model.IndexMap;
+import ca.ubc.cs.commandrecommender.model.Rationale;
 import ca.ubc.cs.commandrecommender.model.User;
 import com.mongodb.*;
 
@@ -32,6 +33,7 @@ public class MongoRecommendationDB extends AbstractRecommendationDB{
     public static final String ALGORITHM_TYPE_FIELD = "algorithm_type";
     public static final String ALGORITHM_VALUE_FIELD = "algorithm_value";
     public static final String REASON_VALUE_FIELD = "reason_value";
+    public static final String RANK_FIELD = "rank";
 
     private MongoClient recommendationClient;
     private DBCollection userCollection;
@@ -71,9 +73,8 @@ public class MongoRecommendationDB extends AbstractRecommendationDB{
     public void saveRecommendation(String commandId,
                                    String userId,
                                    String reason,
-                                   double reasonValue,
                                    String algorithmType,
-                                   double algorithmValue) {
+                                   Rationale rationale) {
         if(commandId == null || commandId.equals("") || userId == null || userId.equals(""))
             return;
         DBObject query = new BasicDBObject(COMMAND_ID_FIELD, commandId);
@@ -88,8 +89,9 @@ public class MongoRecommendationDB extends AbstractRecommendationDB{
                 .append(CREATED_ON, new Date(System.currentTimeMillis()))
                 .append(COMMAND_ID_FIELD, commandId)
                 .append(ALGORITHM_TYPE_FIELD, algorithmType)
-                .append(ALGORITHM_VALUE_FIELD, algorithmValue)
-                .append(REASON_VALUE_FIELD, reasonValue);
+                .append(ALGORITHM_VALUE_FIELD, rationale.getDecisionPointValue())
+                .append(RANK_FIELD, rationale.getRank())
+                .append(REASON_VALUE_FIELD, rationale.getValueForTypeSpecificReason());
         recommendationCollection.insert(recommendationToSave);
     }
 

@@ -1,6 +1,7 @@
 package ca.ubc.cs.commandrecommender.db;
 
 import ca.ubc.cs.commandrecommender.model.IndexMap;
+import ca.ubc.cs.commandrecommender.model.Rationale;
 import ca.ubc.cs.commandrecommender.model.User;
 
 import java.util.List;
@@ -11,13 +12,18 @@ import java.util.List;
 public abstract class AbstractRecommendationDB {
     protected IndexMap userIndexMap;
 
-
     public AbstractRecommendationDB(IndexMap userIndexMap){
         this.userIndexMap = userIndexMap;
     }
 
-    public abstract void saveRecommendation(String commandId, String userId, String reason, double reasonValue, String algorithmType, double algorithmValue);
+    public abstract void saveRecommendation(String commandId,
+                                            String userId,
+                                            String reason,
+                                            String algorithmType,
+                                            Rationale rationale);
+
     public abstract void markRecommendationsAsOld(String userId);
+
     public abstract List<User> getAllUsers();
 
     public abstract void updateRecommendationStatus(String userId);
