@@ -42,8 +42,6 @@ public abstract class AbstractLintonRecGen extends AbstractRecGen {
                 rationale.put(Rationale.LINTON_PERCENT_USAGE, percentUsage);
 
 				rc.add(toolToRecommend, rationale);
-				if(rc.isSatisfied())
-					break;
 			}
             rank++;
 		}

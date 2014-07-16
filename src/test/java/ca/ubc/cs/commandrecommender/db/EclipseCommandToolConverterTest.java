@@ -4,11 +4,12 @@ import ca.ubc.cs.commandrecommender.model.IndexMap;
 import ca.ubc.cs.commandrecommender.model.ToolUse;
 import org.junit.Before;
 import org.junit.Test;
-import static  org.junit.Assert.assertEquals;
 
 import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.Map;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * Created by Spencer on 6/20/2014.

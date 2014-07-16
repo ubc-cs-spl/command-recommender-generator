@@ -18,7 +18,6 @@ public class UserTest {
     private IndexMap toolIndexMap;
     private MockRecommendationDB mockRecommendationDb;
     private Date willUpdate;
-    private HashSet<Integer> toolUses;
     private String REASON = "REASON";
     private String ALGORITHM_TYPE = "ALGORITHM_TYPE";
     private double ALGORITHM_VALUE = 1.0;
@@ -27,12 +26,11 @@ public class UserTest {
 
     @Before
     public void setUp(){
-        recommendations = new RecommendationCollector(1, new ArrayList<Integer>(), new HashSet<Integer>(), 5, false);
+        recommendations = new RecommendationCollector(1, new ArrayList<Integer>());
         toolIndexMap = new IndexMap();
         mockRecommendationDb = new MockRecommendationDB(toolIndexMap);
         willUpdate = new Date(System.currentTimeMillis());
-        toolUses = createRecs();
-        user = new User(USER_ID, willUpdate, willUpdate, toolUses, mockRecommendationDb);
+        user = new User(USER_ID, willUpdate, willUpdate, mockRecommendationDb);
 
     }
 
@@ -59,7 +57,7 @@ public class UserTest {
         Calendar sixDaysAgo = Calendar.getInstance();
         sixDaysAgo.add(Calendar.DATE, -6);
         Date willNotUpdate = new Date(sixDaysAgo.getTimeInMillis());
-        user = new User(USER_ID, willNotUpdate, willNotUpdate, toolUses, mockRecommendationDb);
+        user = new User(USER_ID, willNotUpdate, willNotUpdate, mockRecommendationDb);
         assertFalse(user.isTimeToGenerateRecs());
     }
 
@@ -85,7 +83,7 @@ public class UserTest {
 
     @Test
     public void testSaveEmptyRecommendationList(){
-        recommendations = new RecommendationCollector(1, null, null);
+        recommendations = new RecommendationCollector(1, null);
         user.saveRecommendations(recommendations, REASON, ALGORITHM_TYPE, toolIndexMap);
         assertTrue(mockRecommendationDb.savedRecommendations.isEmpty());
         assertTrue(mockRecommendationDb.savedReasons.isEmpty());

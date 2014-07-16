@@ -23,9 +23,11 @@ public abstract class AbstractCFRecGen extends AbstractRecGen {
 
     private UDCUsageModel model = new UDCUsageModel();
     private ReasonedRecommender recommender;
+    private final int numberOfCommands;
 
-    public AbstractCFRecGen(String label) {
+    public AbstractCFRecGen(String label, int numberOfCommands) {
         super(label);
+        this.numberOfCommands = numberOfCommands;
     }
 
     /**
@@ -61,12 +63,10 @@ public abstract class AbstractCFRecGen extends AbstractRecGen {
     public  void fillRecommendations(RecommendationCollector rc) {
         try {
             //TODO: the 1000 is artibrary... how to do this better?
-            List<RecommendedItemWithRationale> items = recommender.recommendWithRationale(rc.userId, 1000);
+            List<RecommendedItemWithRationale> items = recommender.recommendWithRationale(rc.userId, numberOfCommands);
             for(RecommendedItemWithRationale item : items){
                 Rationale rationale = item.getRationale();
                 rc.add((int)item.getItemID(), rationale);
-                if (rc.isSatisfied())
-                    break;
             }
         } catch (Exception e) {
             e.printStackTrace();

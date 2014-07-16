@@ -14,20 +14,20 @@ import org.junit.Test;
 import java.net.UnknownHostException;
 import java.sql.Date;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 /**
  * Created by Spencer on 6/23/2014.
  */
 public class MongoRecommendationDBTest {
+    //TODO: update and add tests
     private MongoClient client;
     private DBCollection userCollection;
     private DBCollection recommendationCollection;
     private DBCollection commandDetailsCollection;
-    private AbstractCommandToolConverter toolConverter;
     private String DB_URL = "localhost";
     private int DB_PORT = 27000;
     private String DB_NAME = "commands-test";
@@ -41,8 +41,6 @@ public class MongoRecommendationDBTest {
     private double ALGORITHM_VALUE1 = 0.28f;
     private double REASON_VALUE1 = 0.3;
     private ObjectId command_detail_object_id_1;
-    private List<Integer> recommendations;
-    private HashSet<Integer> recs;
     private Date willUpdate;
 
     @Before
@@ -54,9 +52,8 @@ public class MongoRecommendationDBTest {
         userIndexMap = new IndexMap();
         toolIndexMap = new IndexMap();
         ConnectionParameters connectionParameters = new ConnectionParameters(DB_URL, DB_PORT, DB_NAME, "", "");
-        toolConverter = new EclipseCommandToolConverter(toolIndexMap);
         initializeDataBase();
-        recommendationDB = new MongoRecommendationDB(connectionParameters, toolConverter, userIndexMap);
+        recommendationDB = new MongoRecommendationDB(connectionParameters, userIndexMap);
     }
 
     private void initializeDataBase() {
@@ -129,56 +126,26 @@ public class MongoRecommendationDBTest {
     @Test
     public void testGetAllUsers(){
         Integer itemIndex = toolIndexMap.addItem(COMMAND_ID1);
-        List<User> users = prepareUsers(itemIndex);
-        List<User> usersFromDb = recommendationDB.getAllUsers();
-        assertFalse(usersFromDb.isEmpty());
-        for(User user : usersFromDb){
-            compareUsers(user, users);
-        }
+        prepareUsers(itemIndex);
+        assertFalse(userCollection.getCount() == 0);
     }
-
-    private void compareUsers(User retrievedUser, List<User> users) {
-        for(User savedUser : users){
-            if(savedUser.getUserId().equals(retrievedUser.getUserId())){
-                HashSet<Integer> savedUserRecs = savedUser.getPastRecommendations();
-                HashSet<Integer> retrievedUserRecs = retrievedUser.getPastRecommendations();
-                assertEquals(savedUserRecs.size(), retrievedUserRecs.size());
-                assertTrue(savedUserRecs.containsAll(retrievedUserRecs));
-            }
-        }
-    }
-
+    
     private List<User> prepareUsers(Integer itemIndex) {
         List<User> users = new ArrayList<User>();
         for(int i=0; i < 5; i++){
             willUpdate = new Date(System.currentTimeMillis());
-            recommendations = new ArrayList<Integer>();
-            recs = createRecs(i, itemIndex);
-            users.add(createNewUser(i, recs));
+            users.add(createNewUser(i));
         }
         return users;
     }
 
-    private User createNewUser(int i, HashSet<Integer> recs) {
+    private User createNewUser(int i) {
         String userId =  USER_ID + i;
         BasicDBObject new_user = new BasicDBObject()
                 .append(MongoRecommendationDB.USER_ID_FIELD, userId)
                 .append(MongoRecommendationDB.LAST_UPLOADED_DATE_FIELD, willUpdate);
         userCollection.insert(new_user);
-        return new User(userId, willUpdate, willUpdate, recs, new MockRecommendationDB(toolIndexMap));
+        return new User(userId, willUpdate, willUpdate, new MockRecommendationDB(toolIndexMap));
     }
-
-    private HashSet<Integer> createRecs(int i, Integer itemIndex) {
-        String userId =  USER_ID + i;
-        BasicDBObject new_recommendation = new BasicDBObject()
-                .append(MongoRecommendationDB.USER_ID_FIELD, userId)
-                .append(MongoRecommendationDB.COMMAND_DETAIL_ID_FIELD, command_detail_object_id_1)
-                .append(MongoRecommendationDB.COMMAND_ID_FIELD, COMMAND_ID1)
-                .append(MongoRecommendationDB.NEW_RECOMMENDATION_FIELD, true)
-                .append(MongoRecommendationDB.REASON_FIELD, REASON1);
-        recommendationCollection.insert(new_recommendation);
-        HashSet<Integer> recs = new HashSet<Integer>();
-        recs.add(itemIndex);
-        return recs;
-    }
+    
 }

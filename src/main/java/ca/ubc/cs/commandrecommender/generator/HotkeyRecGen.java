@@ -64,8 +64,6 @@ public class HotkeyRecGen extends AbstractRecGen {
         for (Integer tool : neverHotkeyCmdsByFrequency) {
             if (cmdsWithShortcuts.contains(tool)) {
                 rc.add(tool, new Rationale((double) neverHotkeyCmdsByFrequency.getCount(tool)));
-                if (rc.isSatisfied())
-                    break;
             }
         }
     }

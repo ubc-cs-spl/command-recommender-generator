@@ -36,8 +36,7 @@ public class App {
     public static final String ALGORITHM_TYPE = "t";
     public static final String ACCEPTANCE_TYPE = "c";
     public static final String USE_CACHE = "u";
-    public static final String GEN_ALL = "g";
-
+    
     private static AbstractCommandToolConverter toolConverter;
     private static ConnectionParameters commandConnectionParameters;
     private static ConnectionParameters recommendationConnectionParameters;
@@ -54,7 +53,6 @@ public class App {
     private static AbstractLearningAcceptance acceptance;
     private static Logger logger = LogManager.getLogger(App.class);
     private static boolean useCache = false;
-    private static boolean genAll = false;
 
     public static void main(String[] args) throws UnknownHostException, DBConnectionException {
         //establish connection
@@ -68,7 +66,7 @@ public class App {
            System.exit(1);
         }
         initializeDatabases();
-        IRecGen recGen = algorithmType.getRecGen(acceptance);
+        IRecGen recGen = algorithmType.getRecGen(acceptance, recommendationDB.getNumberOfKnownCommands());
         long time = System.currentTimeMillis();
         List<ToolUseCollection> toolUses =  commandDB.getAllUsageData();
         logger.debug("Time to Retrieve Data From Database: {}", getAmountOfTimeTaken(time));
@@ -91,10 +89,9 @@ public class App {
                 ToolUseCollection history = commandDB.getUsersUsageData(user.getUserId());
                 logger.trace("Retrieving Usage Data for user: {}, number of entries: {}, in {}", user.getUserId(), history.size(), getAmountOfTimeTaken(time));
                 time = System.currentTimeMillis();
-                RecommendationCollector recommendations = recGen.getRecommendationsForUser(user, history, amount, userId, genAll);
+                RecommendationCollector recommendations = recGen.getRecommendationsForUser(user, history, amount, userId);
                 logger.trace("Recommendations for user: {}, gathered in {}", user.getUserId(), getAmountOfTimeTaken(time));
                 user.saveRecommendations(recommendations, algorithmType.getRationale(), algorithmType.name(), toolIndexMap);
-                user.updateRecommendationStatus();
                 logger.trace("Saved and completed recommendation gathering process for user: {}", user.getUserId());
                 totalUserRecommendation++;
             }
@@ -126,7 +123,6 @@ public class App {
         options.addOption(ALGORITHM_TYPE, true, "Type of algorithm you want to use to generate the recommendations. Default: " + algorithmName);
         options.addOption(ACCEPTANCE_TYPE, true, "Acceptance type for the algorithm. Default: none");
         options.addOption(USE_CACHE, false, "Cache all usage data");
-        options.addOption(GEN_ALL, false, "Generate as many recommendations as possible"); //TODO: this options is not completely supported yet
         return options;
     }
 
@@ -188,10 +184,6 @@ public class App {
             useCache = true;
         }
 
-        if(cmd.hasOption(GEN_ALL)) {
-            genAll = true;
-        }
-
         if(cmd.hasOption(AMOUNT)){
             try {
                 amount = Integer.parseInt(cmd.getOptionValue(AMOUNT));
@@ -230,7 +222,7 @@ public class App {
         logger.debug("Connecting to Command database with: " + commandConnectionParameters.toString());
         commandDB = new MongoCommandDB(commandConnectionParameters, toolConverter, userIndexMap, useCache);
         logger.debug("Connecting to Recommendation database with: " + recommendationConnectionParameters.toString());
-        recommendationDB = new MongoRecommendationDB(recommendationConnectionParameters, toolConverter, userIndexMap);
+        recommendationDB = new MongoRecommendationDB(recommendationConnectionParameters, userIndexMap);
     }
 
 }

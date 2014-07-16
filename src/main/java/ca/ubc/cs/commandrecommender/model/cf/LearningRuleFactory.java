@@ -3,11 +3,6 @@ package ca.ubc.cs.commandrecommender.model.cf;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-
 /**
  * Implementation of {@link ca.ubc.cs.commandrecommender.model.cf.ItemFactory}
  * for Learning-related CF algorithms.

@@ -1,10 +1,10 @@
 package ca.ubc.cs.commandrecommender.model;
 
-import ca.ubc.cs.commandrecommender.model.IndexMap;
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
+
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * Created by Spencer on 6/20/2014.

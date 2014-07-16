@@ -53,7 +53,6 @@ public interface IRecGen {
     RecommendationCollector getRecommendationsForUser(User user,
                                                       ToolUseCollection history,
                                                       int amount,
-                                                      int userId,
-                                                      boolean genAll);
+                                                      int userId);
 
 }

@@ -4,12 +4,9 @@ package ca.ubc.cs.commandrecommender.generator;
 import ca.ubc.cs.commandrecommender.model.RecommendationCollector;
 import org.junit.Test;
 
-import java.util.HashSet;
 import java.util.Iterator;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * Created by KeEr on 2014-06-10.
@@ -28,8 +25,7 @@ public class HotkeyRecGenTest extends AbstractRecGenTest {
 
     @Test
     public void onlyCmdsThatTheUserNeverUsedHotkeyWithGetRecommended() {
-        RecommendationCollector rc = new RecommendationCollector(
-                3, null, new HashSet<Integer>());
+        RecommendationCollector rc = new RecommendationCollector(3, null);
         rec.fillRecommendations(rc);
         assertFalse(rc.containsRec(3));
         assertFalse(rc.containsRec(2));
@@ -40,8 +36,7 @@ public class HotkeyRecGenTest extends AbstractRecGenTest {
 
     @Test
     public void testMostUsedCommandGetRecommendedFirst() {
-        RecommendationCollector rc1 = new RecommendationCollector(
-                1, null, new HashSet<Integer>());
+        RecommendationCollector rc1 = new RecommendationCollector(1, null);
         rec.fillRecommendations(rc1);
         Iterator<Integer> interator = rc1.iterator();
         assertEquals(new Integer(1), interator.next());
@@ -52,8 +47,7 @@ public class HotkeyRecGenTest extends AbstractRecGenTest {
 
     @Test
     public void onlyCmdsThatHasHotkeysGetRecommended() {
-        RecommendationCollector rc = new RecommendationCollector(
-                2, null, new HashSet<Integer>());
+        RecommendationCollector rc = new RecommendationCollector(2, null);
         rec.fillRecommendations(rc);
         assertFalse(rc.containsRec(4));
         assertFalse(rc.containsRec(8));

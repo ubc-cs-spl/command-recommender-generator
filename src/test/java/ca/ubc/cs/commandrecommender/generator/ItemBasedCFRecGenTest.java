@@ -4,8 +4,6 @@ import ca.ubc.cs.commandrecommender.model.RecommendationCollector;
 import ca.ubc.cs.commandrecommender.model.cf.matejka.MatejkaOptions;
 import org.junit.Test;
 
-import java.util.HashSet;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -19,8 +17,7 @@ public class ItemBasedCFRecGenTest extends AbstractCFRecGenTest {
 		
 		rec.runAlgorithm();
 		
-		RecommendationCollector rc = new RecommendationCollector(
-                2, null, new HashSet<Integer>(), 1, false);
+		RecommendationCollector rc = new RecommendationCollector(2, null);
 		rec.fillRecommendations(rc);
 		assertTrue(rc.containsRec(3));
 	}
@@ -35,8 +32,7 @@ public class ItemBasedCFRecGenTest extends AbstractCFRecGenTest {
 		
 		rec.runAlgorithm();
 		
-		RecommendationCollector rc = new RecommendationCollector(
-                2, null, new HashSet<Integer>(), 5, false);
+		RecommendationCollector rc = new RecommendationCollector(2, null);
 		rec.fillRecommendations(rc);
 		assertEquals(new Integer(6),rc.iterator().next());
 		assertTrue(rc.containsRec(2));
@@ -47,6 +43,6 @@ public class ItemBasedCFRecGenTest extends AbstractCFRecGenTest {
 	
 	@Override
     protected ItemBasedCFRecGen getRec() {
-        return new ItemBasedCFRecGen("", new MatejkaOptions(false, true, 1.0));
+        return new ItemBasedCFRecGen("", new MatejkaOptions(false, true, 1.0),100);
     }
 }

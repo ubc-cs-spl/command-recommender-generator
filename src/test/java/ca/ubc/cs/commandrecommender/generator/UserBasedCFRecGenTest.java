@@ -7,8 +7,6 @@ import org.apache.mahout.cf.taste.common.TasteException;
 import org.apache.mahout.cf.taste.model.DataModel;
 import org.junit.Test;
 
-import java.util.HashSet;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -25,8 +23,7 @@ public class UserBasedCFRecGenTest extends AbstractCFRecGenTest {
 		
 		rec.runAlgorithm();
 		
-		RecommendationCollector rc = new RecommendationCollector(
-                2, null, new HashSet<Integer>(), 1, false);
+		RecommendationCollector rc = new RecommendationCollector(2, null);
 		rec.fillRecommendations(rc);
 		assertEquals(new Integer(3),rc.iterator().next());
 	}
@@ -111,6 +108,6 @@ public class UserBasedCFRecGenTest extends AbstractCFRecGenTest {
 
 	@Override
     protected AbstractCFRecGen getRec() {
-		return new UserBasedCFRecGen("",32,new MatejkaOptions(false, true, 1.0));
+		return new UserBasedCFRecGen("",32,new MatejkaOptions(false, true, 1.0),100);
 	}
 }

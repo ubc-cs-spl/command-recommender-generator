@@ -16,8 +16,8 @@ public class UserBasedCFRecGen extends AbstractCFRecGen {
     private int neighborhoodSize;
     private MatejkaOptions ops;
 
-    public UserBasedCFRecGen(String label, int neighborhoodSize, MatejkaOptions ops){
-        super(label);
+    public UserBasedCFRecGen(String label, int neighborhoodSize, MatejkaOptions ops, int numOfCmd){
+        super(label, numOfCmd);
         this.neighborhoodSize = neighborhoodSize;
         this.ops = ops;
     }

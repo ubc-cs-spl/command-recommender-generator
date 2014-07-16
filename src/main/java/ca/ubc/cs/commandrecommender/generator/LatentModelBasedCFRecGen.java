@@ -18,8 +18,8 @@ public class LatentModelBasedCFRecGen extends AbstractCFRecGen {
     private int numFeatures;
 
     public LatentModelBasedCFRecGen(String label, int numFeatures, int lambda,
-                                       int numIterations, double alpha) {
-        super(label);
+                                       int numIterations, double alpha, int numOfCmd) {
+        super(label, numOfCmd);
         this.numFeatures = numFeatures;
         this.lambda = lambda;
         this.numIterations = numIterations;

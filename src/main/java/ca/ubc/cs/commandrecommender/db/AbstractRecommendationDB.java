@@ -21,10 +21,13 @@ public abstract class AbstractRecommendationDB {
                                             String reason,
                                             String algorithmType,
                                             Rationale rationale);
+    
 
-    public abstract void markRecommendationsAsOld(String userId);
+    public abstract int getNumberOfKnownCommands(); 
 
     public abstract List<User> getAllUsers();
 
-    public abstract void updateRecommendationStatus(String userId);
+    public abstract void updateRecommendationStatus(String userId, String algoType);
+    
+    public abstract void clearInfoAndRankings(String userId, String algoType);
 }

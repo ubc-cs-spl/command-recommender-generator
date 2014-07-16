@@ -1,10 +1,10 @@
 package ca.ubc.cs.commandrecommender.generator;
 
 import ca.pfv.spmf.Itemset;
+import ca.pfv.spmf.Sequence;
 import ca.ubc.cs.commandrecommender.model.Rationale;
 import ca.ubc.cs.commandrecommender.model.RecommendationCollector;
 import ca.ubc.cs.commandrecommender.model.acceptance.AbstractLearningAcceptance;
-import ca.pfv.spmf.Sequence;
 import ca.ubc.cs.commandrecommender.util.SortingUtils;
 import org.apache.commons.collections4.Bag;
 import org.apache.commons.collections4.SortedBag;
@@ -65,8 +65,6 @@ public abstract class AbstractLearningRuleRecGen extends AbstractFilteredLearnin
             Rationale rationale = new Rationale(value);
             updateRationale(rationale, i);
             rc.add(i, rationale);
-            if (rc.isSatisfied())
-                break;
         }
     }
 

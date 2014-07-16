@@ -5,7 +5,6 @@ import ca.ubc.cs.commandrecommender.model.RecommendationCollector;
 import ca.ubc.cs.commandrecommender.model.ToolUseCollection;
 import ca.ubc.cs.commandrecommender.model.User;
 
-import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -15,6 +14,7 @@ import java.util.List;
  * Created by KeEr on 2014-06-11.
  */
 public abstract class AbstractRecGen implements IRecGen {
+	
     protected final String algorithm;
 
     public AbstractRecGen(String algorithm) {
@@ -28,14 +28,11 @@ public abstract class AbstractRecGen implements IRecGen {
 
     @Override
     public RecommendationCollector getRecommendationsForUser(User user, ToolUseCollection history,
-                                                       int amount, int userId, boolean genAll) {
+    		int amount, int userId) {
         history.sort();
         List<Integer> historyList = history.toolsUsedInOrder().asList();
-        HashSet<Integer> recommended = user.getPastRecommendations();
-        RecommendationCollector collector = new RecommendationCollector(userId, historyList,
-                recommended, amount, genAll);
+        RecommendationCollector collector = new RecommendationCollector(userId, historyList);
         fillRecommendations(collector);
-        collector.done();
         return collector;
     }
 

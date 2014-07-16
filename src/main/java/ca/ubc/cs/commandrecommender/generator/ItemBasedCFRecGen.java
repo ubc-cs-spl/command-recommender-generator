@@ -15,8 +15,8 @@ public class ItemBasedCFRecGen extends AbstractCFRecGen {
 
     private MatejkaOptions ops;
 
-    public ItemBasedCFRecGen(String label, MatejkaOptions ops) {
-        super(label);
+    public ItemBasedCFRecGen(String label, MatejkaOptions ops, int numOfCmd) {
+        super(label, numOfCmd);
         this.ops = ops;
     }
 

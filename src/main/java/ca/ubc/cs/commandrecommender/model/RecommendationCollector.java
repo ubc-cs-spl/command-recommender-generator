@@ -7,19 +7,17 @@ import java.util.*;
  * the user id and history.
  */
 public class RecommendationCollector implements Iterable<Integer>{
-
-	private int recSize = 10;
 	
-	private List<List<Integer>> lists;
+	//TODO: simplify the structure
+	private List<List<Integer>> recommendations;
 	private List<Integer> currentList;
 	private Double lastValue;
     private Map<Integer, Rationale> rationaleMap;
-    private boolean genAll;
+    private int count;
 
 	public final int userId;
 
 	private List<Integer> history;
-    private HashSet<Integer> pastRecommendations;
 
     /**
      * Create a recommendation collector for a given user that recommends at most
@@ -27,39 +25,24 @@ public class RecommendationCollector implements Iterable<Integer>{
      * @param userId
      * @param history
      */
-	public RecommendationCollector(int userId, List<Integer> history, HashSet<Integer> pastRecommendations) {
+	public RecommendationCollector(int userId, List<Integer> history) {
 		this.userId = userId;
 		this.history = history;
-        this.pastRecommendations = pastRecommendations;
-        this.genAll = false;
 		init();
 	}
 
-    /**
-     * Create a recommendation collector for a given user
-     * @param userId user id
-     * @param history usage data of the target user
-     * @param size # of items to recommend
-     */
-	public RecommendationCollector(int userId, List<Integer> history,
-                                   HashSet<Integer> recommendations, int size, boolean genAll) {
-		this(userId,history,recommendations);
-		recSize = size;
-        this.genAll = genAll;
-	}
-
 	private void init(){
-		lists = new ArrayList<List<Integer>>();
+		recommendations = new ArrayList<List<Integer>>();
 		currentList = new ArrayList<Integer>();
         rationaleMap = new HashMap<Integer, Rationale>();
 		lastValue = null;
+		count = 0;
 	}
 
     @Override
 	public Iterator<Integer> iterator() {
 		
-		if(!isSatisfied())
-			flush();
+		flush();
 		
 		return  new Iterator<Integer>() {
 			
@@ -71,9 +54,10 @@ public class RecommendationCollector implements Iterable<Integer>{
 			}
 
 			@Override
+			//TODO: improve the performance of this 
 			public Integer next() {
 				int i = 0;
-				for(List<Integer> ls : lists)
+				for(List<Integer> ls : recommendations)
 					for(Integer l : ls){
 						if(pointer==i){
 							pointer++;
@@ -105,16 +89,8 @@ public class RecommendationCollector implements Iterable<Integer>{
 
         double thisValue = rationale.getDecisionPointValue();
 
-        //we don't add more than recSize
-		if(isSatisfied())
-            return;
-
-        //filter out the already recommended ones
-        if (pastRecommendations.contains(thisKey) && !genAll)
-            return;
-
 		//make sure we haven't already added it
-		for(List<Integer> ls : lists)
+		for(List<Integer> ls : recommendations)
             if (ls.contains(thisKey))
                 return;
 		if (currentList.contains(thisKey))
@@ -134,41 +110,15 @@ public class RecommendationCollector implements Iterable<Integer>{
 	private void flush() {
 		if (!currentList.isEmpty()) {
 			Collections.sort(currentList);
-			if(genAll || ((size() + currentList.size()) <= recSize))
-                lists.add(currentList);
-			else
-                lists.add(currentList.subList(0, recSize-size()));
-			currentList = new ArrayList<Integer>();
+            recommendations.add(currentList);
+            count += currentList.size();
+            currentList = new ArrayList<Integer>();
 		}
 	}
-
-    /**
-     * This method should be call only once when all candidate recommendations
-     * have been added in to the collector
-     */
-    public void done() {
-        flush();
-    }
-
-
-    /**
-     *
-     * @return whether or not we have made enough recommendations for the user
-     */
-	public boolean isSatisfied() {
-		return !genAll && size() >= recSize;
-	}
-
-    // TODO: this method recomputes the current size of recommendation every time
-    //       considering that we would usually have <= 10 recommendations, it's not
-    //       that bad. Nevertheless, we might want to keep a counter for the size
-    //       so we can retrieve the size more efficiently?
-	// return # of elements in lists (ie. the # of recommendations so far
+    
+	// return # of elements in recommendations (ie. the # of recommendations so far
 	private int size() {
-		int size = 0;
-		for(List<Integer> ls : lists)
-			size += ls.size();
-		return size;
+		return count;
 	}
 
 	public boolean isEmpty() {

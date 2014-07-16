@@ -40,17 +40,24 @@ public class MockRecommendationDB extends AbstractRecommendationDB {
     }
 
     @Override
-    public void markRecommendationsAsOld(String userId) {
-
-    }
-
-    @Override
     public List<User> getAllUsers() {
         return null;
     }
 
     @Override
-    public void updateRecommendationStatus(String userId) {
+    public void updateRecommendationStatus(String userId, String algoType) {
 
     }
+
+	@Override
+	public void clearInfoAndRankings(String userId, String algoType) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public int getNumberOfKnownCommands() {
+		// TODO Auto-generated method stub
+		return 1000;
+	}
 }

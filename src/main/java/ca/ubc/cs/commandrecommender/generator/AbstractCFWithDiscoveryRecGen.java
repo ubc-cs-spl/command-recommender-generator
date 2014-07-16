@@ -86,8 +86,8 @@ public abstract class AbstractCFWithDiscoveryRecGen extends AbstractFilteredLear
     public void fillRecommendations(RecommendationCollector rc) {
 
         try {
-            //TODO: the 1000 is artibrary... how to do this better?
-            List<RecommendedItemWithRationale> items = recommender.recommendWithRationale(rc.userId, 1000);
+            //TODO: the 10000 is somewhat arbitrary; we should find a way to get the total number of learning pairs
+            List<RecommendedItemWithRationale> items = recommender.recommendWithRationale(rc.userId, 10000);
             for(RecommendedItemWithRationale item : items){
                 Rationale rationale = item.getRationale();
                 long itemID = item.getItemID();
@@ -104,9 +104,6 @@ public abstract class AbstractCFWithDiscoveryRecGen extends AbstractFilteredLear
                     rationale.put(Rationale.HOOK_FOR, b);
                     rc.add(a, rationale);
                 }
-
-                if(rc.isSatisfied())
-                    break;
             }
         } catch (Exception e) {
             e.printStackTrace();

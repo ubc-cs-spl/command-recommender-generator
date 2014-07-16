@@ -4,11 +4,7 @@ package ca.ubc.cs.commandrecommender.generator;
 import ca.ubc.cs.commandrecommender.model.RecommendationCollector;
 import org.junit.Test;
 
-import java.util.HashSet;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public abstract class AbstractCFRecGenTest extends AbstractRecGenTest {
 
@@ -21,8 +17,7 @@ public abstract class AbstractCFRecGenTest extends AbstractRecGenTest {
 
 		rec.runAlgorithm();
 
-		RecommendationCollector rc = new RecommendationCollector(
-                2, null, new HashSet<Integer>(), 2, false);
+		RecommendationCollector rc = new RecommendationCollector(2, null);
 		rec.fillRecommendations(rc);
 		assertTrue(rc.containsRec(3));
 		assertTrue(rc.containsRec(4));
@@ -37,8 +32,7 @@ public abstract class AbstractCFRecGenTest extends AbstractRecGenTest {
 
 		rec.runAlgorithm();
 
-		RecommendationCollector rc = new RecommendationCollector(
-                2, null, new HashSet<Integer>(), 1000, false);
+		RecommendationCollector rc = new RecommendationCollector(2, null);
 		rec.fillRecommendations(rc);
 
 		assertTrue(rc.containsRec(2));
@@ -59,8 +53,7 @@ public abstract class AbstractCFRecGenTest extends AbstractRecGenTest {
 
 		rec.runAlgorithm();
 
-		RecommendationCollector rc = new RecommendationCollector(
-                2, null, new HashSet<Integer>(), 1000, false);
+		RecommendationCollector rc = new RecommendationCollector(2, null);
 		rec.fillRecommendations(rc);
 		assertFalse(rc.iterator().hasNext());
 	}
@@ -74,8 +67,7 @@ public abstract class AbstractCFRecGenTest extends AbstractRecGenTest {
 
 		rec.runAlgorithm();
 
-		RecommendationCollector rc = new RecommendationCollector(
-                2, null, new HashSet<Integer>(), 1000, false);
+		RecommendationCollector rc = new RecommendationCollector(2, null);
 		rec.fillRecommendations(rc);
 
 		assertEquals(new Integer(3),rc.iterator().next());
@@ -93,8 +85,7 @@ public abstract class AbstractCFRecGenTest extends AbstractRecGenTest {
 
 		rec.runAlgorithm();
 
-		RecommendationCollector rc = new RecommendationCollector(
-                2, null, new HashSet<Integer>(), 1000, false);
+		RecommendationCollector rc = new RecommendationCollector(2, null);
 		rec.fillRecommendations(rc);
 
 		assertTrue(rc.containsRec(2));

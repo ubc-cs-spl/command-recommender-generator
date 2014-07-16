@@ -4,7 +4,6 @@ import ca.ubc.cs.commandrecommender.model.RecommendationCollector;
 import org.junit.Test;
 
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Iterator;
 
 import static org.junit.Assert.assertEquals;
@@ -35,8 +34,7 @@ public class LintonUserRecommendationTest extends AbstractRecGenTest {
 
     @Test
     public void mostWidelyUsedGetRecommendedFirst() {
-        RecommendationCollector rc1 = new RecommendationCollector(
-                1, Arrays.asList(1,1,1,1,1,2), new HashSet<Integer>());
+        RecommendationCollector rc1 = new RecommendationCollector(1, Arrays.asList(1,1,1,1,1,2));
         rec.fillRecommendations(rc1);
         Iterator<Integer> iterator1 = rc1.iterator();
         assertEquals(new Integer(3), iterator1.next());
@@ -48,8 +46,7 @@ public class LintonUserRecommendationTest extends AbstractRecGenTest {
 
     @Test
     public void usedCmdsAreNotRecommended() {
-        RecommendationCollector rc3 = new RecommendationCollector(
-                3, Arrays.asList(1,2,3,1,1,6), new HashSet<Integer>());
+        RecommendationCollector rc3 = new RecommendationCollector(3, Arrays.asList(1,2,3,1,1,6));
         rec.fillRecommendations(rc3);
         Iterator<Integer> iterator2 = rc3.iterator();
         assertEquals(new Integer(4), iterator2.next());

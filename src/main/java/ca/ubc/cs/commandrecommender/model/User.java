@@ -2,9 +2,8 @@ package ca.ubc.cs.commandrecommender.model;
 
 import ca.ubc.cs.commandrecommender.db.AbstractRecommendationDB;
 
-import java.util.Date;
 import java.util.Calendar;
-import java.util.HashSet;
+import java.util.Date;
 import java.util.Map;
 
 /**
@@ -14,26 +13,20 @@ public class User {
     private String userId;
     private Date lastUpdate;
     private Date lastRecommendationDate;
-    private HashSet<Integer> pastRecommendations;
     private AbstractRecommendationDB recommendationDB;
     private int WINDOW_IN_DAYS = 5;
 
     public User(String userId, Date lastUpdate, 
-                Date lastRecommendationDate, HashSet<Integer> pastRecommendations, 
+                Date lastRecommendationDate, 
                 AbstractRecommendationDB recommendationDB){
         this.userId = userId;
         this.lastUpdate = lastUpdate;
-        this.pastRecommendations = pastRecommendations;
         this.recommendationDB = recommendationDB;
         this.lastRecommendationDate = lastRecommendationDate;
     }
 
     public String getUserId() {
         return userId;
-    }
-
-    public HashSet<Integer> getPastRecommendations() {
-        return pastRecommendations;
     }
 
     public boolean isTimeToGenerateRecs() {
@@ -47,7 +40,8 @@ public class User {
                                     String reason,
                                     String algorithmType,
                                     IndexMap toolIndexMap) {
-        recommendationDB.markRecommendationsAsOld(userId);
+    	//TODO: consider clearing out only the old recommendations that aren't present anymore
+        recommendationDB.clearInfoAndRankings(userId, algorithmType);
         Map<Integer, Rationale> rationaleMap = recommendations.getRationales();
         for(Integer recommendation : recommendations){
             String commandId = toolIndexMap.getItemByIndex(recommendation);
@@ -58,10 +52,7 @@ public class User {
                     algorithmType,
                     rationale);
         }
+        recommendationDB.updateRecommendationStatus(userId, algorithmType);
     }
-
-
-    public void updateRecommendationStatus() {
-        recommendationDB.updateRecommendationStatus(userId);
-    }
+    
 }

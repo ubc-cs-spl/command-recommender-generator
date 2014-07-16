@@ -79,7 +79,7 @@ public enum AlgorithmType {
      * @param acceptance
      * @return
      */
-    public IRecGen getRecGen(AbstractLearningAcceptance acceptance) {
+    public IRecGen getRecGen(AbstractLearningAcceptance acceptance, int numOfCmd) {
         switch (this) {
             case MOST_FREQUENTLY_USED:
                 return new LintonTotalRecGen(reason);
@@ -101,13 +101,13 @@ public enum AlgorithmType {
                         new MatejkaOptions(false, true, 1.0), 32);
             case ITEM_BASED_CF:
                 return new ItemBasedCFRecGen(reason,
-                        new MatejkaOptions(false, true, Parameters.alpha));
+                        new MatejkaOptions(false, true, Parameters.alpha), numOfCmd);
             case USER_BASED_CF:
                 return new UserBasedCFRecGen(reason,32,
-                        new MatejkaOptions(false, true, 1.0));
+                        new MatejkaOptions(false, true, 1.0), numOfCmd);
             case LATENT_MODEL_BASED_CF:
                 return new LatentModelBasedCFRecGen(reason, Parameters.numFeatures,
-                        Parameters.lambda, Parameters.numIterations, Parameters.alpha);
+                        Parameters.lambda, Parameters.numIterations, Parameters.alpha, numOfCmd);
             default: //We should never reach here unless we forget to update this method
                 return new LintonTotalRecGen(reason);
         }
