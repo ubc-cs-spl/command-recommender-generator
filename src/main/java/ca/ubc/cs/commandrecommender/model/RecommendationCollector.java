@@ -8,8 +8,7 @@ import java.util.*;
  */
 public class RecommendationCollector implements Iterable<Integer>{
 	
-	//TODO: simplify the structure
-	private List<List<Integer>> recommendations;
+	private List<Integer> recommendations;
 	private List<Integer> currentList;
 	private Double lastValue;
     private Map<Integer, Rationale> rationaleMap;
@@ -32,7 +31,7 @@ public class RecommendationCollector implements Iterable<Integer>{
 	}
 
 	private void init(){
-		recommendations = new ArrayList<List<Integer>>();
+		recommendations = new ArrayList<Integer>();
 		currentList = new ArrayList<Integer>();
         rationaleMap = new HashMap<Integer, Rationale>();
 		lastValue = null;
@@ -41,39 +40,8 @@ public class RecommendationCollector implements Iterable<Integer>{
 
     @Override
 	public Iterator<Integer> iterator() {
-		
-		flush();
-		
-		return  new Iterator<Integer>() {
-			
-			int pointer = 0;
-			
-			@Override
-			public boolean hasNext() {
-				return pointer < size();
-			}
-
-			@Override
-			//TODO: improve the performance of this 
-			public Integer next() {
-				int i = 0;
-				for(List<Integer> ls : recommendations)
-					for(Integer l : ls){
-						if(pointer==i){
-							pointer++;
-							return l;
-						}else{
-							i++;
-						}
-					}
-				throw new IndexOutOfBoundsException();
-			}
-
-			@Override
-			public void remove() {
-				throw new UnsupportedOperationException();
-			}
-		};
+    	flush();
+		return recommendations.iterator();
 	}
 
     public void add(Integer thisKey, double thisVal) {
@@ -89,13 +57,13 @@ public class RecommendationCollector implements Iterable<Integer>{
 
         double thisValue = rationale.getDecisionPointValue();
 
-		//make sure we haven't already added it
-		for(List<Integer> ls : recommendations)
-            if (ls.contains(thisKey))
-                return;
-		if (currentList.contains(thisKey))
+		if (currentList.contains(thisKey) || recommendations.contains(thisKey))
             return;
 
+		// It's considered a fatal error for now if this constraint is not satisfied
+		if (lastValue != null && thisValue > lastValue)
+			throw new IllegalArgumentException();
+		
         //add the key and keep track of last value
 		if (lastValue != null && !lastValue.equals(thisValue)) {
 			flush();
@@ -110,7 +78,7 @@ public class RecommendationCollector implements Iterable<Integer>{
 	private void flush() {
 		if (!currentList.isEmpty()) {
 			Collections.sort(currentList);
-            recommendations.add(currentList);
+            recommendations.addAll(currentList);
             count += currentList.size();
             currentList = new ArrayList<Integer>();
 		}
