@@ -11,11 +11,15 @@ import ca.ubc.cs.commandrecommender.model.ToolUseCollection;
 import ca.ubc.cs.commandrecommender.model.User;
 import ca.ubc.cs.commandrecommender.model.acceptance.AbstractLearningAcceptance;
 import ca.ubc.cs.commandrecommender.model.acceptance.LearningAcceptanceType;
+import ca.ubc.cs.commandrecommender.report.MongoCommandReportDB;
+import ca.ubc.cs.commandrecommender.report.MongoReportDB;
+
 import org.apache.commons.cli.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.net.UnknownHostException;
+import com.mongodb.DBObject;
+
 import java.util.List;
 
 /**
@@ -36,6 +40,8 @@ public class App {
     public static final String ALGORITHM_TYPE = "t";
     public static final String ACCEPTANCE_TYPE = "c";
     public static final String USE_CACHE = "u";
+    public static final String TIME_PERIOD_IN_DAYS = "p";
+    public static final String GENERATE_REPORT = "report";
     
     private static AbstractCommandToolConverter toolConverter;
     private static ConnectionParameters commandConnectionParameters;
@@ -53,9 +59,12 @@ public class App {
     private static AbstractLearningAcceptance acceptance;
     private static Logger logger = LogManager.getLogger(App.class);
     private static boolean useCache = false;
+    private static boolean generateReport = false;
+    private static int periodInDays = 7;
+	private static MongoCommandReportDB commandReportDB;
+	private static MongoReportDB reportDB;
 
-    public static void main(String[] args) throws UnknownHostException, DBConnectionException {
-        //establish connection
+    public static void main(String[] args) throws DBConnectionException {
         //TODO: use authorization for production
         //TODO: close connections properly
         //TODO: make more robust
@@ -65,7 +74,15 @@ public class App {
            System.out.println("Invalid argument: " + e.getMessage());
            System.exit(1);
         }
-        initializeDatabases();
+        if (generateReport) {
+        	generateReports();
+        } else {
+        	generateRecommendations();
+        }
+    }
+    
+    private static void generateRecommendations() throws DBConnectionException {
+        initializeDatabasesForRecGen();
         IRecGen recGen = algorithmType.getRecGen(acceptance, recommendationDB.getNumberOfKnownCommands());
         long time = System.currentTimeMillis();
         List<ToolUseCollection> toolUses =  commandDB.getAllUsageData();
@@ -98,6 +115,18 @@ public class App {
         }
         logger.debug("Finished generating recommendations for {} users in {}", totalUserRecommendation, getAmountOfTimeTaken(allUsersTime));
     }
+    
+    private static void generateReports() throws DBConnectionException {
+    	initializeDatabasesForReport();
+        long time = System.currentTimeMillis();
+        List<DBObject> reports = commandReportDB.getUsageReports(periodInDays);
+        logger.debug("Time to Retrieve Usage Stats Data From Database: {}", getAmountOfTimeTaken(time));
+        //commandDB.closeConnection();
+        time = System.currentTimeMillis();
+        reportDB.updateCollection(reports);
+        logger.debug("Time to Record stats: {}", getAmountOfTimeTaken(time));
+        reportDB.closeConnection();
+    }
 
     private static String getAmountOfTimeTaken(long time) {
         long difference = System.currentTimeMillis() - time;
@@ -123,6 +152,8 @@ public class App {
         options.addOption(ALGORITHM_TYPE, true, "Type of algorithm you want to use to generate the recommendations. Default: " + algorithmName);
         options.addOption(ACCEPTANCE_TYPE, true, "Acceptance type for the algorithm. Default: none");
         options.addOption(USE_CACHE, false, "Cache all usage data");
+        options.addOption(GENERATE_REPORT, false, "Whether to generate report or recommendations. Default: false (generate recommendations)");
+        options.addOption(TIME_PERIOD_IN_DAYS, true, "The time period for the usage report in days. Default: 7");
         return options;
     }
 
@@ -168,6 +199,19 @@ public class App {
         }
         recommendationConnectionParameters = new ConnectionParameters(dbUrl, port, dbName);
 
+ 
+        if(cmd.hasOption(GENERATE_REPORT)) {
+        	generateReport = true;
+            if(cmd.hasOption(TIME_PERIOD_IN_DAYS)) {
+                try {
+                    periodInDays = Integer.parseInt(cmd.getOptionValue(TIME_PERIOD_IN_DAYS));
+                } catch (NumberFormatException ex) {
+                    throw new ParseException("The time period for which the reports will be generated is not valid.");
+                }
+            }
+            return;
+        }
+        
         if(cmd.hasOption(RECOMMENDATION_USER)){
             recommendationConnectionParameters.setDbUser(cmd.getOptionValue(RECOMMENDATION_USER));
         }else{
@@ -215,7 +259,7 @@ public class App {
         }
     }
 
-    private static void initializeDatabases() throws DBConnectionException {
+    private static void initializeDatabasesForRecGen() throws DBConnectionException {
         userIndexMap = new IndexMap();
         toolIndexMap = new IndexMap();
         toolConverter = new EclipseCommandToolConverter(toolIndexMap);
@@ -223,6 +267,13 @@ public class App {
         commandDB = new MongoCommandDB(commandConnectionParameters, toolConverter, userIndexMap, useCache);
         logger.debug("Connecting to Recommendation database with: " + recommendationConnectionParameters.toString());
         recommendationDB = new MongoRecommendationDB(recommendationConnectionParameters, userIndexMap);
+    }
+    
+    private static void initializeDatabasesForReport() throws DBConnectionException {
+        logger.debug("Connecting to Command database with: " + commandConnectionParameters.toString());
+        commandReportDB = new MongoCommandReportDB(commandConnectionParameters);
+        logger.debug("Connecting to Recommendation database with: " + recommendationConnectionParameters.toString());
+        reportDB = new MongoReportDB(recommendationConnectionParameters);
     }
 
 }

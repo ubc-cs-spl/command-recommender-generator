@@ -1,0 +1,153 @@
+package ca.ubc.cs.commandrecommender.report;
+
+import ca.ubc.cs.commandrecommender.Exception.DBConnectionException;
+import ca.ubc.cs.commandrecommender.db.ConnectionParameters;
+import com.mongodb.*;
+
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+public class MongoCommandReportDB {
+
+    public static final String DESCRIPTION_FIELD = "description";
+    public static final String COMMAND_ID_FIELD = "command_id";
+    public static final String ID_FIELD = "_id";
+    public static final String BINDING_USED_FIELD = "bindingUsed";
+    public static final String USER_ID_FIELD = "user_id";
+    public static final String TIME_FIELD = "time";
+    public static final String USE_COUNT_FIELD = "useCount";
+    public static final String HOTKEY_COUNT_FIELD = "hotkeyCount";
+    public static final String KIND_FIELD = "kind";
+    public static final String COMMANDS_COLLECTION = "commands";
+    public static final String COMMAND_FIELD = "command";
+    
+    private DBCollection commandCollection;
+    private MongoClient client;
+
+    public MongoCommandReportDB(ConnectionParameters connectionParameters) 
+    		throws DBConnectionException {
+        try {
+            client = new MongoClient(connectionParameters.getDbUrl(), connectionParameters.getDbPort());
+            commandCollection = client.getDB(connectionParameters.getdBName()).getCollection(COMMANDS_COLLECTION);
+        }catch(UnknownHostException ex){
+            throw new DBConnectionException(ex);
+        }
+    }
+
+    public void closeConnection() {
+        client.close();
+    }
+
+    public List<DBObject> getUsageReports(int days) {
+        long startTime = System.currentTimeMillis() - TimeUnit.DAYS.toMillis(days);
+        AggregationOptions options = AggregationOptions.builder()
+                .allowDiskUse(true)
+                .outputMode(AggregationOptions.OutputMode.CURSOR)
+                .build();
+        Cursor rawStats = commandCollection.aggregate(commandStatsPipeline(startTime), options);
+        List<DBObject> reports = new ArrayList<DBObject>();
+        String lastUser = null;
+        BasicDBList userStats = new BasicDBList();
+        int count = 0;
+        while (rawStats.hasNext()) {
+            DBObject stat = rawStats.next();
+            String userId = (String) ((DBObject) stat.get(ID_FIELD)).get(USER_ID_FIELD);
+            if (lastUser == null) {
+                lastUser = userId;
+            } else if (!userId.equals(lastUser)) {
+                reports.add(UsageReport.create(lastUser, userStats, count));
+                userStats = new BasicDBList();
+                count = 0;
+                lastUser = userId;
+            }
+            String cmdId = (String) ((DBObject) stat.get(ID_FIELD)).get(COMMAND_ID_FIELD);
+            int useCount = (Integer) stat.get(USE_COUNT_FIELD);
+            int hotkeyCount = (Integer) stat.get(HOTKEY_COUNT_FIELD);
+            userStats.add(CommandStats.create(cmdId, useCount, hotkeyCount));
+            count += useCount;
+        }
+        if (lastUser != null)
+            reports.add(UsageReport.create(lastUser, userStats, count));
+        return reports;
+    }
+
+    private List<DBObject> commandStatsPipeline(long startTime) {
+        DBObject match = new BasicDBObject("$match",
+                new BasicDBObject(KIND_FIELD, COMMAND_FIELD)
+                        .append(TIME_FIELD, new BasicDBObject("$gt", startTime)));
+        DBObject project = new BasicDBObject("$project",
+                new BasicDBObject(DESCRIPTION_FIELD, 1)
+                        .append(USER_ID_FIELD, 1)
+                        .append(BINDING_USED_FIELD, 1));
+        DBObject fieldsToGroupBy = new BasicDBObject(USER_ID_FIELD, "$" + USER_ID_FIELD)
+                .append(COMMAND_ID_FIELD, "$" + DESCRIPTION_FIELD);
+        DBObject groupFields = new BasicDBObject(ID_FIELD, fieldsToGroupBy)
+                .append(USE_COUNT_FIELD, new BasicDBObject("$sum", 1))
+                .append(HOTKEY_COUNT_FIELD, new BasicDBObject("$sum",
+                        new BasicDBObject("$cond", new Object[]{"$"+BINDING_USED_FIELD, 1, 0})));
+        DBObject group = new BasicDBObject("$group", groupFields);
+        DBObject sort = new BasicDBObject("$sort",
+                new BasicDBObject(ID_FIELD + "." + USER_ID_FIELD, 1)
+                        .append(USE_COUNT_FIELD, -1));
+        return Arrays.asList(match, project, group, sort);
+    }
+
+    /* The javascript query used
+    db.commands.aggregate(
+    [
+    {
+        $match:
+        {
+            kind:"command",
+            time: {
+                $gt:<date>
+            }
+        }
+    },
+    {
+        $project:
+        {
+            description:1,
+            user_id:1,
+            bindingUsed:1
+        }
+    },
+    {
+        $group:
+        {
+            _id:
+            {
+                user_id:"$user_id",
+                command_id:"$description"
+            },
+            useCount:
+            {
+                $sum:1
+            },
+            withHotkeyCount:
+            {
+                $sum:
+                {
+                    $cond: ["$bindingUsed", 1, 0]
+                }
+            }
+        }
+    },
+    {
+        $sort:
+        {
+            "_id.user_id": 1,
+            useCount: -1
+        }
+    }
+    ],
+    {
+        allowDiskUse:true
+    }
+    )
+    */
+
+}

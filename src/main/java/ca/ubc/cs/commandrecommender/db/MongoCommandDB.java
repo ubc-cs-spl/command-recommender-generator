@@ -16,19 +16,18 @@ import java.util.List;
  */
 public class MongoCommandDB extends AbstractCommandDB {
     private MongoClient client;
-    private String cmdDbName;
-    private DBCollection commandCollection;
     private boolean useCache;
     private HashMap<Integer, ToolUseCollection> userToolUsesMap;
+    private DBCollection commandCollection;
 
     public static final String COMMANDS_COLLECTION = "commands";
     public static final String KIND = "kind";
     public static final String COMMAND = "command";
 
-    public MongoCommandDB(ConnectionParameters connectionParameters, AbstractCommandToolConverter toolConverter, IndexMap userIndexMap, boolean useCache) throws DBConnectionException{
+    public MongoCommandDB(ConnectionParameters connectionParameters, AbstractCommandToolConverter toolConverter, 
+    		IndexMap userIndexMap, boolean useCache) throws DBConnectionException{
         super(toolConverter, userIndexMap);
         this.useCache = useCache;
-        this.cmdDbName = connectionParameters.getdBName();
         try {
             client = new MongoClient(connectionParameters.getDbUrl(), connectionParameters.getDbPort());
             commandCollection = client.getDB(connectionParameters.getdBName()).getCollection(COMMANDS_COLLECTION);
@@ -36,7 +35,6 @@ public class MongoCommandDB extends AbstractCommandDB {
         }catch(UnknownHostException ex){
             throw new DBConnectionException(ex);
         }
-
     }
 
     private void ensureIndex() {
