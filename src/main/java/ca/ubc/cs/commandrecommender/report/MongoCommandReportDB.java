@@ -8,7 +8,6 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 public class MongoCommandReportDB {
 
@@ -40,14 +39,13 @@ public class MongoCommandReportDB {
     public void closeConnection() {
         client.close();
     }
-
-    public List<DBObject> getUsageReports(int days) {
-        long startTime = System.currentTimeMillis() - TimeUnit.DAYS.toMillis(days);
+    
+    public List<DBObject> getUsageReports(long startTime, List<String> userIds) {
         AggregationOptions options = AggregationOptions.builder()
                 .allowDiskUse(true)
                 .outputMode(AggregationOptions.OutputMode.CURSOR)
                 .build();
-        Cursor rawStats = commandCollection.aggregate(commandStatsPipeline(startTime), options);
+        Cursor rawStats = commandCollection.aggregate(getReportPipeline(startTime, userIds), options);
         List<DBObject> reports = new ArrayList<DBObject>();
         String lastUser = null;
         BasicDBList userStats = new BasicDBList();
@@ -74,9 +72,10 @@ public class MongoCommandReportDB {
         return reports;
     }
 
-    private List<DBObject> commandStatsPipeline(long startTime) {
+    private List<DBObject> getReportPipeline(long startTime, List<String> userIds) {
         DBObject match = new BasicDBObject("$match",
                 new BasicDBObject(KIND_FIELD, COMMAND_FIELD)
+        				.append(USER_ID_FIELD, new BasicDBObject("$in", userIds))
                         .append(TIME_FIELD, new BasicDBObject("$gt", startTime)));
         DBObject project = new BasicDBObject("$project",
                 new BasicDBObject(DESCRIPTION_FIELD, 1)
@@ -104,6 +103,9 @@ public class MongoCommandReportDB {
             kind:"command",
             time: {
                 $gt:<date>
+            },
+            user: {
+                $in:<list of users>
             }
         }
     },

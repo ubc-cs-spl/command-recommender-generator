@@ -1,6 +1,5 @@
 package ca.ubc.cs.commandrecommender;
 
-
 import ca.ubc.cs.commandrecommender.Exception.DBConnectionException;
 import ca.ubc.cs.commandrecommender.db.*;
 import ca.ubc.cs.commandrecommender.generator.AlgorithmType;
@@ -13,14 +12,13 @@ import ca.ubc.cs.commandrecommender.model.acceptance.AbstractLearningAcceptance;
 import ca.ubc.cs.commandrecommender.model.acceptance.LearningAcceptanceType;
 import ca.ubc.cs.commandrecommender.report.MongoCommandReportDB;
 import ca.ubc.cs.commandrecommender.report.MongoReportDB;
-
+import com.mongodb.DBObject;
 import org.apache.commons.cli.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.mongodb.DBObject;
-
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Main class for running the command line recommendation generator
@@ -117,14 +115,18 @@ public class App {
     }
     
     private static void generateReports() throws DBConnectionException {
+        long startTime = System.currentTimeMillis() - TimeUnit.DAYS.toMillis(periodInDays);
     	initializeDatabasesForReport();
         long time = System.currentTimeMillis();
-        List<DBObject> reports = commandReportDB.getUsageReports(periodInDays);
-        logger.debug("Time to Retrieve Usage Stats Data From Database: {}", getAmountOfTimeTaken(time));
-        //commandDB.closeConnection();
+        List<String> userIds = reportDB.getRecentlyUploadedUserIds(startTime);
+        logger.debug("Time to retrieve users who have recently uploaded: {}", getAmountOfTimeTaken(time));
+        time = System.currentTimeMillis();
+        List<DBObject> reports = commandReportDB.getUsageReports(periodInDays, userIds);
+        logger.debug("Time to retrieve usage stats from database: {}", getAmountOfTimeTaken(time));
+        commandReportDB.closeConnection();
         time = System.currentTimeMillis();
         reportDB.updateCollection(reports);
-        logger.debug("Time to Record stats: {}", getAmountOfTimeTaken(time));
+        logger.debug("Time to record stats: {}", getAmountOfTimeTaken(time));
         reportDB.closeConnection();
     }
 

@@ -36,20 +36,22 @@ public class MongoRecommendationDB extends AbstractRecommendationDB{
     public static final String RANK_FIELD = "rank";
 
     private MongoClient recommendationClient;
-    private DBCollection userCollection;
-    private DBCollection recommendationCollection;
+    protected DBCollection userCollection;
+    protected DBCollection recommendationCollection;
     private DBCollection commandDetailsCollection;
+    private ConnectionParameters connectionParameters;
 
 
     public MongoRecommendationDB(ConnectionParameters connectionParameters, IndexMap userIndexMap)
             throws DBConnectionException{
         super(userIndexMap);
         try {
+        	this.connectionParameters = connectionParameters;
             recommendationClient = new MongoClient(connectionParameters.getDbUrl(),
                     connectionParameters.getDbPort());
-            this.userCollection = getCollection(connectionParameters, USER_COLLECTION);
-            this.recommendationCollection = getCollection(connectionParameters, USER_RECOMMENDATION_COLLECTION);
-            this.commandDetailsCollection = getCollection(connectionParameters, COMMAND_DETAILS_COLLECTION);
+            this.userCollection = getCollection(USER_COLLECTION);
+            this.recommendationCollection = getCollection(USER_RECOMMENDATION_COLLECTION);
+            this.commandDetailsCollection = getCollection(COMMAND_DETAILS_COLLECTION);
             ensureIndex();
         }catch(UnknownHostException ex){
             throw new DBConnectionException(ex);
@@ -66,9 +68,13 @@ public class MongoRecommendationDB extends AbstractRecommendationDB{
         }
     }
 
-    private DBCollection getCollection(ConnectionParameters connectionParameters, String collection) {
+    protected DBCollection getCollection(String collection) {
         return recommendationClient.getDB(connectionParameters.getdBName()).getCollection(collection);
     }
+	
+	public void closeConnection() {
+		recommendationClient.close();
+	}
     
     @Override
     public int getNumberOfKnownCommands() {
