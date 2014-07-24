@@ -19,11 +19,12 @@ public class UsageReport {
 	 * @param totalCommandUsed the total number of command used
 	 */
 	public static DBObject create(String userId, BasicDBList cmdStats, 
-			int totalInvocation, int totalCommandUsed) {
+			int totalInvocation, int totalCommandUsed, BasicDBList newCmds) {
 		return new BasicDBObject("user_id", userId)
                 .append("command_stats", cmdStats)
                 .append("total_invocation", totalInvocation)
-                .append("total_command_used", totalCommandUsed);
+                .append("total_command_used", totalCommandUsed)
+                .append("new_commands_learned", newCmds);
 	}
 
 }

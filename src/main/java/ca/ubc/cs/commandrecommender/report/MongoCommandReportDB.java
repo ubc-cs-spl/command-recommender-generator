@@ -2,7 +2,6 @@ package ca.ubc.cs.commandrecommender.report;
 
 import ca.ubc.cs.commandrecommender.Exception.DBConnectionException;
 import ca.ubc.cs.commandrecommender.db.ConnectionParameters;
-
 import com.google.common.collect.Iterators;
 import com.google.common.collect.PeekingIterator;
 import com.mongodb.*;
@@ -25,6 +24,8 @@ public class MongoCommandReportDB {
     public static final String KIND_FIELD = "kind";
     public static final String COMMANDS_COLLECTION = "commands";
     public static final String COMMAND_FIELD = "command";
+    public static final String NEW_FIELD = "new";
+    public static final String CURRENT_FIELD = "current";
     
     private DBCollection commandCollection;
     private MongoClient client;
@@ -59,25 +60,30 @@ public class MongoCommandReportDB {
         PeekingIterator<DBObject> cursor = Iterators.peekingIterator(rawStats);
         List<DBObject> reports = new ArrayList<DBObject>();
         while (cursor.hasNext()) {
-        	// retrieve the report for a user
+            // retrieve the report for a user
             String userId = (String) ((DBObject) cursor.peek().get(ID_FIELD)).get(USER_ID_FIELD);
             int totalCommandUsed = 0;
             int totalInvocation = 0;
-            BasicDBList cmdStats = new BasicDBList(); 
-        	while (cursor.hasNext() && 
-        			userId.equals(((DBObject) cursor.peek().get(ID_FIELD)).get(USER_ID_FIELD))) {
-        		// retrieve the stats for a command for the user
-        		DBObject stat = cursor.next();
+            BasicDBList cmdStats = new BasicDBList();
+            BasicDBList newCmds = new BasicDBList();
+            while (cursor.hasNext() &&
+                    userId.equals(((DBObject) cursor.peek().get(ID_FIELD)).get(USER_ID_FIELD))) {
+                // retrieve the stats for a command for the user
+                DBObject stat = cursor.next();
                 int useCount = (Integer) stat.get(USE_COUNT_FIELD);
+                if (useCount == 0)
+                    continue;
                 if (cmdLimit < 0 || totalCommandUsed < cmdLimit) {
-                    String cmdId = (String) ((DBObject) stat.get(ID_FIELD)).get(COMMAND_ID_FIELD);
                     int hotkeyCount = (Integer) stat.get(HOTKEY_COUNT_FIELD);
-                	cmdStats.add(CommandStats.create(cmdId, useCount, hotkeyCount));
+                    String cmdId = (String) ((DBObject) stat.get(ID_FIELD)).get(COMMAND_ID_FIELD);
+                    cmdStats.add(CommandStats.create(cmdId, useCount, hotkeyCount));
+                    if ((Boolean) stat.get(NEW_FIELD))
+                        newCmds.add(cmdId);
                 }
                 totalInvocation += useCount;
                 totalCommandUsed++;
-        	}
-        	reports.add(UsageReport.create(userId, cmdStats, totalInvocation, totalCommandUsed));
+            }
+            reports.add(UsageReport.create(userId, cmdStats, totalInvocation, totalCommandUsed, newCmds));
         }
         return reports;
     }
@@ -85,18 +91,23 @@ public class MongoCommandReportDB {
     private List<DBObject> getReportPipeline(long startTime, List<String> userIds) {
         DBObject match = new BasicDBObject("$match",
                 new BasicDBObject(KIND_FIELD, COMMAND_FIELD)
-        				.append(USER_ID_FIELD, new BasicDBObject("$in", userIds))
-                        .append(TIME_FIELD, new BasicDBObject("$gt", startTime)));
+                        .append(USER_ID_FIELD, new BasicDBObject("$in", userIds)));
+        DBObject afterStartTime = new BasicDBObject("$gt", new Object[]{"$" + TIME_FIELD, startTime});
         DBObject project = new BasicDBObject("$project",
                 new BasicDBObject(DESCRIPTION_FIELD, 1)
                         .append(USER_ID_FIELD, 1)
-                        .append(BINDING_USED_FIELD, 1));
+                        .append(BINDING_USED_FIELD, 1)
+                        .append(CURRENT_FIELD, afterStartTime));
         DBObject fieldsToGroupBy = new BasicDBObject(USER_ID_FIELD, "$" + USER_ID_FIELD)
                 .append(COMMAND_ID_FIELD, "$" + DESCRIPTION_FIELD);
+        DBObject useCountCond = new BasicDBObject("$cond", new Object[]{"$"+CURRENT_FIELD, 1, 0});
+        DBObject hotkeyCountCond = new BasicDBObject("$cond",
+                new Object[]{new BasicDBObject("$and",
+                        new Object[]{"$" + CURRENT_FIELD, "$" + BINDING_USED_FIELD}), 1, 0});
         DBObject groupFields = new BasicDBObject(ID_FIELD, fieldsToGroupBy)
-                .append(USE_COUNT_FIELD, new BasicDBObject("$sum", 1))
-                .append(HOTKEY_COUNT_FIELD, new BasicDBObject("$sum",
-                        new BasicDBObject("$cond", new Object[]{"$"+BINDING_USED_FIELD, 1, 0})));
+                .append(USE_COUNT_FIELD, new BasicDBObject("$sum", useCountCond))
+                .append(HOTKEY_COUNT_FIELD, new BasicDBObject("$sum", hotkeyCountCond))
+                .append(NEW_FIELD, new BasicDBObject("$min", "$" + CURRENT_FIELD));
         DBObject group = new BasicDBObject("$group", groupFields);
         DBObject sort = new BasicDBObject("$sort",
                 new BasicDBObject(ID_FIELD + "." + USER_ID_FIELD, 1)
@@ -104,18 +115,15 @@ public class MongoCommandReportDB {
         return Arrays.asList(match, project, group, sort);
     }
 
-    /* The javascript query used
+    /* the query used above
     db.commands.aggregate(
     [
     {
         $match:
         {
             kind:"command",
-            time: {
-                $gt:<date>
-            },
-            user: {
-                $in:<list of users>
+            user_id: {
+                $in: <userIds>
             }
         }
     },
@@ -124,7 +132,11 @@ public class MongoCommandReportDB {
         {
             description:1,
             user_id:1,
-            bindingUsed:1
+            bindingUsed:1,
+            current:
+            {
+                $gt: ["$time", <startTime>]
+            }
         }
     },
     {
@@ -137,14 +149,21 @@ public class MongoCommandReportDB {
             },
             useCount:
             {
-                $sum:1
+                $sum:
+                {
+                    $cond: ["$current", 1, 0]
+                }
             },
-            withHotkeyCount:
+            hotkeyCount:
             {
                 $sum:
                 {
-                    $cond: ["$bindingUsed", 1, 0]
+                    $cond: [{$and: ["$bindingUsed", "$current"]}, 1, 0]
                 }
+            },
+            new:
+            {
+                $min: "$current"
             }
         }
     },

@@ -122,7 +122,7 @@ public class App {
         List<String> userIds = reportDB.getRecentlyUploadedUserIds(startTime);
         logger.debug("Time to retrieve users who have recently uploaded: {}", getAmountOfTimeTaken(time));
         time = System.currentTimeMillis();
-        List<DBObject> reports = commandReportDB.getUsageReports(periodInDays, userIds, amount);
+        List<DBObject> reports = commandReportDB.getUsageReports(startTime, userIds, amount);
         logger.debug("Time to retrieve usage stats from database: {}", getAmountOfTimeTaken(time));
         commandReportDB.closeConnection();
         time = System.currentTimeMillis();
