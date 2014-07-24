@@ -51,7 +51,7 @@ public class App {
     private static String dbName = "commands-production";
     private static String dbUrl = "localhost";
     private static int port = 27017;
-    private static int amount = 10;
+    private static int amount = -1;
     private static String algorithmName = "MOST_WIDELY_USED";
     private static AlgorithmType algorithmType;
     private static AbstractLearningAcceptance acceptance;
@@ -102,7 +102,8 @@ public class App {
                 int userId = userIndexMap.getItemByItemId(user.getUserId());
                 time = System.currentTimeMillis();
                 ToolUseCollection history = commandDB.getUsersUsageData(user.getUserId());
-                logger.trace("Retrieving Usage Data for user: {}, number of entries: {}, in {}", user.getUserId(), history.size(), getAmountOfTimeTaken(time));
+                logger.trace("Retrieving Usage Data for user: {}, number of entries: {}, in {}",
+                        user.getUserId(), history.size(), getAmountOfTimeTaken(time));
                 time = System.currentTimeMillis();
                 RecommendationCollector recommendations = recGen.getRecommendationsForUser(user, history, amount, userId);
                 logger.trace("Recommendations for user: {}, gathered in {}", user.getUserId(), getAmountOfTimeTaken(time));
@@ -121,7 +122,7 @@ public class App {
         List<String> userIds = reportDB.getRecentlyUploadedUserIds(startTime);
         logger.debug("Time to retrieve users who have recently uploaded: {}", getAmountOfTimeTaken(time));
         time = System.currentTimeMillis();
-        List<DBObject> reports = commandReportDB.getUsageReports(periodInDays, userIds);
+        List<DBObject> reports = commandReportDB.getUsageReports(periodInDays, userIds, amount);
         logger.debug("Time to retrieve usage stats from database: {}", getAmountOfTimeTaken(time));
         commandReportDB.closeConnection();
         time = System.currentTimeMillis();
@@ -150,7 +151,7 @@ public class App {
         options.addOption(COMMAND_PASS, true, "Password for the user for the command data store. Default: none");
         options.addOption(RECOMMENDATION_USER, true, "User for your recommendation data store. Default: none");
         options.addOption(RECOMMENDATION_PASS, true, "Password for the user for the recommendation data store. Default: none");
-        options.addOption(AMOUNT, true, "Number of recommendations to generate for each user. Default: " + amount);
+        options.addOption(AMOUNT, true, "The maximum number of commands to include in the user report. Default: unlimited" + amount);
         options.addOption(ALGORITHM_TYPE, true, "Type of algorithm you want to use to generate the recommendations. Default: " + algorithmName);
         options.addOption(ACCEPTANCE_TYPE, true, "Acceptance type for the algorithm. Default: none");
         options.addOption(USE_CACHE, false, "Cache all usage data");
@@ -203,7 +204,9 @@ public class App {
 
  
         if(cmd.hasOption(GENERATE_REPORT)) {
+
         	generateReport = true;
+
             if(cmd.hasOption(TIME_PERIOD_IN_DAYS)) {
                 try {
                     periodInDays = Integer.parseInt(cmd.getOptionValue(TIME_PERIOD_IN_DAYS));
@@ -211,6 +214,15 @@ public class App {
                     throw new ParseException("The time period for which the reports will be generated is not valid.");
                 }
             }
+
+            if(cmd.hasOption(AMOUNT)){
+                try {
+                    amount = Integer.parseInt(cmd.getOptionValue(AMOUNT));
+                }catch (NumberFormatException ex){
+                    throw new ParseException("Not a valid amount.");
+                }
+            }
+
             return;
         }
         
@@ -228,14 +240,6 @@ public class App {
 
         if(cmd.hasOption(USE_CACHE)){
             useCache = true;
-        }
-
-        if(cmd.hasOption(AMOUNT)){
-            try {
-                amount = Integer.parseInt(cmd.getOptionValue(AMOUNT));
-            }catch (NumberFormatException ex){
-                throw new ParseException("Not a valid amount.");
-            }
         }
 
         if(cmd.hasOption(ALGORITHM_TYPE)){

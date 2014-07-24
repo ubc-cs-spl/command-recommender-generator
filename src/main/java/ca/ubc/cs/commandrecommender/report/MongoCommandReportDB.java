@@ -2,6 +2,9 @@ package ca.ubc.cs.commandrecommender.report;
 
 import ca.ubc.cs.commandrecommender.Exception.DBConnectionException;
 import ca.ubc.cs.commandrecommender.db.ConnectionParameters;
+
+import com.google.common.collect.Iterators;
+import com.google.common.collect.PeekingIterator;
 import com.mongodb.*;
 
 import java.net.UnknownHostException;
@@ -40,35 +43,42 @@ public class MongoCommandReportDB {
         client.close();
     }
     
-    public List<DBObject> getUsageReports(long startTime, List<String> userIds) {
+    /**
+     * 
+     * @param startTime the report will be generated based on usage data collected from the startTime to now
+     * @param userIds  the users to generate reports for
+     * @param cmdLimit maximum number of commands to output for a user. If negative, no limit is set
+     * @return
+     */
+    public List<DBObject> getUsageReports(long startTime, List<String> userIds, int cmdLimit) {
         AggregationOptions options = AggregationOptions.builder()
                 .allowDiskUse(true)
                 .outputMode(AggregationOptions.OutputMode.CURSOR)
                 .build();
         Cursor rawStats = commandCollection.aggregate(getReportPipeline(startTime, userIds), options);
+        PeekingIterator<DBObject> cursor = Iterators.peekingIterator(rawStats);
         List<DBObject> reports = new ArrayList<DBObject>();
-        String lastUser = null;
-        BasicDBList userStats = new BasicDBList();
-        int count = 0;
-        while (rawStats.hasNext()) {
-            DBObject stat = rawStats.next();
-            String userId = (String) ((DBObject) stat.get(ID_FIELD)).get(USER_ID_FIELD);
-            if (lastUser == null) {
-                lastUser = userId;
-            } else if (!userId.equals(lastUser)) {
-                reports.add(UsageReport.create(lastUser, userStats, count));
-                userStats = new BasicDBList();
-                count = 0;
-                lastUser = userId;
-            }
-            String cmdId = (String) ((DBObject) stat.get(ID_FIELD)).get(COMMAND_ID_FIELD);
-            int useCount = (Integer) stat.get(USE_COUNT_FIELD);
-            int hotkeyCount = (Integer) stat.get(HOTKEY_COUNT_FIELD);
-            userStats.add(CommandStats.create(cmdId, useCount, hotkeyCount));
-            count += useCount;
+        while (cursor.hasNext()) {
+        	// retrieve the report for a user
+            String userId = (String) ((DBObject) cursor.peek().get(ID_FIELD)).get(USER_ID_FIELD);
+            int totalCommandUsed = 0;
+            int totalInvocation = 0;
+            BasicDBList cmdStats = new BasicDBList(); 
+        	while (cursor.hasNext() && 
+        			userId.equals(((DBObject) cursor.peek().get(ID_FIELD)).get(USER_ID_FIELD))) {
+        		// retrieve the stats for a command for the user
+        		DBObject stat = cursor.next();
+                int useCount = (Integer) stat.get(USE_COUNT_FIELD);
+                if (cmdLimit < 0 || totalCommandUsed < cmdLimit) {
+                    String cmdId = (String) ((DBObject) stat.get(ID_FIELD)).get(COMMAND_ID_FIELD);
+                    int hotkeyCount = (Integer) stat.get(HOTKEY_COUNT_FIELD);
+                	cmdStats.add(CommandStats.create(cmdId, useCount, hotkeyCount));
+                }
+                totalInvocation += useCount;
+                totalCommandUsed++;
+        	}
+        	reports.add(UsageReport.create(userId, cmdStats, totalInvocation, totalCommandUsed));
         }
-        if (lastUser != null)
-            reports.add(UsageReport.create(lastUser, userStats, count));
         return reports;
     }
 
