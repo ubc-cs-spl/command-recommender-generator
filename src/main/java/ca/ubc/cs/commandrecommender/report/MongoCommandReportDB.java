@@ -5,11 +5,13 @@ import ca.ubc.cs.commandrecommender.db.ConnectionParameters;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.PeekingIterator;
 import com.mongodb.*;
+import org.bson.types.ObjectId;
 
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 public class MongoCommandReportDB {
 
@@ -51,7 +53,10 @@ public class MongoCommandReportDB {
      * @param cmdLimit maximum number of commands to output for a user. If negative, no limit is set
      * @return
      */
-    public List<DBObject> getUsageReports(long startTime, List<String> userIds, int cmdLimit) {
+    public List<DBObject> getUsageReports(long startTime,
+                                          List<String> userIds,
+                                          int cmdLimit,
+                                          Map<String, ObjectId> commandDetailsMap) {
         AggregationOptions options = AggregationOptions.builder()
                 .allowDiskUse(true)
                 .outputMode(AggregationOptions.OutputMode.CURSOR)
@@ -76,9 +81,10 @@ public class MongoCommandReportDB {
                 if (cmdLimit < 0 || totalCommandUsed < cmdLimit) {
                     int hotkeyCount = (Integer) stat.get(HOTKEY_COUNT_FIELD);
                     String cmdId = (String) ((DBObject) stat.get(ID_FIELD)).get(COMMAND_ID_FIELD);
-                    cmdStats.add(CommandStats.create(cmdId, useCount, hotkeyCount));
+                    ObjectId cmdDetailObjectId = commandDetailsMap.get(cmdId);
+                    cmdStats.add(CommandStats.create(cmdDetailObjectId, useCount, hotkeyCount));
                     if ((Boolean) stat.get(NEW_FIELD))
-                        newCmds.add(cmdId);
+                        newCmds.add(cmdDetailObjectId);
                 }
                 totalInvocation += useCount;
                 totalCommandUsed++;

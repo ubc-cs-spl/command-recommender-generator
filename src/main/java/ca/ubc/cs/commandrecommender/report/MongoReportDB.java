@@ -8,10 +8,12 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
+import org.bson.types.ObjectId;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 public class MongoReportDB extends MongoRecommendationDB {
 	
@@ -24,6 +26,10 @@ public class MongoReportDB extends MongoRecommendationDB {
 		super(connectionParameters, new IndexMap());
 		reportCollection = getCollection(REPORTS_COLLECTION);
 	}
+
+    public Map<String, ObjectId> getCommandDetailsMap() {
+        return commandDetailsMap;
+    }
 	
 	public void updateCollection(List<DBObject> reports) {
 		reportCollection.drop();

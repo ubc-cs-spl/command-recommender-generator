@@ -6,11 +6,10 @@ import ca.ubc.cs.commandrecommender.model.Rationale;
 import ca.ubc.cs.commandrecommender.model.User;
 import com.google.common.primitives.Ints;
 import com.mongodb.*;
+import org.bson.types.ObjectId;
 
 import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * Adapter for the recommendation, user, and command details collections in mongoDB
@@ -36,11 +35,12 @@ public class MongoRecommendationDB extends AbstractRecommendationDB{
     public static final String RANK_FIELD = "rank";
 
     private MongoClient recommendationClient;
-    protected DBCollection userCollection;
-    protected DBCollection recommendationCollection;
     private DBCollection commandDetailsCollection;
     private ConnectionParameters connectionParameters;
 
+    protected DBCollection userCollection;
+    protected DBCollection recommendationCollection;
+    protected Map<String, ObjectId> commandDetailsMap;
 
     public MongoRecommendationDB(ConnectionParameters connectionParameters, IndexMap userIndexMap)
             throws DBConnectionException{
@@ -49,9 +49,10 @@ public class MongoRecommendationDB extends AbstractRecommendationDB{
         	this.connectionParameters = connectionParameters;
             recommendationClient = new MongoClient(connectionParameters.getDbUrl(),
                     connectionParameters.getDbPort());
-            this.userCollection = getCollection(USER_COLLECTION);
-            this.recommendationCollection = getCollection(USER_RECOMMENDATION_COLLECTION);
-            this.commandDetailsCollection = getCollection(COMMAND_DETAILS_COLLECTION);
+            userCollection = getCollection(USER_COLLECTION);
+            recommendationCollection = getCollection(USER_RECOMMENDATION_COLLECTION);
+            commandDetailsCollection = getCollection(COMMAND_DETAILS_COLLECTION);
+            initCommandDetailsMap();
             ensureIndex();
         }catch(UnknownHostException ex){
             throw new DBConnectionException(ex);
@@ -65,6 +66,16 @@ public class MongoRecommendationDB extends AbstractRecommendationDB{
         	compoundIndex.put(ALGORITHM_TYPE_FIELD, 1);
         	compoundIndex.put(COMMAND_ID_FIELD, 1);
             recommendationCollection.createIndex(compoundIndex);
+        }
+    }
+
+    private void initCommandDetailsMap() {
+        commandDetailsMap = new HashMap<String, ObjectId>();
+        DBCursor details = commandDetailsCollection.find();
+        for (DBObject detail : details) {
+            String commandId = (String) detail.get(COMMAND_ID_FIELD);
+            ObjectId objectId = (ObjectId) detail.get(COMMAND_DETAIL_OBJECT_ID_FIELD);
+            commandDetailsMap.put(commandId, objectId);
         }
     }
 
@@ -94,8 +105,8 @@ public class MongoRecommendationDB extends AbstractRecommendationDB{
         .append(COMMAND_ID_FIELD, commandId);
         DBObject recommendation = recommendationCollection.findOne(queryForOldRecommendation);
         
-        if (recommendation == null) { // we never recommended it before
-            DBObject commandDetail = commandDetailsCollection.findOne(new BasicDBObject(COMMAND_ID_FIELD, commandId));
+        if (recommendation == null) {
+            ObjectId commandDetail = commandDetailsMap.get(commandId);
             // If the command detail is not know, we would not make the recommendation for the user
             // This situation should not occur for the production version as all the tools we know of must be in the 
             // command detail table
@@ -104,7 +115,7 @@ public class MongoRecommendationDB extends AbstractRecommendationDB{
             recommendation =  new BasicDBObject(USER_ID_FIELD, userId)
             .append(ALGORITHM_TYPE_FIELD, algorithmType)
             .append(COMMAND_ID_FIELD, commandId)
-            .append(COMMAND_DETAIL_ID_FIELD, commandDetail.get(COMMAND_DETAIL_OBJECT_ID_FIELD));
+            .append(COMMAND_DETAIL_ID_FIELD, commandDetail);
         }
         
         recommendation.put(RANK_FIELD, rationale.getRank());

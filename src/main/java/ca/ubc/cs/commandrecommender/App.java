@@ -107,8 +107,10 @@ public class App {
                 time = System.currentTimeMillis();
                 RecommendationCollector recommendations = recGen.getRecommendationsForUser(user, history, amount, userId);
                 logger.trace("Recommendations for user: {}, gathered in {}", user.getUserId(), getAmountOfTimeTaken(time));
+                time = System.currentTimeMillis();
                 user.saveRecommendations(recommendations, algorithmType.getRationale(), algorithmType.name(), toolIndexMap);
-                logger.trace("Saved and completed recommendation gathering process for user: {}", user.getUserId());
+                logger.trace("Saved and completed recommendation gathering process for user: {}, in {}",
+                        user.getUserId(), getAmountOfTimeTaken(time));
                 totalUserRecommendation++;
             }
         }
@@ -122,7 +124,8 @@ public class App {
         List<String> userIds = reportDB.getRecentlyUploadedUserIds(startTime);
         logger.debug("Time to retrieve users who have recently uploaded: {}", getAmountOfTimeTaken(time));
         time = System.currentTimeMillis();
-        List<DBObject> reports = commandReportDB.getUsageReports(startTime, userIds, amount);
+        List<DBObject> reports = commandReportDB.getUsageReports(startTime, userIds, amount,
+                reportDB.getCommandDetailsMap());
         logger.debug("Time to retrieve usage stats from database: {}", getAmountOfTimeTaken(time));
         commandReportDB.closeConnection();
         time = System.currentTimeMillis();
