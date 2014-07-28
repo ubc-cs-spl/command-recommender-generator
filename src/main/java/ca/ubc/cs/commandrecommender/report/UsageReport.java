@@ -24,7 +24,7 @@ public class UsageReport {
                 .append("command_stats", cmdStats)
                 .append("total_invocation", totalInvocation)
                 .append("total_command_used", totalCommandUsed)
-                .append("new_commands_learned", newCmds);
+                .append("newly_learned_commands", newCmds);
 	}
 
 }

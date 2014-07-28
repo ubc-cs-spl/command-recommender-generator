@@ -28,6 +28,7 @@ public class MongoCommandReportDB {
     public static final String COMMAND_FIELD = "command";
     public static final String NEW_FIELD = "new";
     public static final String CURRENT_FIELD = "current";
+    public static final String COMMAND_DETAIL_ID_FIELD = "command_detail_id";
     
     private DBCollection commandCollection;
     private MongoClient client;
@@ -84,7 +85,7 @@ public class MongoCommandReportDB {
                     ObjectId cmdDetailObjectId = commandDetailsMap.get(cmdId);
                     cmdStats.add(CommandStats.create(cmdDetailObjectId, useCount, hotkeyCount));
                     if ((Boolean) stat.get(NEW_FIELD))
-                        newCmds.add(cmdDetailObjectId);
+                        newCmds.add(new BasicDBObject(COMMAND_DETAIL_ID_FIELD, cmdDetailObjectId));
                 }
                 totalInvocation += useCount;
                 totalCommandUsed++;
