@@ -4,8 +4,10 @@ import ca.ubc.cs.commandrecommender.Exception.DBConnectionException;
 import ca.ubc.cs.commandrecommender.model.IndexMap;
 import ca.ubc.cs.commandrecommender.model.Rationale;
 import ca.ubc.cs.commandrecommender.model.User;
+
 import com.google.common.primitives.Ints;
 import com.mongodb.*;
+
 import org.bson.types.ObjectId;
 
 import java.net.UnknownHostException;
@@ -47,8 +49,13 @@ public class MongoRecommendationDB extends AbstractRecommendationDB{
         super(userIndexMap);
         try {
         	this.connectionParameters = connectionParameters;
-            recommendationClient = new MongoClient(connectionParameters.getDbUrl(),
-                    connectionParameters.getDbPort());
+        	ServerAddress serverAddress = new ServerAddress(connectionParameters.getDbUrl(), connectionParameters.getDbPort());
+        	if(!connectionParameters.getDbUser().equals("")){
+        		List<MongoCredential> credentialList = createCredentialList(connectionParameters);        		
+        		recommendationClient = new MongoClient(serverAddress, credentialList);
+        	}else{
+        		recommendationClient = new MongoClient(serverAddress);
+        	}           
             userCollection = getCollection(USER_COLLECTION);
             recommendationCollection = getCollection(USER_RECOMMENDATION_COLLECTION);
             commandDetailsCollection = getCollection(COMMAND_DETAILS_COLLECTION);
@@ -58,6 +65,12 @@ public class MongoRecommendationDB extends AbstractRecommendationDB{
             throw new DBConnectionException(ex);
         }
     }
+    
+    private List<MongoCredential> createCredentialList(
+			ConnectionParameters connectionParameters) {
+		MongoCredential userCredential = MongoCredential.createMongoCRCredential(connectionParameters.getDbUser(), connectionParameters.getdBName(), connectionParameters.getDbPassword().toCharArray());
+		return Collections.singletonList(userCredential);
+	}
 
     private void ensureIndex() {
         if(recommendationCollection != null) {
