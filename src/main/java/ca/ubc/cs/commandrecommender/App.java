@@ -24,52 +24,38 @@ import java.util.concurrent.TimeUnit;
  * Main class for running the command line recommendation generator
  */
 public class App {
-    public static final String COMMAND_HOST = "ch";
-    public static final String COMMAND_PORT = "cp";
-    public static final String COMMAND_DB_NAME = "cn";
-    public static final String RECOMMENDATION_HOST = "rh";
-    public static final String RECOMMENDATION_PORT = "rp";
-    public static final String RECOMMENDATION_DB_NAME = "rn";
-    public static final String COMMAND_USER = "cu";
-    public static final String COMMAND_PASS = "cpass";
-    public static final String RECOMMENDATION_USER = "ru";
-    public static final String RECOMMENDATION_PASS = "rpass";
-    public static final String AMOUNT = "a";
-    public static final String ALGORITHM_TYPE = "t";
-    public static final String ACCEPTANCE_TYPE = "c";
-    public static final String USE_CACHE = "u";
-    public static final String TIME_PERIOD_IN_DAYS = "p";
-    public static final String GENERATE_REPORT = "report";
-    
-    private static AbstractCommandToolConverter toolConverter;
-    private static ConnectionParameters commandConnectionParameters;
-    private static ConnectionParameters recommendationConnectionParameters;
+ 
+    private static AbstractCommandToolConverter toolConverter;   
     private static AbstractCommandDB commandDB;
     private static AbstractRecommendationDB recommendationDB;
     private static IndexMap userIndexMap;
     private static IndexMap toolIndexMap;
-    private static String dbName = "commands-production";
-    private static String dbUrl = "localhost";
-    private static int port = 27017;
-    private static int amount = -1;
-    private static String algorithmName = "MOST_WIDELY_USED";
+
     private static AlgorithmType algorithmType;
     private static AbstractLearningAcceptance acceptance;
     private static Logger logger = LogManager.getLogger(App.class);
-    private static boolean useCache = false;
-    private static boolean generateReport = false;
-    private static int periodInDays = 7;
+    private static boolean useCache;
+    private static boolean generateReport;
+    private static int periodInDays;
+    private static int amount;
 	private static MongoCommandReportDB commandReportDB;
 	private static MongoReportDB reportDB;
+	private static RecommenderOptions recommenderOptions;
 
     public static void main(String[] args) throws DBConnectionException {
         //TODO: use authorization for production
         //TODO: close connections properly
         //TODO: make more robust
         try {
-            parseCommandLineArguments(args);
+            recommenderOptions = new RecommenderOptions(args);
+            useCache = recommenderOptions.isUseCache();
+            generateReport = recommenderOptions.isGenerateReport();
+            periodInDays = recommenderOptions.getPeriodInDays();
+            amount = recommenderOptions.getAmount();
+            algorithmType = recommenderOptions.getAlgorithmType();
+            acceptance = recommenderOptions.getAcceptance();            
         } catch (ParseException e) {
-           System.out.println("Invalid argument: " + e.getMessage());
+           System.out.println(e.getMessage());
            System.exit(1);
         }
         if (generateReport) {
@@ -142,147 +128,21 @@ public class App {
         return String.format("%02d:%02d:%02d:%d", hour, minute, second, (difference%1000));
     }
 
-    private static Options createCommandLineOptions() {
-        Options options = new Options();
-        options.addOption(COMMAND_HOST, true, "Specify the host of your command data store. Default: " + dbUrl);
-        options.addOption(COMMAND_PORT, true, "Specify the port of your command data store on. Default: " + port);
-        options.addOption(COMMAND_DB_NAME, true, "Name for the database which contains your commands. Default: " + dbName);
-        options.addOption(RECOMMENDATION_HOST, true, "Specify the host of your recommendation data store. Default: Same as command data store");
-        options.addOption(RECOMMENDATION_PORT, true, "Specify the port of your recommendation data store. Default: Same as command data store");
-        options.addOption(RECOMMENDATION_DB_NAME, true, "Specify the name of the database that contains your recommendation and user data. Default: Same as command data store");
-        options.addOption(COMMAND_USER, true, "User for your command data store. Default: none");
-        options.addOption(COMMAND_PASS, true, "Password for the user for the command data store. Default: none");
-        options.addOption(RECOMMENDATION_USER, true, "User for your recommendation data store. Default: none");
-        options.addOption(RECOMMENDATION_PASS, true, "Password for the user for the recommendation data store. Default: none");
-        options.addOption(AMOUNT, true, "The maximum number of commands to include in the user report. Default: unlimited" + amount);
-        options.addOption(ALGORITHM_TYPE, true, "Type of algorithm you want to use to generate the recommendations. Default: " + algorithmName);
-        options.addOption(ACCEPTANCE_TYPE, true, "Acceptance type for the algorithm. Default: none");
-        options.addOption(USE_CACHE, false, "Cache all usage data");
-        options.addOption(GENERATE_REPORT, false, "Whether to generate report or recommendations. Default: false (generate recommendations)");
-        options.addOption(TIME_PERIOD_IN_DAYS, true, "The time period for the usage report in days. Default: 7");
-        return options;
-    }
-
-    private static void parseCommandLineArguments(String[] args) throws ParseException {
-        Options options = createCommandLineOptions();
-        CommandLineParser parser = new BasicParser();
-        CommandLine cmd = parser.parse(options, args);
-        if(cmd.hasOption(COMMAND_HOST)){
-            dbUrl = cmd.getOptionValue(COMMAND_HOST);
-        }
-        if(cmd.hasOption(COMMAND_PORT)){
-            try {
-                port = Integer.parseInt(cmd.getOptionValue(COMMAND_PORT));
-            }catch (NumberFormatException ex){
-                throw new ParseException("Command port number is not valid.");
-            }
-        }
-        if(cmd.hasOption(COMMAND_DB_NAME)){
-            dbName = cmd.getOptionValue(COMMAND_DB_NAME);
-        }
-        commandConnectionParameters = new ConnectionParameters(dbUrl, port, dbName);
-
-        if(cmd.hasOption(COMMAND_USER)){
-            commandConnectionParameters.setDbUser(cmd.getOptionValue(COMMAND_USER));
-        }
-
-        if(cmd.hasOption(COMMAND_PASS)){
-            commandConnectionParameters.setDbPassword(cmd.getOptionValue(COMMAND_PASS));
-        }
-
-        if(cmd.hasOption(RECOMMENDATION_HOST)){
-            dbUrl = cmd.getOptionValue(RECOMMENDATION_HOST);
-        }
-        if(cmd.hasOption(RECOMMENDATION_PORT)){
-            try {
-                port = Integer.parseInt(cmd.getOptionValue(RECOMMENDATION_PORT));
-            }catch (NumberFormatException ex){
-                throw new ParseException("Recommendation port number is not valid.");
-            }
-        }
-        if(cmd.hasOption(RECOMMENDATION_DB_NAME)){
-            dbName = cmd.getOptionValue(RECOMMENDATION_DB_NAME);
-        }
-        recommendationConnectionParameters = new ConnectionParameters(dbUrl, port, dbName);
-
- 
-        if(cmd.hasOption(GENERATE_REPORT)) {
-
-        	generateReport = true;
-
-            if(cmd.hasOption(TIME_PERIOD_IN_DAYS)) {
-                try {
-                    periodInDays = Integer.parseInt(cmd.getOptionValue(TIME_PERIOD_IN_DAYS));
-                } catch (NumberFormatException ex) {
-                    throw new ParseException("The time period for which the reports will be generated is not valid.");
-                }
-            }
-
-            if(cmd.hasOption(AMOUNT)){
-                try {
-                    amount = Integer.parseInt(cmd.getOptionValue(AMOUNT));
-                }catch (NumberFormatException ex){
-                    throw new ParseException("Not a valid amount.");
-                }
-            }
-
-            return;
-        }
-        
-        if(cmd.hasOption(RECOMMENDATION_USER)){
-            recommendationConnectionParameters.setDbUser(cmd.getOptionValue(RECOMMENDATION_USER));
-        }else{
-            recommendationConnectionParameters.setDbUser(commandConnectionParameters.getDbUser());
-        }
-
-        if(cmd.hasOption(RECOMMENDATION_PASS)){
-            recommendationConnectionParameters.setDbPassword(cmd.getOptionValue(RECOMMENDATION_PASS));
-        }else{
-            recommendationConnectionParameters.setDbPassword(commandConnectionParameters.getDbPassword());
-        }
-
-        if(cmd.hasOption(USE_CACHE)){
-            useCache = true;
-        }
-
-        if(cmd.hasOption(ALGORITHM_TYPE)){
-            try {
-                algorithmType = AlgorithmType.valueOf(cmd.getOptionValue(ALGORITHM_TYPE));
-            }catch (IllegalArgumentException exp){
-                throw new ParseException("Invalid algorithm");
-            }
-        }else{
-            algorithmType = AlgorithmType.valueOf(algorithmName);
-        }
-
-        if(cmd.hasOption(ACCEPTANCE_TYPE)){
-            try {
-                acceptance = LearningAcceptanceType.valueOf(cmd.getOptionValue('c')).getAcceptance();
-            }catch (IllegalArgumentException ex){
-                throw new ParseException("Invalid acceptance type.");
-            }
-        }else{
-            acceptance = null;
-            if (algorithmType.needsAcceptance())
-                throw new ParseException("Acceptance type must be specified for the selected algorithm");
-        }
-    }
-
     private static void initializeDatabasesForRecGen() throws DBConnectionException {
         userIndexMap = new IndexMap();
         toolIndexMap = new IndexMap();
         toolConverter = new EclipseCommandToolConverter(toolIndexMap);
-        logger.debug("Connecting to Command database with: " + commandConnectionParameters.toString());
-        commandDB = new MongoCommandDB(commandConnectionParameters, toolConverter, userIndexMap, useCache);
-        logger.debug("Connecting to Recommendation database with: " + recommendationConnectionParameters.toString());
-        recommendationDB = new MongoRecommendationDB(recommendationConnectionParameters, userIndexMap);
+        logger.debug("Connecting to Command database with: " + recommenderOptions.getCommandConnectionParameters().toString());
+        commandDB = new MongoCommandDB(recommenderOptions, toolConverter, userIndexMap, useCache);
+        logger.debug("Connecting to Recommendation database with: " + recommenderOptions.getRecommendationConnectionParamters().toString());
+        recommendationDB = new MongoRecommendationDB(recommenderOptions, userIndexMap);
     }
     
     private static void initializeDatabasesForReport() throws DBConnectionException {
-        logger.debug("Connecting to Command database with: " + commandConnectionParameters.toString());
-        commandReportDB = new MongoCommandReportDB(commandConnectionParameters);
-        logger.debug("Connecting to Recommendation database with: " + recommendationConnectionParameters.toString());
-        reportDB = new MongoReportDB(recommendationConnectionParameters);
+        logger.debug("Connecting to Command database with: " + recommenderOptions.getCommandConnectionParameters().toString());
+        commandReportDB = new MongoCommandReportDB(recommenderOptions);
+        logger.debug("Connecting to Recommendation database with: " + recommenderOptions.getRecommendationConnectionParamters().toString());
+        reportDB = new MongoReportDB(recommenderOptions);
     }
 
 }

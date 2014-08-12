@@ -1,5 +1,6 @@
 package ca.ubc.cs.commandrecommender.db;
 
+import ca.ubc.cs.commandrecommender.RecommenderOptions;
 import ca.ubc.cs.commandrecommender.Exception.DBConnectionException;
 import ca.ubc.cs.commandrecommender.model.IndexMap;
 import ca.ubc.cs.commandrecommender.model.Rationale;
@@ -44,11 +45,11 @@ public class MongoRecommendationDB extends AbstractRecommendationDB{
     protected DBCollection recommendationCollection;
     protected Map<String, ObjectId> commandDetailsMap;
 
-    public MongoRecommendationDB(ConnectionParameters connectionParameters, IndexMap userIndexMap)
+    public MongoRecommendationDB(RecommenderOptions options, IndexMap userIndexMap)
             throws DBConnectionException{
         super(userIndexMap);
         try {
-        	this.connectionParameters = connectionParameters;
+        	this.connectionParameters = options.getRecommendationConnectionParamters();
         	ServerAddress serverAddress = new ServerAddress(connectionParameters.getDbUrl(), connectionParameters.getDbPort());
         	if(!connectionParameters.getDbUser().equals("")){
         		List<MongoCredential> credentialList = createCredentialList(connectionParameters);        		

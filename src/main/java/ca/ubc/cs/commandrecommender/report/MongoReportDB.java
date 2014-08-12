@@ -1,13 +1,16 @@
 package ca.ubc.cs.commandrecommender.report;
 
+import ca.ubc.cs.commandrecommender.RecommenderOptions;
 import ca.ubc.cs.commandrecommender.Exception.DBConnectionException;
 import ca.ubc.cs.commandrecommender.db.ConnectionParameters;
 import ca.ubc.cs.commandrecommender.db.MongoRecommendationDB;
 import ca.ubc.cs.commandrecommender.model.IndexMap;
+
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
+
 import org.bson.types.ObjectId;
 
 import java.util.ArrayList;
@@ -21,9 +24,9 @@ public class MongoReportDB extends MongoRecommendationDB {
 	
 	public static final String REPORTS_COLLECTION = "reports";
 	
-	public MongoReportDB(ConnectionParameters connectionParameters) throws DBConnectionException {
-		// the index map is useless here, but using null could lead to NPE on super class methods
-		super(connectionParameters, new IndexMap());
+	public MongoReportDB(RecommenderOptions recommenderOptions) throws DBConnectionException {
+		// the index map is useless here, but using null could lead to NPE on super class methods		
+		super(recommenderOptions, new IndexMap());
 		reportCollection = getCollection(REPORTS_COLLECTION);
 	}
 

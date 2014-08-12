@@ -1,5 +1,6 @@
 package ca.ubc.cs.commandrecommender.db;
 
+import ca.ubc.cs.commandrecommender.RecommenderOptions;
 import ca.ubc.cs.commandrecommender.Exception.DBConnectionException;
 import ca.ubc.cs.commandrecommender.model.IndexMap;
 import ca.ubc.cs.commandrecommender.model.ToolUse;
@@ -26,11 +27,12 @@ public class MongoCommandDB extends AbstractCommandDB {
     public static final String KIND = "kind";
     public static final String COMMAND = "command";
 
-    public MongoCommandDB(ConnectionParameters connectionParameters, AbstractCommandToolConverter toolConverter, 
+    public MongoCommandDB(RecommenderOptions options, AbstractCommandToolConverter toolConverter, 
     		IndexMap userIndexMap, boolean useCache) throws DBConnectionException{
         super(toolConverter, userIndexMap);
         this.useCache = useCache;
         try {
+        	ConnectionParameters connectionParameters = options.getCommandConnectionParameters();
         	ServerAddress serverAddress = new ServerAddress(connectionParameters.getDbUrl(), connectionParameters.getDbPort());
         	if(!connectionParameters.getDbUser().equals("")){
         		List<MongoCredential> credentialList = createCredentialList(connectionParameters);        		
