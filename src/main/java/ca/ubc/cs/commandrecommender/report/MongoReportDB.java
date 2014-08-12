@@ -2,7 +2,6 @@ package ca.ubc.cs.commandrecommender.report;
 
 import ca.ubc.cs.commandrecommender.RecommenderOptions;
 import ca.ubc.cs.commandrecommender.Exception.DBConnectionException;
-import ca.ubc.cs.commandrecommender.db.ConnectionParameters;
 import ca.ubc.cs.commandrecommender.db.MongoRecommendationDB;
 import ca.ubc.cs.commandrecommender.model.IndexMap;
 
@@ -22,12 +21,11 @@ public class MongoReportDB extends MongoRecommendationDB {
 	
 	private DBCollection reportCollection;
 	
-	public static final String REPORTS_COLLECTION = "reports";
 	
 	public MongoReportDB(RecommenderOptions recommenderOptions) throws DBConnectionException {
 		// the index map is useless here, but using null could lead to NPE on super class methods		
 		super(recommenderOptions, new IndexMap());
-		reportCollection = getCollection(REPORTS_COLLECTION);
+		reportCollection = getCollection(recommenderOptions.getReportTable());
 	}
 
     public Map<String, ObjectId> getCommandDetailsMap() {

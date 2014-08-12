@@ -23,7 +23,6 @@ public class MongoCommandDB extends AbstractCommandDB {
     private HashMap<Integer, ToolUseCollection> userToolUsesMap;
     private DBCollection commandCollection;
 
-    public static final String COMMANDS_COLLECTION = "commands";
     public static final String KIND = "kind";
     public static final String COMMAND = "command";
 
@@ -40,7 +39,7 @@ public class MongoCommandDB extends AbstractCommandDB {
         	}else{
         		client = new MongoClient(serverAddress);
         	}
-            commandCollection = client.getDB(connectionParameters.getdBName()).getCollection(COMMANDS_COLLECTION);
+            commandCollection = client.getDB(connectionParameters.getdBName()).getCollection(options.getCommandTable());
             ensureIndex();
         }catch(UnknownHostException ex){
             throw new DBConnectionException(ex);

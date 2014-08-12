@@ -27,7 +27,6 @@ public class MongoCommandReportDB {
     public static final String USE_COUNT_FIELD = "useCount";
     public static final String HOTKEY_COUNT_FIELD = "hotkeyCount";
     public static final String KIND_FIELD = "kind";
-    public static final String COMMANDS_COLLECTION = "commands";
     public static final String COMMAND_FIELD = "command";
     public static final String NEW_FIELD = "new";
     public static final String CURRENT_FIELD = "current";
@@ -41,7 +40,7 @@ public class MongoCommandReportDB {
         try {
         	ConnectionParameters connectionParameters = recommenderOptions.getCommandConnectionParameters();
             client = new MongoClient(connectionParameters.getDbUrl(), connectionParameters.getDbPort());
-            commandCollection = client.getDB(connectionParameters.getdBName()).getCollection(COMMANDS_COLLECTION);
+            commandCollection = client.getDB(connectionParameters.getdBName()).getCollection(recommenderOptions.getCommandTable());
         }catch(UnknownHostException ex){
             throw new DBConnectionException(ex);
         }

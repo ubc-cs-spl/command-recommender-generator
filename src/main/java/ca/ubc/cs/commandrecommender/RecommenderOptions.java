@@ -1,6 +1,7 @@
 package ca.ubc.cs.commandrecommender;
 
 import java.util.Iterator;
+
 import org.apache.commons.cli.BasicParser;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -31,15 +32,27 @@ public class RecommenderOptions {
     public static final String USE_CACHE = "u";
     public static final String TIME_PERIOD_IN_DAYS = "p";
     public static final String GENERATE_REPORT = "report";
+    public static final String COMMAND_TABLE = "command_table";
+    public static final String RECOMMENDATION_TABLE = "recommendation_table";
+    public static final String USER_TABLE = "user_table";
+    public static final String REPORT_TABLE = "report_table";
+    public static final String COMMAND_DETAIL_TABLE = "command_detail_table";
     public static final String HELP = "h";
+    
+    protected ConnectionParameters commandConnectionParameters = null;
+    protected ConnectionParameters recommendationConnectionParameters = null;
+    
+    private String commandTable = "commands";
+ 	private String commandDetailTable = "command_details";
+ 	private String recommendationTable = "recommendations";
+ 	private String userTable = "users";
+ 	private String reportTable = "reports";
     
     private String dbName = "commands-production";
     private String dbUrl = "localhost";
     private int port = 27017;
     private int amount = -1;
-    
-    @SuppressWarnings("unused")
-	private String[] args;
+
     private CommandLine cmd;
     private Options options;
     
@@ -51,11 +64,10 @@ public class RecommenderOptions {
     private boolean generateReport = false;
     private int periodInDays = 7;
     
-    private ConnectionParameters commandConnectionParameters = null;
-    private ConnectionParameters recommendationConnectionParameters = null;
+ 
+	
     
     public RecommenderOptions(String[] args) throws ParseException{
-    	this.args = args;
     	this.options = createCommandLineOptions();
         CommandLineParser parser = new BasicParser();
         this.cmd = parser.parse(options, args);
@@ -65,8 +77,10 @@ public class RecommenderOptions {
         parseCommandDbParameters();
 		parseRecommendationParameters();
 		parseGenerationParameters();
+		parseTableParameters();
     }
     
+
 	public ConnectionParameters getCommandConnectionParameters(){
     	return commandConnectionParameters;
     }
@@ -91,6 +105,26 @@ public class RecommenderOptions {
 		return acceptance;
 	}
 
+	public String getCommandTable() {
+		return commandTable;
+	}
+
+	public String getCommandDetailTable() {
+		return commandDetailTable;
+	}
+
+	public String getRecommendationTable() {
+		return recommendationTable;
+	}
+
+	public String getUserTable() {
+		return userTable;
+	}
+
+	public String getReportTable() {
+		return reportTable;
+	}
+
 	public boolean isUseCache() {
 		return useCache;
 	}
@@ -108,9 +142,28 @@ public class RecommenderOptions {
         createCommandOptions();
         createRecommendationOptions();
         createRecommendationGenerationOptions();
+        createTableOptions();
         options.addOption(HELP, false, "help");
         return options;
     }
+
+	protected void createCommandOptions() {
+		options.addOption(COMMAND_HOST, true, "Specify the host of your command data store. Default: " + dbUrl);
+		options.addOption(COMMAND_PORT, true, "Specify the port of your command data store on. Default: " + port);
+        options.addOption(COMMAND_DB_NAME, true, "Name for the database which contains your commands. Default: " + dbName);
+        options.addOption(COMMAND_USER, true, "User for your command data store. Default: none");
+        options.addOption(COMMAND_PASS, true, "Password for the user for the command data store. Default: none");
+
+	}
+	
+	protected void createRecommendationOptions() {
+		options.addOption(RECOMMENDATION_HOST, true, "Specify the host of your recommendation data store. Default: Same as command data store");
+        options.addOption(RECOMMENDATION_PORT, true, "Specify the port of your recommendation data store. Default: Same as command data store");
+        options.addOption(RECOMMENDATION_DB_NAME, true, "Specify the name of the database that contains your recommendation and user data. Default: Same as command data store");      
+        options.addOption(RECOMMENDATION_USER, true, "User for your recommendation data store. Default: none");
+        options.addOption(RECOMMENDATION_PASS, true, "Password for the user for the recommendation data store. Default: none");
+ 
+	}
 
 	protected void createRecommendationGenerationOptions() {
 		options.addOption(AMOUNT, true, "The maximum number of commands to include in the user report. Default: unlimited" + amount);
@@ -120,23 +173,14 @@ public class RecommenderOptions {
         options.addOption(GENERATE_REPORT, false, "Whether to generate report or recommendations. Default: false (generate recommendations)");
         options.addOption(TIME_PERIOD_IN_DAYS, true, "The time period for the usage report in days. Default: 7");
 	}
-
-	protected void createRecommendationOptions() {
-		options.addOption(RECOMMENDATION_HOST, true, "Specify the host of your recommendation data store. Default: Same as command data store");
-        options.addOption(RECOMMENDATION_PORT, true, "Specify the port of your recommendation data store. Default: Same as command data store");
-        options.addOption(RECOMMENDATION_DB_NAME, true, "Specify the name of the database that contains your recommendation and user data. Default: Same as command data store");      
-        options.addOption(RECOMMENDATION_USER, true, "User for your recommendation data store. Default: none");
-        options.addOption(RECOMMENDATION_PASS, true, "Password for the user for the recommendation data store. Default: none");
+	
+	private void createTableOptions(){
+        options.addOption(COMMAND_TABLE, true, "Table that is used for command data. Default: " + commandTable);
+        options.addOption(COMMAND_DETAIL_TABLE, true, "Specify table that is used to store the command details. Default: " + commandDetailTable);
+        options.addOption(RECOMMENDATION_TABLE, true, "Specify table that is used to store the generated recommendations. Default: " + recommendationTable);
+        options.addOption(USER_TABLE, true, "Specify table name that is used to store the users. Default: " + userTable);
+        options.addOption(REPORT_TABLE, true, "Specify table name that is used to store generated reports. Default " + reportTable);
 	}
-
-	protected void createCommandOptions() {
-		options.addOption(COMMAND_HOST, true, "Specify the host of your command data store. Default: " + dbUrl);
-		options.addOption(COMMAND_PORT, true, "Specify the port of your command data store on. Default: " + port);
-        options.addOption(COMMAND_DB_NAME, true, "Name for the database which contains your commands. Default: " + dbName);
-        options.addOption(COMMAND_USER, true, "User for your command data store. Default: none");
-        options.addOption(COMMAND_PASS, true, "Password for the user for the command data store. Default: none");
-	}
-
 	
     private void parseCommandDbParameters() throws ParseException {
         if(cmd.hasOption(COMMAND_HOST)){
@@ -238,6 +282,28 @@ public class RecommenderOptions {
 		    if (algorithmType.needsAcceptance())
 		        throw new ParseException("Invalid Argument: Acceptance type must be specified for the selected algorithm");
 	    }
+	}
+	
+	private void parseTableParameters() {
+		if(cmd.hasOption(COMMAND_TABLE)){
+			commandTable = cmd.getOptionValue(COMMAND_TABLE);
+		}
+		
+		if(cmd.hasOption(RECOMMENDATION_TABLE)){
+			recommendationTable = cmd.getOptionValue(RECOMMENDATION_TABLE);
+		}
+		
+		if(cmd.hasOption(USER_TABLE)){
+			userTable = cmd.getOptionValue(USER_TABLE);
+		}
+		
+		if(cmd.hasOption(COMMAND_DETAIL_TABLE)){
+			commandDetailTable = cmd.getOptionValue(COMMAND_DETAIL_TABLE);
+		}
+		
+		if(cmd.hasOption(REPORT_TABLE)){
+			reportTable = cmd.getOptionValue(REPORT_TABLE);
+		}
 	}
 	
 	@SuppressWarnings("rawtypes")

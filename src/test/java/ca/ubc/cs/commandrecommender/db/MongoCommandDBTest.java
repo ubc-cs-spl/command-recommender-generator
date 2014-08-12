@@ -1,12 +1,16 @@
 package ca.ubc.cs.commandrecommender.db;
 
+import ca.ubc.cs.commandrecommender.RecommenderOptions;
 import ca.ubc.cs.commandrecommender.Exception.DBConnectionException;
 import ca.ubc.cs.commandrecommender.model.IndexMap;
 import ca.ubc.cs.commandrecommender.model.ToolUse;
 import ca.ubc.cs.commandrecommender.model.ToolUseCollection;
+
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.MongoClient;
+
+import org.apache.commons.cli.ParseException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,18 +38,31 @@ public class MongoCommandDBTest {
     private String DESCRIPTION = "description";
     private MongoCommandDB commandDB;
     private EclipseCommandToolConverter toolConverter;
+    
+    private class TestRecommenderObjection extends RecommenderOptions{
+
+		public TestRecommenderObjection(String[] args) throws ParseException {
+			super(args);
+		}
+		
+		@Override
+		public ConnectionParameters getCommandConnectionParameters(){
+			return new ConnectionParameters(DB_URL, DB_PORT, DB_NAME, "", "");
+		}
+    	
+    }
 
     @Before
-    public void setUp() throws UnknownHostException, DBConnectionException {
+    public void setUp() throws UnknownHostException, DBConnectionException, ParseException {
 
+    	RecommenderOptions options = new TestRecommenderObjection(new String[0]);
         client = new MongoClient(DB_URL, DB_PORT);
-        commandCollection = client.getDB(DB_NAME).getCollection(MongoCommandDB.COMMANDS_COLLECTION);
+        commandCollection = client.getDB(DB_NAME).getCollection(options.getCommandTable());
         toolIndexMap = new IndexMap();
         userIndexMap = new IndexMap();
         toolConverter = new EclipseCommandToolConverter(toolIndexMap);
-
-        ConnectionParameters connectionParameters = new ConnectionParameters(DB_URL, DB_PORT, DB_NAME, "", "");
-        commandDB = new MongoCommandDB(connectionParameters,toolConverter, userIndexMap, false);
+        
+        commandDB = new MongoCommandDB(options, toolConverter, userIndexMap, false);
         savedToolUseCollections = generateToolUses();
     }
 

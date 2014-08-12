@@ -5,11 +5,13 @@ import static org.junit.Assert.assertEquals;
 import java.net.UnknownHostException;
 import java.util.Date;
 
+import org.apache.commons.cli.ParseException;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import ca.ubc.cs.commandrecommender.RecommenderOptions;
 import ca.ubc.cs.commandrecommender.Exception.DBConnectionException;
 import ca.ubc.cs.commandrecommender.model.IndexMap;
 import ca.ubc.cs.commandrecommender.model.Rationale;
@@ -44,18 +46,31 @@ public class MongoRecommendationDBTest {
     private double REASON_VALUE1 = 0.3;
     private ObjectId command_detail_object_id_1;
     private Date willUpdate;
+    
+    private class TestRecommenderOption extends RecommenderOptions{
+
+		public TestRecommenderOption(String[] args) throws ParseException {
+			super(args);
+		}
+		
+		@Override
+		public ConnectionParameters getRecommendationConnectionParamters(){
+			return new ConnectionParameters(DB_URL, DB_PORT, DB_NAME, "", "");
+		}
+    	
+    }
 
     @Before
-    public void setUp() throws UnknownHostException, DBConnectionException {
+    public void setUp() throws UnknownHostException, DBConnectionException, ParseException {
+    	RecommenderOptions options = new TestRecommenderOption(new String[0]);
         client = new MongoClient(DB_URL, DB_PORT);
-        this.userCollection = getCollection(MongoRecommendationDB.USER_COLLECTION);
-        this.recommendationCollection = getCollection(MongoRecommendationDB.USER_RECOMMENDATION_COLLECTION);
-        this.commandDetailsCollection = getCollection(MongoRecommendationDB.COMMAND_DETAILS_COLLECTION);
+        this.userCollection = getCollection(options.getUserTable());
+        this.recommendationCollection = getCollection(options.getRecommendationTable());
+        this.commandDetailsCollection = getCollection(options.getCommandDetailTable());
         userIndexMap = new IndexMap();
         toolIndexMap = new IndexMap();
-        ConnectionParameters connectionParameters = new ConnectionParameters(DB_URL, DB_PORT, DB_NAME, "", "");
         initializeDataBase();
-        recommendationDB = new MongoRecommendationDB(connectionParameters, userIndexMap);
+        recommendationDB = new MongoRecommendationDB(options, userIndexMap);
     }
 
     private void initializeDataBase() {

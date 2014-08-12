@@ -23,9 +23,6 @@ public class MongoRecommendationDB extends AbstractRecommendationDB{
     public static final String USER_ID_FIELD = "user_id";
     public static final String COMMAND_DETAIL_ID_FIELD = "command_detail_id";
     public static final String COMMAND_DETAIL_OBJECT_ID_FIELD = "_id";
-    public static final String USER_COLLECTION = "users";
-    public static final String USER_RECOMMENDATION_COLLECTION = "recommendations";
-    public static final String COMMAND_DETAILS_COLLECTION = "command_details";
     public static final String COMMAND_ID_FIELD = "command_id";
     public static final String LAST_UPLOADED_DATE_FIELD = "last_upload_date";
     public static final String LAST_RECOMMENDATION_DATE_FIELD = "last_recommendation_date";
@@ -36,7 +33,7 @@ public class MongoRecommendationDB extends AbstractRecommendationDB{
     public static final String ALGORITHM_VALUE_FIELD = "algorithm_value";
     public static final String REASON_VALUE_FIELD = "reason_value";
     public static final String RANK_FIELD = "rank";
-
+    
     private MongoClient recommendationClient;
     private DBCollection commandDetailsCollection;
     private ConnectionParameters connectionParameters;
@@ -57,9 +54,9 @@ public class MongoRecommendationDB extends AbstractRecommendationDB{
         	}else{
         		recommendationClient = new MongoClient(serverAddress);
         	}           
-            userCollection = getCollection(USER_COLLECTION);
-            recommendationCollection = getCollection(USER_RECOMMENDATION_COLLECTION);
-            commandDetailsCollection = getCollection(COMMAND_DETAILS_COLLECTION);
+            userCollection = getCollection(options.getUserTable());
+            recommendationCollection = getCollection(options.getRecommendationTable());
+            commandDetailsCollection = getCollection(options.getCommandDetailTable());
             initCommandDetailsMap();
             ensureIndex();
         }catch(UnknownHostException ex){
