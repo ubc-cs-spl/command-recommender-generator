@@ -67,8 +67,23 @@ public class App {
     
     private static void generateRecommendations() throws DBConnectionException {
         initializeDatabasesForRecGen();
-        IRecGen recGen = algorithmType.getRecGen(acceptance, recommendationDB.getNumberOfKnownCommands());
-        long time = System.currentTimeMillis();
+        if(algorithmType == AlgorithmType.ALL){
+        	for(AlgorithmType algoToGenerate : AlgorithmType.values()){
+        		AbstractLearningAcceptance acceptanceForMutli = LearningAcceptanceType.INCLUDE_ALL.getAcceptance();
+        		if(algoToGenerate != AlgorithmType.ALL){        			
+        			IRecGen recGen = algoToGenerate.getRecGen(acceptanceForMutli, recommendationDB.getNumberOfKnownCommands());
+	        		generateRecommendtionsForRecGen(recGen);
+        		}
+        	}
+        }else{
+        	IRecGen recGen = algorithmType.getRecGen(acceptance, recommendationDB.getNumberOfKnownCommands());
+        	generateRecommendtionsForRecGen(recGen);
+        }
+        
+    }
+
+	private static void generateRecommendtionsForRecGen(IRecGen recGen) {
+		long time = System.currentTimeMillis();
         List<ToolUseCollection> toolUses =  commandDB.getAllUsageData();
         logger.debug("Time to Retrieve Data From Database: {}", getAmountOfTimeTaken(time));
         time = System.currentTimeMillis();
@@ -101,7 +116,7 @@ public class App {
             }
         }
         logger.debug("Finished generating recommendations for {} users in {}", totalUserRecommendation, getAmountOfTimeTaken(allUsersTime));
-    }
+	}
     
     private static void generateReports() throws DBConnectionException {
         long startTime = System.currentTimeMillis() - TimeUnit.DAYS.toMillis(periodInDays);

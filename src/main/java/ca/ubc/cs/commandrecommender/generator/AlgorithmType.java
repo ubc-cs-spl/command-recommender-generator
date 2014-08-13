@@ -57,7 +57,9 @@ public enum AlgorithmType {
     /**
      * See {@link ca.ubc.cs.commandrecommender.generator.LatentModelBasedCFRecGen}
      */
-    LATENT_MODEL_BASED_CF("user and item based CF");
+    LATENT_MODEL_BASED_CF("user and item based CF"),
+    
+    ALL("all recommendaiton types");
 
     private String reason;
 
