@@ -1,18 +1,12 @@
 package ca.ubc.cs.commandrecommender;
 
-import java.util.Iterator;
-
-import org.apache.commons.cli.BasicParser;
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
-
 import ca.ubc.cs.commandrecommender.db.ConnectionParameters;
 import ca.ubc.cs.commandrecommender.generator.AlgorithmType;
 import ca.ubc.cs.commandrecommender.model.acceptance.AbstractLearningAcceptance;
 import ca.ubc.cs.commandrecommender.model.acceptance.LearningAcceptanceType;
+import org.apache.commons.cli.*;
+
+import java.util.Iterator;
 
 public class RecommenderOptions {
 	
@@ -28,8 +22,9 @@ public class RecommenderOptions {
     public static final String RECOMMENDATION_PASS = "rpass";
     public static final String AMOUNT = "a";
     public static final String ALGORITHM_TYPE = "t";
-    public static final String ACCEPTANCE_TYPE = "c";
-    public static final String USE_CACHE = "u";
+    public static final String ACCEPTANCE_TYPE = "l"; //for learning acceptance
+    public static final String USE_CACHE = "c";
+    public static final String USER = "u";
     public static final String TIME_PERIOD_IN_DAYS = "p";
     public static final String GENERATE_REPORT = "report";
     public static final String COMMAND_TABLE = "command_table";
@@ -51,7 +46,6 @@ public class RecommenderOptions {
     private String dbName = "commands-production";
     private String dbUrl = "localhost";
     private int port = 27017;
-    private int amount = -1;
 
     private CommandLine cmd;
     private Options options;
@@ -61,8 +55,10 @@ public class RecommenderOptions {
     private AbstractLearningAcceptance acceptance;
     
     private boolean useCache = false;
+    private String user = null;
     private boolean generateReport = false;
     private int periodInDays = 7;
+    private int amount = -1;
     
  
 	
@@ -137,6 +133,10 @@ public class RecommenderOptions {
 		return periodInDays;
 	}
 
+    public String getSpecifiedUser() {
+        return user;
+    }
+
 	private Options createCommandLineOptions() {
 		options = new Options();
         createCommandOptions();
@@ -162,13 +162,13 @@ public class RecommenderOptions {
         options.addOption(RECOMMENDATION_DB_NAME, true, "Specify the name of the database that contains your recommendation and user data. Default: Same as command data store");      
         options.addOption(RECOMMENDATION_USER, true, "User for your recommendation data store. Default: none");
         options.addOption(RECOMMENDATION_PASS, true, "Password for the user for the recommendation data store. Default: none");
- 
+        options.addOption(USER, true, "Generate recommendations only for the user specified in this option. Default: generate recommendations for all users");
 	}
 
 	protected void createRecommendationGenerationOptions() {
 		options.addOption(AMOUNT, true, "The maximum number of commands to include in the user report. Default: unlimited" + amount);
         options.addOption(ALGORITHM_TYPE, true, "Type of algorithm you want to use to generate the recommendations. Default: " + algorithmName);
-        options.addOption(ACCEPTANCE_TYPE, true, "Acceptance type for the algorithm. Default: none");
+        options.addOption(ACCEPTANCE_TYPE, true, "Acceptance type for the algorithm. Default: INCLUDE_ALL");
         options.addOption(USE_CACHE, false, "Cache all usage data");
         options.addOption(GENERATE_REPORT, false, "Whether to generate report or recommendations. Default: false (generate recommendations)");
         options.addOption(TIME_PERIOD_IN_DAYS, true, "The time period for the usage report in days. Default: 7");
@@ -247,15 +247,19 @@ public class RecommenderOptions {
 		            throw new ParseException("Invalid Argument: The time period for which the reports will be generated is not valid.");
 		        }
 		    }
-	
-		    if(cmd.hasOption(AMOUNT)){
-			    try {
-			        amount = Integer.parseInt(cmd.getOptionValue(AMOUNT));
-			    }catch (NumberFormatException ex){
-			        throw new ParseException("Invalid Argument: Not a valid amount.");
-		        }
-			}
 		}
+
+        if(cmd.hasOption(USER)) {
+            user = cmd.getOptionValue(USER);
+        }
+
+        if(cmd.hasOption(AMOUNT)) {
+            try {
+                amount = Integer.parseInt(cmd.getOptionValue(AMOUNT));
+            }catch (NumberFormatException ex){
+                throw new ParseException("Invalid Argument: Not a valid amount.");
+            }
+        }
 	
 		if(cmd.hasOption(USE_CACHE)){
 		    useCache = true;
@@ -273,15 +277,16 @@ public class RecommenderOptions {
 	
 		if(cmd.hasOption(ACCEPTANCE_TYPE)){
 		    try {
-		        acceptance = LearningAcceptanceType.valueOf(cmd.getOptionValue('c')).getAcceptance();
+		        acceptance = LearningAcceptanceType.valueOf(cmd.getOptionValue(ACCEPTANCE_TYPE)).getAcceptance();
 		}catch (IllegalArgumentException ex){
 		    throw new ParseException("Invalid Argument: Invalid acceptance type.");
 		    }
 		}else{
-		    acceptance = null;
-		    if (algorithmType.needsAcceptance())
-		        throw new ParseException("Invalid Argument: Acceptance type must be specified for the selected algorithm");
-	    }
+            if (algorithmType.needsAcceptance()) {
+                throw new ParseException("Invalid Argument: Acceptance type must be specified for the selected algorithm");
+            }
+            acceptance = null;
+        }
 	}
 	
 	private void parseTableParameters() {

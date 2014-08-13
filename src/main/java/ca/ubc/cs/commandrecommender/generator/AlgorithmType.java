@@ -59,7 +59,7 @@ public enum AlgorithmType {
      */
     LATENT_MODEL_BASED_CF("user and item based CF"),
     
-    ALL("all recommendaiton types");
+    ALL("all recommendation types");
 
     private String reason;
 
@@ -126,6 +126,7 @@ public enum AlgorithmType {
             case ITEM_BASED_CF_WITH_DISCOVERY:
             case USER_BASED_CF_WITH_DISCOVERY:
             case MOST_PREREQ_LEARNING_RULE:
+            case ALL:
                 return true;
             default:
                 return false;

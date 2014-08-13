@@ -1,26 +1,22 @@
 package ca.ubc.cs.commandrecommender.db;
 
-import static org.junit.Assert.assertEquals;
-
-import java.net.UnknownHostException;
-import java.util.Date;
-
+import ca.ubc.cs.commandrecommender.Exception.DBConnectionException;
+import ca.ubc.cs.commandrecommender.RecommenderOptions;
+import ca.ubc.cs.commandrecommender.model.IndexMap;
+import ca.ubc.cs.commandrecommender.model.Rationale;
+import ca.ubc.cs.commandrecommender.model.RecommendationCollector;
+import com.mongodb.*;
 import org.apache.commons.cli.ParseException;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import ca.ubc.cs.commandrecommender.RecommenderOptions;
-import ca.ubc.cs.commandrecommender.Exception.DBConnectionException;
-import ca.ubc.cs.commandrecommender.model.IndexMap;
-import ca.ubc.cs.commandrecommender.model.Rationale;
+import java.net.UnknownHostException;
+import java.util.Date;
+import java.util.HashSet;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBCollection;
-import com.mongodb.DBCursor;
-import com.mongodb.DBObject;
-import com.mongodb.MongoClient;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Created by Spencer on 6/23/2014.
@@ -96,7 +92,9 @@ public class MongoRecommendationDBTest {
     private void saveRecommendation(String cmdId, String userId) {
         Rationale rationale = new Rationale(ALGORITHM_VALUE1);
         rationale.setValueForTypeSpecificReason(REASON_VALUE1);
-        recommendationDB.saveRecommendation(cmdId, userId, REASON1, ALGORITHM_TYPE1, rationale);
+        RecommendationCollector rc = new RecommendationCollector(1, new HashSet<Integer>());
+        rc.add(toolIndexMap.addItem(cmdId), rationale);
+        recommendationDB.saveRecommendations(rc, userId, REASON1, ALGORITHM_TYPE1, toolIndexMap);
     }
 
     @Test
@@ -150,7 +148,6 @@ public class MongoRecommendationDBTest {
     	saveRecommendation(COMMAND_ID1, USER_ID1); //duplicates will not be added
     	saveRecommendation("adf", "asdf");         //unknow cmd will not be added
     	//duplicates will not be added
-    	recommendationDB.saveRecommendation(COMMAND_ID2, USER_ID1, "a", ALGORITHM_TYPE1, new Rationale(0));
     	assertEquals(2, recommendationCollection.count());
     }
 

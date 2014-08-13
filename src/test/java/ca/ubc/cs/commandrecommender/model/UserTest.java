@@ -4,7 +4,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.sql.Date;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashSet;
 
@@ -26,7 +25,7 @@ public class UserTest {
 
     @Before
     public void setUp(){
-        recommendations = new RecommendationCollector(1, new ArrayList<Integer>());
+        recommendations = new RecommendationCollector(1, new HashSet<Integer>());
         toolIndexMap = new IndexMap();
         mockRecommendationDb = new MockRecommendationDB(toolIndexMap);
         willUpdate = new Date(System.currentTimeMillis());

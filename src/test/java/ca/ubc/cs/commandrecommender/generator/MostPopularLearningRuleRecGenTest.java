@@ -5,6 +5,7 @@ import ca.ubc.cs.commandrecommender.model.acceptance.IncludeAllAcceptance;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Iterator;
 
 import static org.junit.Assert.assertEquals;
@@ -22,7 +23,8 @@ public class MostPopularLearningRuleRecGenTest extends AbstractRecGenTest {
         rec.trainWith(person(true,3,12,12,12,12,5,6,5,6,5,7));
         rec.runAlgorithm();
 
-        RecommendationCollector r1 = new RecommendationCollector(1, Arrays.asList(1,2,1,3,1,4));
+        RecommendationCollector r1 = new RecommendationCollector(1,
+                new HashSet<Integer>(Arrays.asList(1,2,1,3,1,4)));
         rec.fillRecommendations(r1);
         Iterator<Integer> i1 = r1.iterator();
         assertEquals(new Integer(5), i1.next());
@@ -30,7 +32,8 @@ public class MostPopularLearningRuleRecGenTest extends AbstractRecGenTest {
         assertEquals(new Integer(7), i1.next());
         assertFalse(i1.hasNext());
 
-        RecommendationCollector r2 = new RecommendationCollector(2, Arrays.asList(1,5,1,5,1,3));
+        RecommendationCollector r2 = new RecommendationCollector(2,
+                new HashSet<Integer>(Arrays.asList(1,5,1,5,1,3)));
         rec.fillRecommendations(r2);
         Iterator<Integer> i2 = r2.iterator();
         assertEquals(new Integer(2), i2.next());
@@ -39,7 +42,8 @@ public class MostPopularLearningRuleRecGenTest extends AbstractRecGenTest {
         assertEquals(new Integer(7), i2.next());
         assertFalse(i2.hasNext());
 
-        RecommendationCollector r3 = new RecommendationCollector(3, Arrays.asList(5,6,5,6,5,7));
+        RecommendationCollector r3 = new RecommendationCollector(3,
+                new HashSet<Integer>(Arrays.asList(5,6,5,6,5,7)));
         rec.fillRecommendations(r3);
         Iterator<Integer> i3 = r3.iterator();
         assertEquals(new Integer(1), i3.next());

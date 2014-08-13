@@ -3,6 +3,7 @@ package ca.ubc.cs.commandrecommender.mocks;
 import ca.ubc.cs.commandrecommender.db.AbstractRecommendationDB;
 import ca.ubc.cs.commandrecommender.model.IndexMap;
 import ca.ubc.cs.commandrecommender.model.Rationale;
+import ca.ubc.cs.commandrecommender.model.RecommendationCollector;
 import ca.ubc.cs.commandrecommender.model.User;
 
 import java.util.ArrayList;
@@ -29,7 +30,6 @@ public class MockRecommendationDB extends AbstractRecommendationDB {
         savedAlgorithmValues = new ArrayList<Double>();
     }
 
-    @Override
     public void saveRecommendation(String commandId, String userId, String reason, String algorithmType, Rationale rationale) {
         savedRecommendations.add(commandId);
         savedUserIds.add(userId);
@@ -49,13 +49,12 @@ public class MockRecommendationDB extends AbstractRecommendationDB {
 
     }
 
-	@Override
-	public void clearInfoAndRankings(String userId, String algoType) {
-		// TODO Auto-generated method stub
-		
-	}
+    @Override
+    public void saveRecommendations(RecommendationCollector recommendations, String userId, String reason, String algorithmType, IndexMap toolIndexMap) {
+        // TODO
+    }
 
-	@Override
+    @Override
 	public int getNumberOfKnownCommands() {
 		// TODO Auto-generated method stub
 		return 1000;

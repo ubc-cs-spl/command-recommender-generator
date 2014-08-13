@@ -9,11 +9,10 @@ import ca.ubc.cs.commandrecommender.model.RecommendationCollector;
 import ca.ubc.cs.commandrecommender.model.ToolUseCollection;
 import ca.ubc.cs.commandrecommender.model.User;
 import ca.ubc.cs.commandrecommender.model.acceptance.AbstractLearningAcceptance;
-import ca.ubc.cs.commandrecommender.model.acceptance.LearningAcceptanceType;
 import ca.ubc.cs.commandrecommender.report.MongoCommandReportDB;
 import ca.ubc.cs.commandrecommender.report.MongoReportDB;
 import com.mongodb.DBObject;
-import org.apache.commons.cli.*;
+import org.apache.commons.cli.ParseException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -31,6 +30,7 @@ public class App {
     private static IndexMap userIndexMap;
     private static IndexMap toolIndexMap;
 
+    //TODO: should we store these or retrieve from the recommenderOptions?
     private static AlgorithmType algorithmType;
     private static AbstractLearningAcceptance acceptance;
     private static Logger logger = LogManager.getLogger(App.class);
@@ -67,38 +67,41 @@ public class App {
     
     private static void generateRecommendations() throws DBConnectionException {
         initializeDatabasesForRecGen();
-        if(algorithmType == AlgorithmType.ALL){
-        	for(AlgorithmType algoToGenerate : AlgorithmType.values()){
-        		AbstractLearningAcceptance acceptanceForMutli = LearningAcceptanceType.INCLUDE_ALL.getAcceptance();
-        		if(algoToGenerate != AlgorithmType.ALL){        			
-        			IRecGen recGen = algoToGenerate.getRecGen(acceptanceForMutli, recommendationDB.getNumberOfKnownCommands());
-	        		generateRecommendtionsForRecGen(recGen, algoToGenerate);
-        		}
-        	}
-        }else{
-        	IRecGen recGen = algorithmType.getRecGen(acceptance, recommendationDB.getNumberOfKnownCommands());
-        	generateRecommendtionsForRecGen(recGen, algorithmType);
-        }
-        
-    }
-
-	private static void generateRecommendtionsForRecGen(IRecGen recGen, AlgorithmType algoToGenerate) {
-		long time = System.currentTimeMillis();
+        long time = System.currentTimeMillis();
         List<ToolUseCollection> toolUses =  commandDB.getAllUsageData();
         logger.debug("Time to Retrieve Data From Database: {}", getAmountOfTimeTaken(time));
         time = System.currentTimeMillis();
+        List<User> users = recommendationDB.getAllUsers();
+        logger.debug("Retrieved all users in {}", getAmountOfTimeTaken(time));
+        if(algorithmType == AlgorithmType.ALL){
+        	for(AlgorithmType algoToGenerate : AlgorithmType.values()){
+        		if(algoToGenerate != AlgorithmType.ALL){
+	        		generateRecommendationsForRecGen(algoToGenerate, toolUses, users);
+        		}
+        	}
+        }else{
+            generateRecommendationsForRecGen(algorithmType, toolUses, users);
+        }
+    }
+
+	private static void generateRecommendationsForRecGen(AlgorithmType algoToGenerate,
+                                                         List<ToolUseCollection> toolUses,
+                                                         List<User> users) {
+        IRecGen recGen = algoToGenerate.getRecGen(acceptance,
+                recommendationDB.getNumberOfKnownCommands());
+        long time = System.currentTimeMillis();
         for (ToolUseCollection uses : toolUses)
             recGen.trainWith(uses);
         logger.debug("Trained with {}, in {}", toolUses.size(), getAmountOfTimeTaken(time));
         time = System.currentTimeMillis();
         recGen.runAlgorithm();
-        logger.debug("Ran Algorithm {} in {}", algorithmType.getRationale(), getAmountOfTimeTaken(time));
+        logger.debug("Ran Algorithm {} in {}", algoToGenerate.name(), getAmountOfTimeTaken(time));
         int totalUserRecommendation = 0;
         long allUsersTime = System.currentTimeMillis();
-        List<User> users = recommendationDB.getAllUsers();
-        logger.debug("Retrieved all users in {}", getAmountOfTimeTaken(allUsersTime));
         for (User user : users) {
-            if (user.isTimeToGenerateRecs()) {
+            if ((recommenderOptions.getSpecifiedUser() == null ||
+                            user.getUserId().equals(recommenderOptions.getSpecifiedUser())) &&
+                    user.isTimeToGenerateRecs()) {
                 logger.trace("Generating recommendation process for user: {}", user.getUserId());
                 int userId = userIndexMap.getItemByItemId(user.getUserId());
                 time = System.currentTimeMillis();
@@ -106,16 +109,21 @@ public class App {
                 logger.trace("Retrieving Usage Data for user: {}, number of entries: {}, in {}",
                         user.getUserId(), history.size(), getAmountOfTimeTaken(time));
                 time = System.currentTimeMillis();
-                RecommendationCollector recommendations = recGen.getRecommendationsForUser(user, history, amount, userId);
-                logger.trace("Recommendations for user: {}, gathered in {}", user.getUserId(), getAmountOfTimeTaken(time));
+                RecommendationCollector recommendations =
+                        new RecommendationCollector(userId, history.toolsUsedHashSet(), amount);
+                recGen.getRecommendationsForUser(recommendations);
+                logger.trace("{} Recommendations for user: {}, gathered in {}", recommendations.size(),
+                        user.getUserId(), getAmountOfTimeTaken(time));
                 time = System.currentTimeMillis();
-                user.saveRecommendations(recommendations, algoToGenerate.getRationale(), algoToGenerate.name(), toolIndexMap);
+                user.saveRecommendations(recommendations, algoToGenerate.getRationale(),
+                        algoToGenerate.name(), toolIndexMap);
                 logger.trace("Saved and completed recommendation gathering process for user: {}, in {}",
                         user.getUserId(), getAmountOfTimeTaken(time));
                 totalUserRecommendation++;
             }
         }
-        logger.debug("Finished generating recommendations for {} users in {}", totalUserRecommendation, getAmountOfTimeTaken(allUsersTime));
+        logger.debug("Finished generating recommendations for {} users in {}", totalUserRecommendation,
+                getAmountOfTimeTaken(allUsersTime));
 	}
     
     private static void generateReports() throws DBConnectionException {
@@ -147,16 +155,20 @@ public class App {
         userIndexMap = new IndexMap();
         toolIndexMap = new IndexMap();
         toolConverter = new EclipseCommandToolConverter(toolIndexMap);
-        logger.debug("Connecting to Command database with: " + recommenderOptions.getCommandConnectionParameters().toString());
+        logger.debug("Connecting to Command database with: " +
+                recommenderOptions.getCommandConnectionParameters().toString());
         commandDB = new MongoCommandDB(recommenderOptions, toolConverter, userIndexMap, useCache);
-        logger.debug("Connecting to Recommendation database with: " + recommenderOptions.getRecommendationConnectionParamters().toString());
+        logger.debug("Connecting to Recommendation database with: " +
+                recommenderOptions.getRecommendationConnectionParamters().toString());
         recommendationDB = new MongoRecommendationDB(recommenderOptions, userIndexMap);
     }
     
     private static void initializeDatabasesForReport() throws DBConnectionException {
-        logger.debug("Connecting to Command database with: " + recommenderOptions.getCommandConnectionParameters().toString());
+        logger.debug("Connecting to Command database with: " +
+                recommenderOptions.getCommandConnectionParameters().toString());
         commandReportDB = new MongoCommandReportDB(recommenderOptions);
-        logger.debug("Connecting to Recommendation database with: " + recommenderOptions.getRecommendationConnectionParamters().toString());
+        logger.debug("Connecting to Recommendation database with: " +
+                recommenderOptions.getRecommendationConnectionParamters().toString());
         reportDB = new MongoReportDB(recommenderOptions);
     }
 

@@ -62,7 +62,6 @@ public abstract class AbstractCFRecGen extends AbstractRecGen {
     @Override
     public  void fillRecommendations(RecommendationCollector rc) {
         try {
-            //TODO: the 1000 is artibrary... how to do this better?
             List<RecommendedItemWithRationale> items = recommender.recommendWithRationale(rc.userId, numberOfCommands);
             for(RecommendedItemWithRationale item : items){
                 Rationale rationale = item.getRationale();

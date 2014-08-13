@@ -13,22 +13,36 @@ public class RecommendationCollector implements Iterable<Integer>{
 	private Double lastValue;
     private Map<Integer, Rationale> rationaleMap;
     private int count;
+    private int capacity = -1; //negative means no limit
 
 	public final int userId;
 
-	private List<Integer> history;
+	private Set<Integer> history;
 
     /**
-     * Create a recommendation collector for a given user that recommends at most
-     * 10 recommendations
+     * Create a recommendation collector for a given user
      * @param userId
      * @param history
      */
-	public RecommendationCollector(int userId, List<Integer> history) {
+	public RecommendationCollector(int userId, Set<Integer> history) {
 		this.userId = userId;
 		this.history = history;
 		init();
 	}
+
+    /**
+     * Create a recommendation collector for a given user
+     * @param userId
+     * @param history
+     * @param capacity the number of recommendations this recommendation collector
+     *                 can store; may store more if the last recommendations to store
+     *                 have the same rank
+     */
+    public RecommendationCollector(int userId, Set<Integer> history, int capacity) {
+        this(userId, history);
+        this.capacity = capacity;
+        init();
+    }
 
 	private void init(){
 		recommendations = new ArrayList<Integer>();
@@ -55,14 +69,20 @@ public class RecommendationCollector implements Iterable<Integer>{
      */
 	public void add(Integer thisKey, Rationale rationale) {
 
+        if (capacity >= 0 && size() >= capacity) {
+            return;
+        }
+
         double thisValue = rationale.getDecisionPointValue();
 
-		if (currentList.contains(thisKey) || recommendations.contains(thisKey))
+		if (currentList.contains(thisKey) || recommendations.contains(thisKey)) {
             return;
+        }
 
 		// It's considered a fatal error for now if this constraint is not satisfied
-		if (lastValue != null && thisValue > lastValue)
-			throw new IllegalArgumentException();
+		if (lastValue != null && thisValue > lastValue) {
+            throw new IllegalArgumentException();
+        }
 		
         //add the key and keep track of last value
 		if (lastValue != null && !lastValue.equals(thisValue)) {
@@ -85,7 +105,7 @@ public class RecommendationCollector implements Iterable<Integer>{
 	}
     
 	// return # of elements in recommendations (ie. the # of recommendations so far
-	private int size() {
+	public int size() {
 		return count;
 	}
 

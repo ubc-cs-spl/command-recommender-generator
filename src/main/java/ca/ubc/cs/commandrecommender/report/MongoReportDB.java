@@ -34,7 +34,9 @@ public class MongoReportDB extends MongoRecommendationDB {
 	
 	public void updateCollection(List<DBObject> reports) {
 		reportCollection.drop();
-		reportCollection.insert(reports);
+        if (!reports.isEmpty()) {
+            reportCollection.insert(reports);
+        }
 	}
 	
 	public List<String> getRecentlyUploadedUserIds(long startTime) {

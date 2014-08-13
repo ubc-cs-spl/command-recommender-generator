@@ -1,14 +1,14 @@
 package ca.ubc.cs.commandrecommender.db;
 
-import ca.ubc.cs.commandrecommender.RecommenderOptions;
 import ca.ubc.cs.commandrecommender.Exception.DBConnectionException;
+import ca.ubc.cs.commandrecommender.RecommenderOptions;
 import ca.ubc.cs.commandrecommender.model.IndexMap;
 import ca.ubc.cs.commandrecommender.model.Rationale;
+import ca.ubc.cs.commandrecommender.model.RecommendationCollector;
 import ca.ubc.cs.commandrecommender.model.User;
-
 import com.google.common.primitives.Ints;
 import com.mongodb.*;
-
+import org.apache.commons.lang.StringUtils;
 import org.bson.types.ObjectId;
 
 import java.net.UnknownHostException;
@@ -33,7 +33,7 @@ public class MongoRecommendationDB extends AbstractRecommendationDB{
     public static final String ALGORITHM_VALUE_FIELD = "algorithm_value";
     public static final String REASON_VALUE_FIELD = "reason_value";
     public static final String RANK_FIELD = "rank";
-    
+
     private MongoClient recommendationClient;
     private DBCollection commandDetailsCollection;
     private ConnectionParameters connectionParameters;
@@ -46,14 +46,15 @@ public class MongoRecommendationDB extends AbstractRecommendationDB{
             throws DBConnectionException{
         super(userIndexMap);
         try {
-        	this.connectionParameters = options.getRecommendationConnectionParamters();
-        	ServerAddress serverAddress = new ServerAddress(connectionParameters.getDbUrl(), connectionParameters.getDbPort());
-        	if(!connectionParameters.getDbUser().equals("")){
-        		List<MongoCredential> credentialList = createCredentialList(connectionParameters);        		
-        		recommendationClient = new MongoClient(serverAddress, credentialList);
-        	}else{
-        		recommendationClient = new MongoClient(serverAddress);
-        	}           
+            this.connectionParameters = options.getRecommendationConnectionParamters();
+            ServerAddress serverAddress = new ServerAddress(connectionParameters.getDbUrl(),
+                    connectionParameters.getDbPort());
+            if(!connectionParameters.getDbUser().equals("")){
+                List<MongoCredential> credentialList = createCredentialList(connectionParameters);
+                recommendationClient = new MongoClient(serverAddress, credentialList);
+            }else{
+                recommendationClient = new MongoClient(serverAddress);
+            }
             userCollection = getCollection(options.getUserTable());
             recommendationCollection = getCollection(options.getRecommendationTable());
             commandDetailsCollection = getCollection(options.getCommandDetailTable());
@@ -63,20 +64,26 @@ public class MongoRecommendationDB extends AbstractRecommendationDB{
             throw new DBConnectionException(ex);
         }
     }
-    
+
     private List<MongoCredential> createCredentialList(
-			ConnectionParameters connectionParameters) {
-		MongoCredential userCredential = MongoCredential.createMongoCRCredential(connectionParameters.getDbUser(), connectionParameters.getdBName(), connectionParameters.getDbPassword().toCharArray());
-		return Collections.singletonList(userCredential);
-	}
+            ConnectionParameters connectionParameters) {
+        MongoCredential userCredential = MongoCredential.createMongoCRCredential(
+                connectionParameters.getDbUser(),
+                connectionParameters.getdBName(),
+                connectionParameters.getDbPassword().toCharArray());
+        return Collections.singletonList(userCredential);
+    }
 
     private void ensureIndex() {
         if(recommendationCollection != null) {
-        	DBObject compoundIndex = new BasicDBObject();
-        	compoundIndex.put(USER_ID_FIELD, 1);
-        	compoundIndex.put(ALGORITHM_TYPE_FIELD, 1);
-        	compoundIndex.put(COMMAND_ID_FIELD, 1);
+            DBObject compoundIndex = new BasicDBObject();
+            compoundIndex.put(USER_ID_FIELD, 1);
+            compoundIndex.put(ALGORITHM_TYPE_FIELD, 1);
+            compoundIndex.put(COMMAND_ID_FIELD, 1);
             recommendationCollection.createIndex(compoundIndex);
+        }
+        if(userCollection != null) {
+            userCollection.createIndex(new BasicDBObject("user_id", 1));
         }
     }
 
@@ -93,48 +100,14 @@ public class MongoRecommendationDB extends AbstractRecommendationDB{
     protected DBCollection getCollection(String collection) {
         return recommendationClient.getDB(connectionParameters.getdBName()).getCollection(collection);
     }
-	
-	public void closeConnection() {
-		recommendationClient.close();
-	}
-    
-    @Override
-    public int getNumberOfKnownCommands() {
-    	return Ints.saturatedCast(commandDetailsCollection.count());
+
+    public void closeConnection() {
+        recommendationClient.close();
     }
 
     @Override
-    public void saveRecommendation(String commandId,
-                                   String userId,
-                                   String reason,
-                                   String algorithmType,
-                                   Rationale rationale) {
-        if(commandId == null || commandId.equals("") || userId == null || userId.equals(""))
-            return;
-        DBObject queryForOldRecommendation = new BasicDBObject(USER_ID_FIELD, userId)
-        .append(ALGORITHM_TYPE_FIELD, algorithmType)
-        .append(COMMAND_ID_FIELD, commandId);
-        DBObject recommendation = recommendationCollection.findOne(queryForOldRecommendation);
-        
-        if (recommendation == null) {
-            ObjectId commandDetail = commandDetailsMap.get(commandId);
-            // If the command detail is not know, we would not make the recommendation for the user
-            // This situation should not occur for the production version as all the tools we know of must be in the 
-            // command detail table
-            if(commandDetail == null)
-            	return;
-            recommendation =  new BasicDBObject(USER_ID_FIELD, userId)
-            .append(ALGORITHM_TYPE_FIELD, algorithmType)
-            .append(COMMAND_ID_FIELD, commandId)
-            .append(COMMAND_DETAIL_ID_FIELD, commandDetail);
-        }
-        
-        recommendation.put(RANK_FIELD, rationale.getRank());
-        recommendation.put(ALGORITHM_VALUE_FIELD, rationale.getDecisionPointValue());
-        recommendation.put(CREATED_ON, new Date(System.currentTimeMillis())); //TODO: should we keep this?
-        recommendation.put(REASON_VALUE_FIELD, rationale.getValueForTypeSpecificReason()); //TODO: avoid duplication
-        recommendation.put(REASON_FIELD, reason); //TODO: avoid duplication
-        recommendationCollection.save(recommendation);
+    public int getNumberOfKnownCommands() {
+        return Ints.saturatedCast(commandDetailsCollection.count());
     }
 
     @Override
@@ -155,17 +128,78 @@ public class MongoRecommendationDB extends AbstractRecommendationDB{
     public void updateRecommendationStatus(String userId, String algoType) {
         DBObject query = new BasicDBObject(USER_ID_FIELD, userId);
         DBObject updatedValues = new BasicDBObject(LAST_RECOMMENDATION_DATE_FIELD, new Date())
-        .append(LAST_RECOMMENDATION_ALGORITHM_FIELD, algoType);
+                .append(LAST_RECOMMENDATION_ALGORITHM_FIELD, algoType);
         userCollection.update(query, new BasicDBObject("$set", updatedValues), true, false);
     }
 
-	@Override
-	public void clearInfoAndRankings(String userId, String algoType) {
+    private void clearInfoAndRankings(String userId, String algoType) {
         DBObject query = new BasicDBObject(USER_ID_FIELD, userId).append(ALGORITHM_TYPE_FIELD, algoType);
-        DBObject fieldsToClear = new BasicDBObject(ALGORITHM_VALUE_FIELD, null)
-        .append(RANK_FIELD, null)
-        .append(REASON_VALUE_FIELD, null);
-		recommendationCollection.update(query, new BasicDBObject("$unset", fieldsToClear), false, true);
-	}
-    
+        DBObject fieldsToClear = new BasicDBObject(RANK_FIELD, null);
+        recommendationCollection.update(query, new BasicDBObject("$set", fieldsToClear), false, true);
+    }
+
+    @Override
+    public void saveRecommendations(RecommendationCollector recommendations,
+                                    String userId,
+                                    String reason,
+                                    String algorithmType,
+                                    IndexMap toolIndexMap) {
+        if (StringUtils.isEmpty(userId)) {
+            return;
+        }
+        //TODO: consider clearing out only the old recommendations that aren't present anymore
+        clearInfoAndRankings(userId, algorithmType);
+        Map<Integer, Rationale> rationaleMap = recommendations.getRationales();
+        BulkWriteOperation operation = recommendationCollection.initializeUnorderedBulkOperation();
+        boolean hasOperation = false;
+        for (Integer recommendation : recommendations) {
+            String commandId = toolIndexMap.getItemByIndex(recommendation);
+            Rationale rationale = rationaleMap.get(recommendation);
+            hasOperation = saveRecommendation(commandId, userId, reason, algorithmType, rationale, operation)
+                    || hasOperation;
+        }
+        if (hasOperation) {
+            operation.execute();
+        }
+    }
+
+    /**
+     *
+     * @param commandId
+     * @param userId
+     * @param reason
+     * @param algorithmType
+     * @param rationale
+     * @param operation
+     * @return whether an operation is added to the bulk operation
+     */
+    private boolean saveRecommendation(String commandId,
+                                       String userId,
+                                       String reason,
+                                       String algorithmType,
+                                       Rationale rationale,
+                                       BulkWriteOperation operation) {
+        if (StringUtils.isEmpty(commandId)) {
+            return false;
+        }
+        ObjectId commandDetail = commandDetailsMap.get(commandId);
+        if (commandDetail == null) {
+            return false;
+        }
+        DBObject targetEntry = new BasicDBObject(USER_ID_FIELD, userId)
+                .append(ALGORITHM_TYPE_FIELD, algorithmType)
+                .append(COMMAND_ID_FIELD, commandId);
+        DBObject fieldsToUpdate = new BasicDBObject(RANK_FIELD, rationale.getRank())
+                .append(ALGORITHM_VALUE_FIELD, rationale.getDecisionPointValue())
+                .append(CREATED_ON, new Date(System.currentTimeMillis())) // TODO: maybe remove this?
+                .append(REASON_VALUE_FIELD, rationale.getValueForTypeSpecificReason())
+                .append(REASON_FIELD, reason); //TODO avoid duplication
+        DBObject fieldsToInitiate = new BasicDBObject(COMMAND_DETAIL_ID_FIELD, commandDetail);
+        DBObject update = new BasicDBObject("$set", fieldsToUpdate)
+                .append("$setOnInsert", fieldsToInitiate);
+        operation.find(targetEntry).upsert().updateOne(update);
+        return true;
+    }
+
+
 }

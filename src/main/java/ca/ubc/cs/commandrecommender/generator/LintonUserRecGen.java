@@ -23,7 +23,7 @@ public class LintonUserRecGen extends AbstractLintonRecGen {
 
     @Override
     public void trainWith(ToolUseCollection tools) {
-        toolCount.addAll(tools.toolsUsedBag().uniqueSet());
+        toolCount.addAll(tools.toolsUsedHashSet());
         numUsers++;
     }
 

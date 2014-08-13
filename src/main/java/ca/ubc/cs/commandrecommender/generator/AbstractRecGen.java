@@ -2,10 +2,6 @@ package ca.ubc.cs.commandrecommender.generator;
 
 
 import ca.ubc.cs.commandrecommender.model.RecommendationCollector;
-import ca.ubc.cs.commandrecommender.model.ToolUseCollection;
-import ca.ubc.cs.commandrecommender.model.User;
-
-import java.util.List;
 
 /**
  * The base class for all classes implementing
@@ -27,13 +23,8 @@ public abstract class AbstractRecGen implements IRecGen {
     }
 
     @Override
-    public RecommendationCollector getRecommendationsForUser(User user, ToolUseCollection history,
-    		int amount, int userId) {
-        history.sort();
-        List<Integer> historyList = history.toolsUsedInOrder().asList();
-        RecommendationCollector collector = new RecommendationCollector(userId, historyList);
+    public void getRecommendationsForUser(RecommendationCollector collector) {
         fillRecommendations(collector);
-        return collector;
     }
 
     /**

@@ -4,7 +4,6 @@ import ca.ubc.cs.commandrecommender.db.AbstractRecommendationDB;
 
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Map;
 
 /**
  * Created by KeEr on 2014-06-19.
@@ -40,19 +39,8 @@ public class User {
                                     String reason,
                                     String algorithmType,
                                     IndexMap toolIndexMap) {
-    	//TODO: consider clearing out only the old recommendations that aren't present anymore
-        recommendationDB.clearInfoAndRankings(userId, algorithmType);
-        Map<Integer, Rationale> rationaleMap = recommendations.getRationales();
-        for(Integer recommendation : recommendations){
-            String commandId = toolIndexMap.getItemByIndex(recommendation);
-            Rationale rationale = rationaleMap.get(recommendation);
-            recommendationDB.saveRecommendation(commandId,
-                    userId,
-                    reason,
-                    algorithmType,
-                    rationale);
-        }
-        recommendationDB.updateRecommendationStatus(userId, algorithmType);
+        recommendationDB.saveRecommendations(recommendations,
+                userId, reason, algorithmType, toolIndexMap);
     }
     
 }
