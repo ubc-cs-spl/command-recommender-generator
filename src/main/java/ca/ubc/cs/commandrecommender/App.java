@@ -72,17 +72,17 @@ public class App {
         		AbstractLearningAcceptance acceptanceForMutli = LearningAcceptanceType.INCLUDE_ALL.getAcceptance();
         		if(algoToGenerate != AlgorithmType.ALL){        			
         			IRecGen recGen = algoToGenerate.getRecGen(acceptanceForMutli, recommendationDB.getNumberOfKnownCommands());
-	        		generateRecommendtionsForRecGen(recGen);
+	        		generateRecommendtionsForRecGen(recGen, algoToGenerate);
         		}
         	}
         }else{
         	IRecGen recGen = algorithmType.getRecGen(acceptance, recommendationDB.getNumberOfKnownCommands());
-        	generateRecommendtionsForRecGen(recGen);
+        	generateRecommendtionsForRecGen(recGen, algorithmType);
         }
         
     }
 
-	private static void generateRecommendtionsForRecGen(IRecGen recGen) {
+	private static void generateRecommendtionsForRecGen(IRecGen recGen, AlgorithmType algoToGenerate) {
 		long time = System.currentTimeMillis();
         List<ToolUseCollection> toolUses =  commandDB.getAllUsageData();
         logger.debug("Time to Retrieve Data From Database: {}", getAmountOfTimeTaken(time));
@@ -109,7 +109,7 @@ public class App {
                 RecommendationCollector recommendations = recGen.getRecommendationsForUser(user, history, amount, userId);
                 logger.trace("Recommendations for user: {}, gathered in {}", user.getUserId(), getAmountOfTimeTaken(time));
                 time = System.currentTimeMillis();
-                user.saveRecommendations(recommendations, algorithmType.getRationale(), algorithmType.name(), toolIndexMap);
+                user.saveRecommendations(recommendations, algoToGenerate.getRationale(), algoToGenerate.name(), toolIndexMap);
                 logger.trace("Saved and completed recommendation gathering process for user: {}, in {}",
                         user.getUserId(), getAmountOfTimeTaken(time));
                 totalUserRecommendation++;
