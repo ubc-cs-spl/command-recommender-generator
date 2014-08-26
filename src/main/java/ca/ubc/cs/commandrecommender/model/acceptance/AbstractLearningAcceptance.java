@@ -8,8 +8,6 @@ import java.util.List;
 
 /**
  * Determine when can count as "learning" in a set of usage data
- *
- * Created by KeEr on 2014-06-20.
  */
 public abstract class AbstractLearningAcceptance {
 

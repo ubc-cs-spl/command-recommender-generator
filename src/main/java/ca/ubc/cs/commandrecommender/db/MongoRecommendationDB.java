@@ -83,7 +83,7 @@ public class MongoRecommendationDB extends AbstractRecommendationDB{
             recommendationCollection.createIndex(compoundIndex);
         }
         if(userCollection != null) {
-            userCollection.createIndex(new BasicDBObject("user_id", 1));
+            userCollection.createIndex(new BasicDBObject(USER_ID_FIELD, 1));
         }
     }
 

@@ -5,8 +5,6 @@ import ca.ubc.cs.commandrecommender.model.ToolUseCollection;
 
 /**
  * Interface for recommendation generation algorithms
- *
- * Created by KeEr on 2014-06-19.
  */
 public interface IRecGen {
 

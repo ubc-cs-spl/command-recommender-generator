@@ -11,8 +11,7 @@ import java.util.List;
 
 /**
  * This algorithm recommend the most commonly "learned" or "discovered" commands that a user is not using
- *
- * Created by KeEr on 2014-06-20.
+ * The most popular commands beyond people's knowledge base
  */
 public class MostPopularLearningRuleRecGen extends AbstractLearningRuleRecGen {
 

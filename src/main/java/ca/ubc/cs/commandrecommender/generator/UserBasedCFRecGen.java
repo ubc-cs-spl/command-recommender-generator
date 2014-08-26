@@ -8,8 +8,6 @@ import ca.ubc.cs.commandrecommender.model.cf.matejka.MatejkaUserBasedRecommender
 /**
  * This algorithm make recommendations by looking at the data of similar users determined by the
  * commands used
- *
- * Created by KeEr on 2014-06-23.
  */
 public class UserBasedCFRecGen extends AbstractCFRecGen {
 

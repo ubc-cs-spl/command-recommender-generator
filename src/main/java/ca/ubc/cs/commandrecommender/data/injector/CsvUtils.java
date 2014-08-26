@@ -6,7 +6,7 @@ import java.io.StringReader;
 import java.util.List;
 
 /**
- * Created by KeEr on 2014-06-06.
+ * Parser for csv
  */
 public class CsvUtils {
 

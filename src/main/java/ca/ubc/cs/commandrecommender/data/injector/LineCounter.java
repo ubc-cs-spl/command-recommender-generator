@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 /**
+ * Count the number of lines in a file
+ *
  * Created by KeEr on 2014-06-10.
  */
 public class LineCounter {

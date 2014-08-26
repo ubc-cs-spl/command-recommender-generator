@@ -13,8 +13,6 @@ import java.util.ArrayList;
  * For example, if we have A->C, C->D, A->C, A->B as our discovery pattern and Person1 only
  * used A, then we would recommend C first and then B but we won't recommend D because
  * the user does not know C yet.
- *
- * Created by KeEr on 2014-06-20.
  */
 public class LearningRuleRecGen extends AbstractLearningRuleRecGen {
 

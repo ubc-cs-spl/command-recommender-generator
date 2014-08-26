@@ -8,7 +8,6 @@ import java.util.Comparator;
 
 /**
  * Provide utility functions for sorting
- * Created by KeEr on 2014-06-19.
  */
 public class SortingUtils {
 

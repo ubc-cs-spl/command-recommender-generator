@@ -11,7 +11,7 @@ import org.apache.commons.collections4.SortedBag;
 import org.apache.commons.collections4.bag.HashBag;
 
 /**
- * Created by KeEr on 2014-06-20.
+ * Base class for learning rule (discovery) algorithms
  */
 public abstract class AbstractLearningRuleRecGen extends AbstractFilteredLearningRecGen {
 

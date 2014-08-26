@@ -9,8 +9,6 @@ import ca.ubc.cs.commandrecommender.model.cf.matejka.MatejkaUserBasedRecommender
 /**
  * This algorithm find similar users based on the usage history and discovery patterns
  * and make recommendations based on the information of these similar users
- *
- * Created by KeEr on 2014-06-23.
  */
 public class UserBasedCFWithDiscoveryRecGen extends AbstractCFWithDiscoveryRecGen {
 

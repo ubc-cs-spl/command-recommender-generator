@@ -24,6 +24,7 @@ public enum AlgorithmType {
     /**
      * See {@link ca.ubc.cs.commandrecommender.generator.HotkeyRecGen}
      */
+    @Deprecated
     HOTKEY_NOT_USED("You have not used this command with a hotkey"),
     /**
      * See {@link ca.ubc.cs.commandrecommender.generator.MostPopularLearningRuleRecGen}

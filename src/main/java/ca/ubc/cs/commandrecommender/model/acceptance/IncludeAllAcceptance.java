@@ -9,8 +9,6 @@ import java.util.List;
 
 /**
  * All new commands are considered as "learned" or "discovered"
- *
- * Created by KeEr on 2014-06-20.
  */
 public class IncludeAllAcceptance extends AbstractLearningAcceptance {
 

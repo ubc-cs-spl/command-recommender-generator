@@ -6,8 +6,6 @@ import ca.ubc.cs.commandrecommender.model.RecommendationCollector;
 /**
  * The base class for all classes implementing
  * {@link ca.ubc.cs.commandrecommender.generator.IRecGen}
- *
- * Created by KeEr on 2014-06-11.
  */
 public abstract class AbstractRecGen implements IRecGen {
 	

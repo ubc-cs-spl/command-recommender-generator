@@ -4,8 +4,6 @@ package ca.ubc.cs.commandrecommender.model.acceptance;
  * All acceptance levels for algorithms involving temporal infomation ("learning").
  * See {@link ca.ubc.cs.commandrecommender.model.acceptance.AbstractLearningAcceptance} for
  * more details.
- *
- * Created by KeEr on 2014-06-23.
  */
 public enum  LearningAcceptanceType {
 

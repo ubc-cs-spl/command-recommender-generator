@@ -10,8 +10,6 @@ import java.util.List;
 
 /**
  * Only new commands used more than once are considered as "learned" or "discovered"
- *
- * Created by KeEr on 2014-06-20.
  */
 public class MultiUseAcceptance extends AbstractLearningAcceptance {
 

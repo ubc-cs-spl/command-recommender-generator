@@ -19,8 +19,6 @@ import java.util.List;
  * These algorithms take into consideration the order in which commands or tools
  * are used or "discovered". We then perform collaborative filtering on these
  * learning sequences we recorded to generate recommendations.
- *
- * Created by KeEr on 2014-06-23.
  */
 public abstract class AbstractCFWithDiscoveryRecGen extends AbstractFilteredLearningRecGen {
 

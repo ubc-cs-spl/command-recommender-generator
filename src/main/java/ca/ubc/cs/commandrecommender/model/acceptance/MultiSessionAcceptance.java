@@ -10,8 +10,6 @@ import java.util.List;
 
 /**
  * Only new commands that are used in multiple sessions are considered as "learned" or "discovered"
- *
- * Created by KeEr on 2014-06-20.
  */
 public class MultiSessionAcceptance extends AbstractLearningAcceptance {
 

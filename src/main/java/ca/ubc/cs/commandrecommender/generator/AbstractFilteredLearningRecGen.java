@@ -12,8 +12,6 @@ import java.util.List;
  * which tools or commands are used or "discovered." Filtering of data with the
  * use of {@link ca.ubc.cs.commandrecommender.model.acceptance.AbstractLearningAcceptance}
  * is involved to specify when counts as a discovery sequence in the usage data collected
- *
- * Created by KeEr on 2014-06-20.
  */
 public abstract class AbstractFilteredLearningRecGen extends AbstractRecGen {
 

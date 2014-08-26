@@ -16,8 +16,6 @@ import java.util.List;
  * The base class for collaborative filtering algorithms based solely on
  * the command used (ie. do not take into account of the order) to generate
  * recommendations
- *
- * Created by KeEr on 2014-06-23.
  */
 public abstract class AbstractCFRecGen extends AbstractRecGen {
 

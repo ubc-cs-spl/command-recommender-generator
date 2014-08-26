@@ -15,12 +15,12 @@ import java.util.Set;
 
 /**
  * Generate the commands with hot-keys that a user has never used.
- * //TODO: right now we are determining whether hotkeys are available for
- *         a command by asking whether there is any user who used the
- *         command with hotkey. This design may or may not be appropriate
+ * a command by asking whether there is any user who used the
+ * command with hotkey. This design may or may not be appropriate
  *
- * Created by KeEr on 2014-06-09.
+ * Deprecated because usage reports suggest hotkeys in a better manner
  */
+@Deprecated
 public class HotkeyRecGen extends AbstractRecGen {
 
     private Set<Integer> cmdsWithShortcuts;

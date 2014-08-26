@@ -14,6 +14,7 @@ import java.util.Collection;
 import java.util.List;
 
 /**
+ * Wrapper class for SVDRecommender to help us extract values and reasons from algorithms
  * Created by KeEr on 2014-07-07.
  */
 public class ReasonedSVDRecommender implements ReasonedRecommender {
