@@ -27,6 +27,7 @@ public class RecommenderOptions {
     public static final String USER = "u";
     public static final String TIME_PERIOD_IN_DAYS = "p";
     public static final String GENERATE_REPORT = "report";
+    public static final String GENERATE_FUN_FACTS = "info_gen";
     public static final String COMMAND_TABLE = "command_table";
     public static final String RECOMMENDATION_TABLE = "recommendation_table";
     public static final String USER_TABLE = "user_table";
@@ -56,7 +57,7 @@ public class RecommenderOptions {
     
     private boolean useCache = false;
     private String user = null;
-    private boolean generateReport = false;
+    private GenType genType = GenType.RECOMMENDATION;
     private int periodInDays = 7;
     private int amount = -1;
     
@@ -125,8 +126,8 @@ public class RecommenderOptions {
 		return useCache;
 	}
 
-	public boolean isGenerateReport() {
-		return generateReport;
+	public GenType getGenType() {
+		return genType;
 	}
 
 	public int getPeriodInDays() {
@@ -170,7 +171,8 @@ public class RecommenderOptions {
         options.addOption(ALGORITHM_TYPE, true, "Type of algorithm you want to use to generate the recommendations. Default: " + algorithmName);
         options.addOption(ACCEPTANCE_TYPE, true, "Acceptance type for the algorithm. Default: INCLUDE_ALL");
         options.addOption(USE_CACHE, false, "Cache all usage data");
-        options.addOption(GENERATE_REPORT, false, "Whether to generate report or recommendations. Default: false (generate recommendations)");
+        options.addOption(GENERATE_FUN_FACTS, false, "Whether to generate fun facts for commands. Default: false");
+        options.addOption(GENERATE_REPORT, false, "Whether to generate report. Default: false");
         options.addOption(TIME_PERIOD_IN_DAYS, true, "The time period for the usage report in days. Default: 7");
 	}
 	
@@ -238,7 +240,7 @@ public class RecommenderOptions {
     
 	private void parseGenerationParameters() throws ParseException {
 		if(cmd.hasOption(GENERATE_REPORT)) {
-			generateReport = true;
+			genType = GenType.REPORT;
 		
 		    if(cmd.hasOption(TIME_PERIOD_IN_DAYS)) {
 		        try {
@@ -248,6 +250,10 @@ public class RecommenderOptions {
 		        }
 		    }
 		}
+
+        if(cmd.hasOption(GENERATE_FUN_FACTS)) {
+            genType = GenType.FUN_FACTS;
+        }
 
         if(cmd.hasOption(USER)) {
             user = cmd.getOptionValue(USER);
@@ -321,5 +327,9 @@ public class RecommenderOptions {
 		}
 		return help;
 	}
+
+    public static enum GenType {
+        RECOMMENDATION, FUN_FACTS, REPORT
+    }
 
 }

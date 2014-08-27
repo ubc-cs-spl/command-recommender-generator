@@ -28,7 +28,7 @@ public class MongoRecommendationDBTest {
     private DBCollection recommendationCollection;
     private DBCollection commandDetailsCollection;
     private String DB_URL = "localhost";
-    private int DB_PORT = 27000;
+    private int DB_PORT = 27017;
     private String DB_NAME = "commands-test";
     private AbstractRecommendationDB recommendationDB;
     private IndexMap userIndexMap, toolIndexMap;

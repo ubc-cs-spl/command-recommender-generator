@@ -21,7 +21,6 @@ public class MongoReportDB extends MongoRecommendationDB {
 	
 	private DBCollection reportCollection;
 	
-	
 	public MongoReportDB(RecommenderOptions recommenderOptions) throws DBConnectionException {
 		// the index map is useless here, but using null could lead to NPE on super class methods		
 		super(recommenderOptions, new IndexMap());

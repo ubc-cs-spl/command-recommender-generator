@@ -1,6 +1,9 @@
 package ca.ubc.cs.commandrecommender;
 
 import ca.ubc.cs.commandrecommender.Exception.DBConnectionException;
+import ca.ubc.cs.commandrecommender.cmdinfo.CommandFunFacts;
+import ca.ubc.cs.commandrecommender.cmdinfo.CommandInfoExtractor;
+import ca.ubc.cs.commandrecommender.cmdinfo.MongoInfoGenDetailDB;
 import ca.ubc.cs.commandrecommender.db.*;
 import ca.ubc.cs.commandrecommender.generator.AlgorithmType;
 import ca.ubc.cs.commandrecommender.generator.IRecGen;
@@ -35,12 +38,14 @@ public class App {
     private static AbstractLearningAcceptance acceptance;
     private static Logger logger = LogManager.getLogger(App.class);
     private static boolean useCache;
-    private static boolean generateReport;
+    private static RecommenderOptions.GenType genType;
     private static int periodInDays;
     private static int amount;
 	private static MongoCommandReportDB commandReportDB;
 	private static MongoReportDB reportDB;
 	private static RecommenderOptions recommenderOptions;
+    private static MongoInfoGenDetailDB infoGenDetailDB;
+    private static CommandInfoExtractor commandInfoExtractor;
 
     public static void main(String[] args) throws DBConnectionException {
         //TODO: use authorization for production
@@ -49,7 +54,7 @@ public class App {
         try {
             recommenderOptions = new RecommenderOptions(args);
             useCache = recommenderOptions.isUseCache();
-            generateReport = recommenderOptions.isGenerateReport();
+            genType = recommenderOptions.getGenType();
             periodInDays = recommenderOptions.getPeriodInDays();
             amount = recommenderOptions.getAmount();
             algorithmType = recommenderOptions.getAlgorithmType();
@@ -58,10 +63,12 @@ public class App {
            System.out.println(e.getMessage());
            System.exit(1);
         }
-        if (generateReport) {
-        	generateReports();
+        if (genType == RecommenderOptions.GenType.RECOMMENDATION) {
+            generateRecommendations();
+        } else if (genType == RecommenderOptions.GenType.FUN_FACTS) {
+            updateCommandInfo();
         } else {
-        	generateRecommendations();
+            generateReports();
         }
     }
     
@@ -143,6 +150,36 @@ public class App {
         reportDB.closeConnection();
     }
 
+    private static void initializeDatabasesForReport() throws DBConnectionException {
+        logger.debug("Connecting to Command database with: " +
+                recommenderOptions.getCommandConnectionParameters().toString());
+        commandReportDB = new MongoCommandReportDB(recommenderOptions);
+        logger.debug("Connecting to Recommendation database with: " +
+                recommenderOptions.getRecommendationConnectionParamters().toString());
+        reportDB = new MongoReportDB(recommenderOptions);
+    }
+
+    private static void updateCommandInfo() throws DBConnectionException {
+        initializeDatabaseForInfoGen();
+        long time = System.currentTimeMillis();
+        List<CommandFunFacts> funFactsList = commandInfoExtractor.getCommandInfo();
+        logger.debug("Time to extract interesting facts: {}", getAmountOfTimeTaken(time));
+        commandInfoExtractor.closeConnection();
+        time = System.currentTimeMillis();
+        infoGenDetailDB.updateDetails(funFactsList);
+        logger.debug("Time to update deatials: {}", getAmountOfTimeTaken(time));
+        infoGenDetailDB.closeConnection();
+    }
+
+    private static void initializeDatabaseForInfoGen() throws DBConnectionException {
+        logger.debug("Connecting to Command database with: " +
+                recommenderOptions.getCommandConnectionParameters().toString());
+        commandInfoExtractor = new CommandInfoExtractor(recommenderOptions);
+        logger.debug("Connecting to Recommendation database with: " +
+                recommenderOptions.getRecommendationConnectionParamters().toString());
+        infoGenDetailDB = new MongoInfoGenDetailDB(recommenderOptions);
+    }
+
     private static String getAmountOfTimeTaken(long time) {
         long difference = System.currentTimeMillis() - time;
         long second = (difference / 1000) % 60;
@@ -161,15 +198,6 @@ public class App {
         logger.debug("Connecting to Recommendation database with: " +
                 recommenderOptions.getRecommendationConnectionParamters().toString());
         recommendationDB = new MongoRecommendationDB(recommenderOptions, userIndexMap);
-    }
-    
-    private static void initializeDatabasesForReport() throws DBConnectionException {
-        logger.debug("Connecting to Command database with: " +
-                recommenderOptions.getCommandConnectionParameters().toString());
-        commandReportDB = new MongoCommandReportDB(recommenderOptions);
-        logger.debug("Connecting to Recommendation database with: " +
-                recommenderOptions.getRecommendationConnectionParamters().toString());
-        reportDB = new MongoReportDB(recommenderOptions);
     }
 
 }

@@ -47,14 +47,7 @@ public class MongoRecommendationDB extends AbstractRecommendationDB{
         super(userIndexMap);
         try {
             this.connectionParameters = options.getRecommendationConnectionParamters();
-            ServerAddress serverAddress = new ServerAddress(connectionParameters.getDbUrl(),
-                    connectionParameters.getDbPort());
-            if(!connectionParameters.getDbUser().equals("")){
-                List<MongoCredential> credentialList = createCredentialList(connectionParameters);
-                recommendationClient = new MongoClient(serverAddress, credentialList);
-            }else{
-                recommendationClient = new MongoClient(serverAddress);
-            }
+            recommendationClient = MongoUtils.getMongoClientFromParameters(connectionParameters);
             userCollection = getCollection(options.getUserTable());
             recommendationCollection = getCollection(options.getRecommendationTable());
             commandDetailsCollection = getCollection(options.getCommandDetailTable());
@@ -63,15 +56,6 @@ public class MongoRecommendationDB extends AbstractRecommendationDB{
         }catch(UnknownHostException ex){
             throw new DBConnectionException(ex);
         }
-    }
-
-    private List<MongoCredential> createCredentialList(
-            ConnectionParameters connectionParameters) {
-        MongoCredential userCredential = MongoCredential.createMongoCRCredential(
-                connectionParameters.getDbUser(),
-                connectionParameters.getdBName(),
-                connectionParameters.getDbPassword().toCharArray());
-        return Collections.singletonList(userCredential);
     }
 
     private void ensureIndex() {

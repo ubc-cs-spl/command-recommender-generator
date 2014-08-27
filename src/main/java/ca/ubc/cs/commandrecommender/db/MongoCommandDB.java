@@ -1,16 +1,14 @@
 package ca.ubc.cs.commandrecommender.db;
 
-import ca.ubc.cs.commandrecommender.RecommenderOptions;
 import ca.ubc.cs.commandrecommender.Exception.DBConnectionException;
+import ca.ubc.cs.commandrecommender.RecommenderOptions;
 import ca.ubc.cs.commandrecommender.model.IndexMap;
 import ca.ubc.cs.commandrecommender.model.ToolUse;
 import ca.ubc.cs.commandrecommender.model.ToolUseCollection;
-
 import com.mongodb.*;
 
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -32,14 +30,9 @@ public class MongoCommandDB extends AbstractCommandDB {
         this.useCache = useCache;
         try {
         	ConnectionParameters connectionParameters = options.getCommandConnectionParameters();
-        	ServerAddress serverAddress = new ServerAddress(connectionParameters.getDbUrl(), connectionParameters.getDbPort());
-        	if(!connectionParameters.getDbUser().equals("")){
-        		List<MongoCredential> credentialList = createCredentialList(connectionParameters);        		
-        		client = new MongoClient(serverAddress, credentialList);
-        	}else{
-        		client = new MongoClient(serverAddress);
-        	}
-            commandCollection = client.getDB(connectionParameters.getdBName()).getCollection(options.getCommandTable());
+        	client = MongoUtils.getMongoClientFromParameters(connectionParameters);
+            commandCollection = client.getDB(connectionParameters.getdBName())
+                    .getCollection(options.getCommandTable());
             ensureIndex();
         }catch(UnknownHostException ex){
             throw new DBConnectionException(ex);
@@ -47,14 +40,6 @@ public class MongoCommandDB extends AbstractCommandDB {
         	throw new DBConnectionException(ex);
         }
     }
-    
-    private List<MongoCredential> createCredentialList(
-			ConnectionParameters connectionParameters) {
-		MongoCredential userCredential = MongoCredential.createMongoCRCredential(connectionParameters.getDbUser(), connectionParameters.getdBName(), connectionParameters.getDbPassword().toCharArray());
-		return Collections.singletonList(userCredential);
-	}
-
-  
 
 	private void ensureIndex() {
         if(commandCollection != null) {

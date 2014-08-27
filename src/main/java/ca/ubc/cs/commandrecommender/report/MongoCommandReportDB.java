@@ -1,13 +1,12 @@
 package ca.ubc.cs.commandrecommender.report;
 
-import ca.ubc.cs.commandrecommender.RecommenderOptions;
 import ca.ubc.cs.commandrecommender.Exception.DBConnectionException;
+import ca.ubc.cs.commandrecommender.RecommenderOptions;
 import ca.ubc.cs.commandrecommender.db.ConnectionParameters;
-
+import ca.ubc.cs.commandrecommender.db.MongoUtils;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.PeekingIterator;
 import com.mongodb.*;
-
 import org.bson.types.ObjectId;
 
 import java.net.UnknownHostException;
@@ -39,7 +38,7 @@ public class MongoCommandReportDB {
     		throws DBConnectionException {
         try {
         	ConnectionParameters connectionParameters = recommenderOptions.getCommandConnectionParameters();
-            client = new MongoClient(connectionParameters.getDbUrl(), connectionParameters.getDbPort());
+            client = MongoUtils.getMongoClientFromParameters(connectionParameters);
             commandCollection = client.getDB(connectionParameters.getdBName()).getCollection(recommenderOptions.getCommandTable());
         }catch(UnknownHostException ex){
             throw new DBConnectionException(ex);

@@ -30,7 +30,7 @@ public class MongoCommandDBTest {
     private List<ToolUseCollection> savedToolUseCollections;
     private MongoClient client;
     private String DB_URL = "localhost";
-    private int DB_PORT = 27000;
+    private int DB_PORT = 27017;
     private DBCollection commandCollection;
     private String DB_NAME = "commands-test";
     private IndexMap toolIndexMap, userIndexMap;
